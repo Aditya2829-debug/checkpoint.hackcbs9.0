@@ -674,7 +674,10 @@ export const ScannerModal: React.FC = () => {
                     {detectedCode}
                   </p>
                   <p className="text-xs text-white/80 mt-1">
-                    Retrieving product analysis from database...
+                    Analyzing ingredients & nutrition...
+                  </p>
+                  <p className="text-[10px] text-[#D7FF63] mt-1 animate-pulse">
+                    ⚡ Querying database & AI engine
                   </p>
                 </div>
               )}

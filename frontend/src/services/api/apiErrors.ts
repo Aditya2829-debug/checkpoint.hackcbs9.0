@@ -21,6 +21,13 @@ export function handleAxiosError(error: unknown): ApiError {
     return new ApiError(message, status, code, err.response?.data?.detail);
   }
   if (error instanceof Error) {
+    if (error.message.includes('timeout') || (error as any).code === 'ECONNABORTED') {
+      return new ApiError(
+        'The server is warming up or processing complex ingredients. Please tap scan again.',
+        408,
+        'TIMEOUT'
+      );
+    }
     return new ApiError(error.message, 0);
   }
   return new ApiError('An unexpected network error occurred', 0);

@@ -4,7 +4,7 @@ import { handleAxiosError } from './apiErrors';
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  timeout: 60000, // 60s timeout allows for Render cold-starts (30-45s) and Gemini multimodality
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',

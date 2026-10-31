@@ -314,6 +314,7 @@ export const scanService = {
     try {
       const response = await apiClient.get<BackendScanResponse>(
         ENDPOINTS.SCANNING.BARCODE_LOOKUP(cleanBarcode),
+        { timeout: 60000 },
       );
 
       if (response.data.status === 'OK' && response.data.product) {
@@ -355,6 +356,7 @@ export const scanService = {
     const response = await apiClient.post<BackendScanResponse>(
       ENDPOINTS.SCANNING.LABEL_ANALYZE,
       payload,
+      { timeout: 60000 },
     );
 
     if (response.data.status === 'OK' && response.data.product) {
