@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CheckPoint!!</string>
+    <string name="title_activity_main">CheckPoint!!</string>
+    <string name="package_name">com.checkpoint.healthintelligence</string>
+    <string name="custom_url_scheme">com.checkpoint.healthintelligence</string>
+</resources>
