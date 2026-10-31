@@ -1,4 +1,5 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { MongoExceptionFilter } from './common/filters/mongo-exception.filter';
 
 export function configureApp(app: INestApplication): void {
   app.setGlobalPrefix(process.env.API_PREFIX ?? 'api/v1');
@@ -16,6 +17,9 @@ export function configureApp(app: INestApplication): void {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      transformOptions: { enableImplicitConversion: true },
     }),
   );
+
+  app.useGlobalFilters(new MongoExceptionFilter());
 }

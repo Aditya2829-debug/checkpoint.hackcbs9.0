@@ -1,12 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
+import { HealthService } from './health.service';
 
 @Controller('health')
 export class HealthController {
+  constructor(private readonly healthService: HealthService) {}
+
   @Get()
-  check(): { status: string; message: string } {
-    return {
-      status: 'ok',
-      message: 'Product Health Intelligence API is running',
-    };
+  check() {
+    return this.healthService.check();
   }
 }
