@@ -77,14 +77,16 @@ export const ScannerModal: React.FC = () => {
   const [cameraErrorMsg, setCameraErrorMsg] = useState<string>('');
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [detectedCode, setDetectedCode] = useState<string | null>(null);
-  const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
-  const [availableCameras, setAvailableCameras] = useState<Array<{ id: string; label: string }>>([]);
   const [selectedCameraId, setSelectedCameraId] = useState<string>('');
   const [isCapturingFrame, setIsCapturingFrame] = useState(false);
+  const [isSwitchingCamera, setIsSwitchingCamera] = useState(false);
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const isScanningLockedRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const onScanSuccessRef = useRef<(decodedText: string) => void>(() => {});
+  const onScanErrorRef = useRef<() => void>(() => {});
 
   // Stop camera tracks and decoder cleanly
   const stopCamera = useCallback(async () => {
@@ -133,21 +135,28 @@ export const ScannerModal: React.FC = () => {
     }
   }, [handleClose, navigate, recordScan, setCurrentProduct, setActiveMode, setManualBarcodeInput]);
 
-  // Check available camera devices using Html5Qrcode
+  // Set up scan callback refs to avoid stale closures
   useEffect(() => {
-    Html5Qrcode.getCameras()
-      .then((devices) => {
-        if (devices && devices.length > 0) {
-          setAvailableCameras(devices);
-          setHasMultipleCameras(devices.length > 1);
-          // Auto-select back camera if on phone, or first available camera if on laptop
-          const backCam = devices.find((d) => /back|rear|environment/i.test(d.label));
-          const chosen = backCam ? backCam.id : devices[0].id;
-          setSelectedCameraId(chosen);
-        }
-      })
-      .catch(() => {});
-  }, []);
+    onScanSuccessRef.current = (decodedText: string) => {
+      if (isScanningLockedRef.current || !decodedText.trim()) return;
+      isScanningLockedRef.current = true;
+      const clean = decodedText.trim();
+      setDetectedCode(clean);
+      playBeep();
+
+      if (html5QrCodeRef.current?.isScanning) {
+        html5QrCodeRef.current.stop().then(() => html5QrCodeRef.current?.clear()).catch(() => {});
+      }
+
+      setTimeout(() => {
+        handleBarcodeSubmit(clean);
+      }, 500);
+    };
+
+    onScanErrorRef.current = () => {
+      // Searching frame for barcode
+    };
+  }, [handleBarcodeSubmit]);
 
   // Initialize and run HTML5 Camera Barcode Scanner
   useEffect(() => {
@@ -159,7 +168,6 @@ export const ScannerModal: React.FC = () => {
     let isCancelled = false;
 
     const startScanner = async () => {
-      // Short delay to allow React to mount the #interactive-barcode-scanner DOM element
       await new Promise((resolve) => setTimeout(resolve, 80));
       if (isCancelled) return;
 
@@ -190,66 +198,44 @@ export const ScannerModal: React.FC = () => {
 
         html5QrCodeRef.current = qrcode;
 
-        // Query available devices if not yet populated
-        const devices = await Html5Qrcode.getCameras().catch(() => []);
-        if (devices && devices.length > 0) {
-          setAvailableCameras(devices);
-          setHasMultipleCameras(devices.length > 1);
-        }
-
-        // Determine camera target (laptop webcams fail on 'environment', so pass deviceId or fallback to 'user')
-        let targetCamera: string | MediaTrackConstraints = selectedCameraId;
-        if (!targetCamera && devices.length > 0) {
-          if (facingMode === 'environment') {
-            const backCam = devices.find((d) => /back|rear|environment/i.test(d.label));
-            targetCamera = backCam ? backCam.id : devices[0].id;
-          } else {
-            const frontCam = devices.find((d) => /front|user|integrated|webcam/i.test(d.label));
-            targetCamera = frontCam ? frontCam.id : devices[0].id;
-          }
-        }
-        if (!targetCamera) {
-          targetCamera = { facingMode };
-        }
-
         const scanConfig = {
           fps: 15,
-          disableFlip: false, // Inverts frame automatically to scan mirrored laptop webcam video
-          videoConstraints: {
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-          },
+          disableFlip: false,
         };
 
-        const onScanSuccess = (decodedText: string) => {
-          if (isScanningLockedRef.current || !decodedText.trim()) return;
-          isScanningLockedRef.current = true;
-          const clean = decodedText.trim();
-          setDetectedCode(clean);
-          playBeep();
+        // Query available devices
+        const devices = await Html5Qrcode.getCameras().catch(() => []);
 
-          if (qrcode.isScanning) {
-            qrcode.stop().then(() => qrcode.clear()).catch(() => {});
+        // Default to environment (back) camera for barcode scanning
+        let targetCamera: string | MediaTrackConstraints = { facingMode: 'environment' };
+        if (devices && devices.length > 0) {
+          const backCam = devices.find((d) => /back|rear|environment|main/i.test(d.label));
+          if (backCam) {
+            targetCamera = backCam.id;
+            setSelectedCameraId(backCam.id);
           }
+        }
 
-          setTimeout(() => {
-            handleBarcodeSubmit(clean);
-          }, 500);
-        };
-
-        const onScanError = () => {
-          // Frame search without barcode - keep scanning
-        };
-
-        // Try selected/preferred camera target, with automatic fallback for laptop single webcams
         try {
-          await qrcode.start(targetCamera, scanConfig, onScanSuccess, onScanError);
+          await qrcode.start(
+            targetCamera,
+            scanConfig,
+            (decodedText) => onScanSuccessRef.current(decodedText),
+            () => onScanErrorRef.current(),
+          );
+          setFacingMode('environment');
         } catch (initialErr) {
-          console.warn('Initial camera target failed, trying fallback...', initialErr);
-          if (devices.length > 0) {
-            await qrcode.start(devices[0].id, scanConfig, onScanSuccess, onScanError);
-          } else {
-            await qrcode.start({ facingMode: 'user' }, scanConfig, onScanSuccess, onScanError);
+          console.warn('Initial back camera target failed, falling back to user/webcam...', initialErr);
+          const fallbackTarget = devices && devices.length > 0 ? devices[0].id : { facingMode: 'user' };
+          await qrcode.start(
+            fallbackTarget,
+            scanConfig,
+            (decodedText) => onScanSuccessRef.current(decodedText),
+            () => onScanErrorRef.current(),
+          );
+          setFacingMode('user');
+          if (typeof fallbackTarget === 'string') {
+            setSelectedCameraId(fallbackTarget);
           }
         }
 
@@ -279,18 +265,99 @@ export const ScannerModal: React.FC = () => {
       isCancelled = true;
       stopCamera();
     };
-  }, [isScannerOpen, activeMode, facingMode, selectedCameraId, handleBarcodeSubmit, stopCamera]);
+  }, [isScannerOpen, activeMode, stopCamera]);
 
-  // Toggle Camera Front / Back
-  const toggleCameraFacing = () => {
-    if (availableCameras.length > 1) {
-      const currentIndex = availableCameras.findIndex((c) => c.id === selectedCameraId);
-      const nextIndex = (currentIndex + 1) % availableCameras.length;
-      setSelectedCameraId(availableCameras[nextIndex].id);
-    } else {
-      setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
+  // Toggle Camera Front / Back (seamless switch without unmounting)
+  const handleSwitchCamera = useCallback(async () => {
+    if (isSwitchingCamera || !html5QrCodeRef.current) return;
+    setIsSwitchingCamera(true);
+
+    try {
+      const qrcode = html5QrCodeRef.current;
+      if (qrcode.isScanning) {
+        await qrcode.stop();
+      }
+      qrcode.clear();
+
+      const nextFacing: 'environment' | 'user' = facingMode === 'environment' ? 'user' : 'environment';
+
+      // Refresh camera devices list with permissions granted
+      const devices = await Html5Qrcode.getCameras().catch(() => []);
+
+      let target: string | MediaTrackConstraints = { facingMode: nextFacing };
+
+      if (devices && devices.length > 0) {
+        if (nextFacing === 'environment') {
+          const backCam = devices.find((d) => /back|rear|environment|main/i.test(d.label));
+          if (backCam) {
+            target = backCam.id;
+          } else if (devices.length > 1 && selectedCameraId) {
+            const otherCam = devices.find((d) => d.id !== selectedCameraId);
+            if (otherCam) target = otherCam.id;
+          }
+        } else {
+          const frontCam = devices.find((d) => /front|user|selfie|integrated|webcam/i.test(d.label));
+          if (frontCam) {
+            target = frontCam.id;
+          } else if (devices.length > 1 && selectedCameraId) {
+            const otherCam = devices.find((d) => d.id !== selectedCameraId);
+            if (otherCam) target = otherCam.id;
+          }
+        }
+      }
+
+      const scanConfig = {
+        fps: 15,
+        disableFlip: false,
+      };
+
+      try {
+        await qrcode.start(
+          target,
+          scanConfig,
+          (decodedText) => onScanSuccessRef.current(decodedText),
+          () => onScanErrorRef.current(),
+        );
+        setFacingMode(nextFacing);
+        if (typeof target === 'string') {
+          setSelectedCameraId(target);
+        } else {
+          setSelectedCameraId('');
+        }
+        setCameraState('active');
+      } catch (switchErr) {
+        console.warn('Target camera start failed, trying standard facingMode constraint...', switchErr);
+        try {
+          await qrcode.start(
+            { facingMode: nextFacing },
+            scanConfig,
+            (decodedText) => onScanSuccessRef.current(decodedText),
+            () => onScanErrorRef.current(),
+          );
+          setFacingMode(nextFacing);
+          setSelectedCameraId('');
+          setCameraState('active');
+        } catch {
+          // If switching to that camera failed (e.g. single camera laptop), revert to current facing camera
+          alert(`The ${nextFacing === 'environment' ? 'back' : 'front'} camera is not available on this device.`);
+          const revertTarget = devices && devices.length > 0 ? devices[0].id : { facingMode };
+          await qrcode.start(
+            revertTarget,
+            scanConfig,
+            (decodedText) => onScanSuccessRef.current(decodedText),
+            () => onScanErrorRef.current(),
+          );
+          setCameraState('active');
+        }
+      }
+    } catch (err: any) {
+      console.error('Camera switch error:', err);
+      setCameraState('error');
+      setCameraErrorMsg(err?.message || 'Error switching camera.');
+    } finally {
+      setIsSwitchingCamera(false);
     }
-  };
+  }, [facingMode, isSwitchingCamera, selectedCameraId]);
 
   // Instant Snapshot & High-Precision Barcode Capture (for laptop webcams without autofocus)
   const handleCaptureFrame = async () => {
@@ -517,11 +584,13 @@ export const ScannerModal: React.FC = () => {
           {/* Camera Switch / Flip (for phones with front/back or laptops with webcams) */}
           {activeMode === 'barcode' && (
             <button
-              onClick={toggleCameraFacing}
-              className="p-2.5 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all cursor-pointer"
-              title={facingMode === 'environment' ? 'Switch to Front/User Camera' : 'Switch to Back Camera'}
+              type="button"
+              onClick={handleSwitchCamera}
+              disabled={isSwitchingCamera || cameraState !== 'active'}
+              className="p-2.5 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all cursor-pointer disabled:opacity-50"
+              title={facingMode === 'environment' ? 'Switch to Front Camera' : 'Switch to Back Camera'}
             >
-              <SwitchCamera className="w-5 h-5" />
+              <SwitchCamera className={`w-5 h-5 ${isSwitchingCamera ? 'animate-spin' : ''}`} />
             </button>
           )}
 
@@ -639,17 +708,16 @@ export const ScannerModal: React.FC = () => {
                 <span>{isCapturingFrame ? 'Analyzing Frame...' : '📸 Capture & Scan Frame'}</span>
               </button>
 
-              {hasMultipleCameras && (
-                <button
-                  type="button"
-                  onClick={toggleCameraFacing}
-                  className="py-2 px-3 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-xs font-bold text-white flex items-center gap-1.5 cursor-pointer transition-all"
-                  title="Switch to next camera"
-                >
-                  <SwitchCamera className="w-4 h-4 text-[#D7FF63]" />
-                  <span>Switch</span>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleSwitchCamera}
+                disabled={cameraState !== 'active' || isSwitchingCamera}
+                className="py-2 px-3 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-xs font-bold text-white flex items-center gap-1.5 cursor-pointer transition-all disabled:opacity-50"
+                title={facingMode === 'environment' ? 'Switch to Front Camera' : 'Switch to Back Camera'}
+              >
+                <SwitchCamera className={`w-4 h-4 text-[#D7FF63] ${isSwitchingCamera ? 'animate-spin' : ''}`} />
+                <span>{facingMode === 'environment' ? 'To Front Cam' : 'To Back Cam'}</span>
+              </button>
             </div>
 
             {/* Instruction & Status */}
