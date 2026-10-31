@@ -170,32 +170,34 @@ export class ScanService {
           this.logger.log(
             `[Branch 3 -> DB Name Match] Gemini identified "${extraction.productName}" which matches official DB record "${matchedDbProduct.name}"!`,
           );
+          const matchedDoc = matchedDbProduct as any;
           const res = this.handleDatabaseProduct(
             normalizedBarcode,
-            matchedDbProduct,
+            matchedDoc,
           );
           // Persist to scan_cache so future barcode scans are instant
-          await this.scanCacheRepository.upsert({
+          await this.scanCacheRepository.save({
             barcode: normalizedBarcode,
-            category: res.product.category,
+            category: res.product?.category || 'food',
             extraction: {
-              productName: matchedDbProduct.name,
-              brand: matchedDbProduct.brand,
-              category: res.product.category,
+              productName: matchedDoc.name || 'Unknown Product',
+              brand: matchedDoc.brand || 'Unknown Brand',
+              category: res.product?.category || 'food',
               per100g: {
-                energyKcal: matchedDbProduct.nutrition?.caloriesKcal,
-                carbs: matchedDbProduct.nutrition?.carbs,
-                protein: matchedDbProduct.nutrition?.protein,
-                totalFat: matchedDbProduct.nutrition?.totalFat,
-                satFat: matchedDbProduct.nutrition?.satFat,
-                sugars: matchedDbProduct.nutrition?.sugars,
-                sodiumMg: matchedDbProduct.nutrition?.sodiumMg,
+                energyKcal: matchedDoc.nutrition?.caloriesKcal,
+                carbs: matchedDoc.nutrition?.carbs,
+                protein: matchedDoc.nutrition?.protein,
+                totalFat: matchedDoc.nutrition?.totalFat,
+                satFat: matchedDoc.nutrition?.satFat,
+                sugars: matchedDoc.nutrition?.sugars,
+                sodiumMg: matchedDoc.nutrition?.sodiumMg,
               },
-              ingredients: res.product.ingredients,
-              ingredientsText: matchedDbProduct.ingredientsText,
+              ingredients: res.product?.ingredients || [],
+              ingredientsText: matchedDoc.ingredientsText,
               confidence: 0.99,
             },
-            source: 'database_match',
+            createdAt: new Date(),
+            source: 'gemini',
           });
           this.setMemoryCache(normalizedBarcode, res);
           return res;
