@@ -6,11 +6,10 @@ import {
   Share2,
   ChevronDown,
   ChevronUp,
-  ShieldCheck,
   Check,
-  Sparkles,
 } from 'lucide-react';
 import { productService } from '../../services/api/productService';
+import { scanService } from '../../services/api/scanService';
 import { useProductStore } from '../../store/useProductStore';
 import { IngredientDetailModal } from '../ingredients/IngredientDetailModal';
 import type { Ingredient, Product } from '../../types';
@@ -18,7 +17,7 @@ import type { Ingredient, Product } from '../../types';
 export const ProductAnalysisScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isWatchlisted, toggleWatchlist } = useProductStore();
+  const { isWatchlisted, toggleWatchlist, currentProduct } = useProductStore();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,9 +27,20 @@ export const ProductAnalysisScreen: React.FC = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
+      if (currentProduct && (currentProduct.id === id || currentProduct.barcode === id)) {
+        setProduct(currentProduct);
+        setLoading(false);
+        return;
+      }
+
       if (id) {
-        const item = await productService.getById(id);
-        setProduct(item);
+        try {
+          const item = await scanService.lookupBarcode(id);
+          setProduct(item);
+        } catch {
+          const item = await productService.getById(id);
+          setProduct(item);
+        }
       } else {
         const items = await productService.getAll();
         setProduct(items[0]);
@@ -38,7 +48,7 @@ export const ProductAnalysisScreen: React.FC = () => {
       setLoading(false);
     };
     fetchProduct();
-  }, [id]);
+  }, [id, currentProduct]);
 
   if (loading || !product) {
     return (
@@ -126,133 +136,221 @@ export const ProductAnalysisScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Grade Hero Card (Stitch Screen 2 / 7) */}
-      <div className="p-4 rounded-3xl bg-gradient-to-b from-[#E2F7D8] to-[#D0F0C0] dark:from-[#1A2E1F] dark:to-[#122316] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-3 text-center">
-        <span className="inline-block px-3 py-0.5 rounded-full bg-white/70 dark:bg-black/40 border border-[#111F15]/20 text-[9px] font-mono font-black uppercase tracking-wider">
-          COMPREHENSIVE SAFETY & QUALITY AUDIT
-        </span>
+      {/* Grade Hero Card */}
+      {(() => {
+        const gradeColorMap: Record<string, { bg: string; text: string; badge: string; border: string }> = {
+          A: { bg: 'bg-[#15803D]', text: 'text-white', badge: 'bg-[#C5F82A] text-[#111F15]', border: 'border-[#15803D]' },
+          B: { bg: 'bg-[#84CC16]', text: 'text-[#111F15]', badge: 'bg-[#111F15] text-white', border: 'border-[#84CC16]' },
+          C: { bg: 'bg-[#EAB308]', text: 'text-[#111F15]', badge: 'bg-[#111F15] text-white', border: 'border-[#EAB308]' },
+          D: { bg: 'bg-[#F97316]', text: 'text-white', badge: 'bg-[#111F15] text-white', border: 'border-[#F97316]' },
+          E: { bg: 'bg-[#EF4444]', text: 'text-white', badge: 'bg-[#111F15] text-white', border: 'border-[#EF4444]' },
+        };
+        const colors = gradeColorMap[product.grade] || gradeColorMap.C;
 
-        {/* Big Grade Box */}
-        <div className="flex justify-center">
-          <div className="relative bg-[#C5F82A] text-[#111F15] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] rounded-3xl px-8 py-3 text-center">
-            <span className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-md bg-[#5EEAD4] text-[#111F15] border border-[#111F15] text-[9px] font-black uppercase">
-              VERIFIED ✓
+        const gradeStatusText = {
+          A: 'EXCELLENT NUTRITIONAL QUALITY • CLEAN INGREDIENTS',
+          B: 'HEALTHIER CHOICE • BALANCED NUTRIENT PROFILE',
+          C: 'MODERATE NUTRITIONAL VALUE • CONSUME OCCASIONALLY',
+          D: 'HIGH CONCERN NUTRIENTS • RESTRAIN CONSUMPTION',
+          E: 'CRITICAL HEALTH CONCERN • HIGH SUGAR / SFA / PALM OIL',
+        }[product.grade] || 'COMPREHENSIVE HEALTH AUDIT';
+
+        return (
+          <div className="p-4 rounded-3xl bg-gradient-to-b from-[#E2F7D8] to-[#D0F0C0] dark:from-[#1A2E1F] dark:to-[#122316] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-3 text-center">
+            <span className="inline-block px-3 py-0.5 rounded-full bg-white/70 dark:bg-black/40 border border-[#111F15]/20 text-[9px] font-mono font-black uppercase tracking-wider">
+              IN-CODE NUTRI-SCORE RATING ENGINE
             </span>
-            <span className="text-[10px] font-extrabold font-mono tracking-widest block uppercase text-[#111F15]/80">
-              GRADE
-            </span>
-            <span className="text-4xl font-black font-['Plus_Jakarta_Sans'] leading-none">
-              {product.grade}
-            </span>
-            <span className="text-[11px] font-mono font-bold block mt-1">
-              {product.gradeScore} / 100
-            </span>
-          </div>
-        </div>
 
-        {/* Status bar */}
-        <div className="bg-[#111F15] text-white py-1.5 px-3 rounded-xl text-[10px] font-extrabold tracking-wide uppercase">
-          NUTRITIONALLY BALANCED • MINOR ADDITIVE WATCH
-        </div>
-
-        <p className="text-[10px] text-[#404940] dark:text-[#9BAA9E] leading-tight">
-          Calculated via <span className="font-bold">ICMR-NIN dietary guidelines</span> & <span className="font-bold">FSSAI standards</span> for packaged snacks.
-        </p>
-
-        {/* Big Cyan Explainer CTA Button */}
-        <button
-          onClick={() => navigate(`/ai-explainer/${product.id}`)}
-          className="w-full py-2.5 rounded-2xl bg-[#5EEAD4] text-[#111F15] font-['Plus_Jakarta_Sans'] font-black text-xs uppercase tracking-wider border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-1.5"
-        >
-          <span>⚡</span>
-          <span>Ask Gemini Explainer</span>
-          <span>⚡</span>
-        </button>
-      </div>
-
-      {/* Section 01: Nutritional Profile */}
-      <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-lg bg-[#C5F82A] text-[#111F15] border border-[#111F15] flex items-center justify-center text-xs font-black">
-              01
-            </span>
-            <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
-              Nutritional Profile
-            </h2>
-          </div>
-          <span className="text-[10px] font-mono text-[#69766D] dark:text-[#9BAA9E] bg-[#EDF6EA] dark:bg-[#15271B] px-2 py-0.5 rounded border border-[#111F15]/10">
-            Per 50g serving
-          </span>
-        </div>
-
-        <div className="space-y-3 pt-1">
-          {/* Dietary Fiber */}
-          <div className="p-3 rounded-2xl border border-[#111F15]/20 bg-[#F7FAF6] dark:bg-[#15271B] space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-extrabold uppercase tracking-wide text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
-                DIETARY FIBER
-              </span>
-              <span className="px-2 py-0.5 rounded-full bg-[#C5F82A] text-[#111F15] text-[9px] font-black border border-[#111F15]">
-                100% NAT. GRAIN
-              </span>
+            {/* Big Grade Box */}
+            <div className="flex justify-center">
+              <div className={`relative ${colors.bg} ${colors.text} border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] rounded-3xl px-9 py-3 text-center`}>
+                <span className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-md bg-[#5EEAD4] text-[#111F15] border border-[#111F15] text-[9px] font-black uppercase">
+                  VERIFIED ✓
+                </span>
+                <span className="text-[10px] font-extrabold font-mono tracking-widest block uppercase opacity-85">
+                  NUTRI-GRADE
+                </span>
+                <span className="text-5xl font-black font-['Plus_Jakarta_Sans'] leading-none">
+                  {product.grade}
+                </span>
+                <span className="text-[11px] font-mono font-bold block mt-1 opacity-90">
+                  {product.gradeScore} / 100 Score
+                </span>
+              </div>
             </div>
-            <div className="text-sm font-black font-mono">
-              5.2g <span className="text-xs text-[#69766D] font-normal">/ 21% RDA</span>
+
+            {/* Status bar */}
+            <div className="bg-[#111F15] text-white py-1.5 px-3 rounded-xl text-[10px] font-extrabold tracking-wide uppercase">
+              {gradeStatusText}
             </div>
-            <div className="w-full h-2 rounded-full bg-black/10 overflow-hidden">
-              <div className="h-full bg-[#C5F82A] w-[70%]" />
-            </div>
-            <p className="text-[10px] text-[#404940] dark:text-[#9BAA9E]">
-              High Fiber • Slow-release carbohydrates
+
+            {/* In-Code Rating Reasons & Points Breakdown */}
+            {product.geminiExplainer?.whyThisGrade && product.geminiExplainer.whyThisGrade.length > 0 && (
+              <div className="text-left bg-white/80 dark:bg-black/30 rounded-2xl p-3 border border-[#111F15]/15 space-y-1.5">
+                <p className="text-[10px] font-mono font-black text-[#111F15] dark:text-[#E4F5E5] uppercase tracking-wider">
+                  Rating Calculation Breakdown:
+                </p>
+                <div className="space-y-1">
+                  {product.geminiExplainer.whyThisGrade.map((reason, idx) => (
+                    <div key={idx} className="flex items-start gap-1.5 text-xs text-[#111F15] dark:text-[#E4F5E5]">
+                      <span className="text-sm leading-none">
+                        {reason.toLowerCase().includes('palm') ? '🚨' : reason.toLowerCase().includes('high') ? '⚠️' : '✓'}
+                      </span>
+                      <span className="font-medium text-[11px] leading-tight">
+                        {reason}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="text-[10px] text-[#404940] dark:text-[#9BAA9E] leading-tight">
+              Calculated via pure deterministic Nutri-Score algorithm & FSSAI standards. Grade is never generated by AI.
             </p>
-          </div>
 
-          {/* Saturated Fat */}
-          <div className="p-3 rounded-2xl border border-[#111F15]/20 bg-[#F7FAF6] dark:bg-[#15271B] space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-extrabold uppercase tracking-wide text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
-                SATURATED FAT
-              </span>
-              <span className="px-2 py-0.5 rounded-full bg-[#5EEAD4] text-[#111F15] text-[9px] font-black border border-[#111F15]">
-                LOW
-              </span>
-            </div>
-            <div className="text-sm font-black font-mono">
-              1.4g <span className="text-xs text-[#69766D] font-normal">/ 6% RDA</span>
-            </div>
-            <div className="w-full h-2 rounded-full bg-black/10 overflow-hidden">
-              <div className="h-full bg-[#5EEAD4] w-[25%]" />
-            </div>
-            <p className="text-[10px] text-[#404940] dark:text-[#9BAA9E]">
-              Favourable lipid profile from dry roasting
-            </p>
+            {/* Ask Gemini Explainer CTA Button */}
+            <button
+              onClick={() => navigate(`/ai-explainer/${product.id}`)}
+              className="w-full py-2.5 rounded-2xl bg-[#5EEAD4] text-[#111F15] font-['Plus_Jakarta_Sans'] font-black text-xs uppercase tracking-wider border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span>⚡</span>
+              <span>Ask Gemini Nutritionist Deep Dive</span>
+              <span>⚡</span>
+            </button>
           </div>
+        );
+      })()}
 
-          {/* Sodium */}
-          <div className="p-3 rounded-2xl border border-[#111F15]/20 bg-[#F7FAF6] dark:bg-[#15271B] space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-extrabold uppercase tracking-wide text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
-                SODIUM
-              </span>
-              <span className="px-2 py-0.5 rounded-full bg-[#FEE2E2] text-[#B91C1C] text-[9px] font-black border border-[#B91C1C]">
-                MODERATE
-              </span>
-            </div>
-            <div className="text-sm font-black font-mono">
-              280mg <span className="text-xs text-[#69766D] font-normal">/ 14% RDA</span>
-            </div>
-            <div className="w-full h-2 rounded-full bg-black/10 overflow-hidden">
-              <div className="h-full bg-[#EF4444] w-[45%]" />
-            </div>
-            <p className="text-[10px] text-[#B91C1C]">
-              Keep daily consumption within 2 servings
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Section 01: Harmful Chemicals & Additives Watchlist */}
+      {(() => {
+        const harmfulIngredients = product.ingredients.filter(
+          (i) => i.riskLevel === 'high' || i.riskLevel === 'moderate'
+        );
+        const hasPalmOil = product.ingredients.some((i) =>
+          /palm\s*oil|palmolein|palm\s*olein|palm\s*kernel|palm\s*fat/i.test(i.name)
+        );
 
-      {/* Section 02: Ingredient Assessment */}
+        return (
+          <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-lg bg-[#FF5E5E] text-white border border-[#111F15] flex items-center justify-center text-xs font-black">
+                  01
+                </span>
+                <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
+                  Harmful Chemicals & Additives Watchlist
+                </h2>
+              </div>
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${
+                harmfulIngredients.length > 0 ? 'bg-[#FEE2E2] text-[#B91C1C] border border-[#B91C1C]' : 'bg-[#EDF6EA] text-[#005128]'
+              }`}>
+                {harmfulIngredients.length} Flagged
+              </span>
+            </div>
+
+            {harmfulIngredients.length === 0 ? (
+              <div className="p-3 rounded-2xl bg-[#EDF6EA] dark:bg-[#15271B] border border-[#111F15]/15 text-center">
+                <p className="text-xs font-bold text-[#005128]">
+                  ✓ Zero High or Moderate Risk Chemicals Detected!
+                </p>
+                <p className="text-[10px] text-[#69766D] mt-0.5">
+                  All identified ingredients are natural dietary components.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2.5 pt-1">
+                {harmfulIngredients.map((item) => {
+                  const isHighRisk = item.riskLevel === 'high';
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => setSelectedIngredient(item)}
+                      className={`p-3 rounded-2xl border-2 transition-all cursor-pointer hover:shadow-md ${
+                        isHighRisk
+                          ? 'border-[#DC2626] bg-[#FEF2F2] dark:bg-[#3D1414]/50'
+                          : 'border-[#F59E0B] bg-[#FFFBEB] dark:bg-[#382810]/50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className={`w-5 h-5 rounded-md flex items-center justify-center text-xs font-black ${
+                            isHighRisk ? 'bg-[#DC2626] text-white' : 'bg-[#F59E0B] text-black'
+                          }`}>
+                            !
+                          </span>
+                          <span className="font-['Plus_Jakarta_Sans'] text-xs font-black text-[#111F15] dark:text-white">
+                            {item.insNumber ? `${item.insNumber} • ` : ''}{item.name}
+                          </span>
+                        </div>
+                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase border ${
+                          isHighRisk
+                            ? 'bg-[#DC2626] text-white border-[#991B1B]'
+                            : 'bg-[#F59E0B] text-black border-[#B45309]'
+                        }`}>
+                          {isHighRisk ? 'High Concern' : 'Moderate / Watch'}
+                        </span>
+                      </div>
+
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold text-[#69766D] dark:text-[#9BAA9E] uppercase">
+                          Purpose: {item.purpose}
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-[#404940] dark:text-[#D1D5DB] mt-1 leading-relaxed">
+                        {item.scientificContext}
+                      </p>
+
+                      <div className="mt-2 flex items-center justify-between border-t border-[#111F15]/10 pt-1 text-[9px] font-mono text-[#69766D] dark:text-[#9BAA9E]">
+                        <span>{item.regulatoryStatusIndia}</span>
+                        <span className="underline font-bold text-[#111F15] dark:text-white">Tap for Toxicology Dossier →</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Why is Palm Olein Oil Flagged Card */}
+            {hasPalmOil && (
+              <div
+                onClick={() => setIsPalmOilAccordionOpen(!isPalmOilAccordionOpen)}
+                className="p-3.5 rounded-2xl bg-[#FEF2F2] dark:bg-[#2D1616] border-2 border-[#DC2626] cursor-pointer mt-2"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-[#DC2626] text-white flex items-center justify-center font-bold text-xs">
+                      🚨
+                    </span>
+                    <div>
+                      <h4 className="text-xs font-black font-['Plus_Jakarta_Sans'] text-[#DC2626] dark:text-[#FFA4A0]">
+                        Palm Oil Penalty Applied (-1 Grade)
+                      </h4>
+                      <p className="text-[10px] text-[#69766D] dark:text-[#D1D5DB]">
+                        Tap to inspect why palm oil triggered an automatic grade penalty
+                      </p>
+                    </div>
+                  </div>
+                  {isPalmOilAccordionOpen ? (
+                    <ChevronUp className="w-4 h-4 text-[#DC2626]" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-[#DC2626]" />
+                  )}
+                </div>
+
+                {isPalmOilAccordionOpen && (
+                  <div className="mt-2.5 pt-2 border-t border-[#DC2626]/20 text-[11px] text-[#404940] dark:text-[#E4F5E5] leading-relaxed animate-fade-in">
+                    Refined palm oil contains over 44% palmitic acid (a saturated fatty acid). According to ICMR-NIN and WHO cardiometabolic guidelines, high dietary palmitic acid elevates serum low-density lipoprotein (LDL) cholesterol and induces systemic vascular inflammation. Our deterministic rating engine penalizes every product containing palm oil with a 1-grade downgrade.
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+        );
+      })()}
+
+      {/* Section 02: Nutritional Profile */}
       <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -260,81 +358,111 @@ export const ProductAnalysisScreen: React.FC = () => {
               02
             </span>
             <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
-              Ingredient Assessment
+              Nutritional Profile
+            </h2>
+          </div>
+          <span className="text-[10px] font-mono text-[#69766D] dark:text-[#9BAA9E] bg-[#EDF6EA] dark:bg-[#15271B] px-2 py-0.5 rounded border border-[#111F15]/10">
+            Per 100g serving
+          </span>
+        </div>
+
+        <div className="space-y-3 pt-1">
+          {product.nutritionFacts && product.nutritionFacts.length > 0 ? (
+            product.nutritionFacts.map((fact, idx) => {
+              const isExcessive = fact.flag === 'excessive';
+              const isModerate = fact.flag === 'moderate';
+              return (
+                <div
+                  key={idx}
+                  className={`p-3 rounded-2xl border space-y-1.5 ${
+                    isExcessive
+                      ? 'border-[#DC2626]/40 bg-[#FEF2F2] dark:bg-[#2D1616]'
+                      : isModerate
+                      ? 'border-[#F59E0B]/40 bg-[#FFFBEB] dark:bg-[#2D2416]'
+                      : 'border-[#111F15]/20 bg-[#F7FAF6] dark:bg-[#15271B]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-extrabold uppercase tracking-wide text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
+                      {fact.nutrient}
+                    </span>
+                    {fact.flag && (
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[9px] font-black border ${
+                          isExcessive
+                            ? 'bg-[#FEE2E2] text-[#B91C1C] border-[#B91C1C]'
+                            : isModerate
+                            ? 'bg-[#FEF3C7] text-[#B45309] border-[#B45309]'
+                            : 'bg-[#C5F82A] text-[#111F15] border-[#111F15]'
+                        }`}
+                      >
+                        {fact.flag.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-sm font-black font-mono">
+                    {fact.amountPer100g}
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-black/10 overflow-hidden">
+                    <div
+                      className={`h-full ${
+                        isExcessive ? 'bg-[#EF4444] w-[85%]' : isModerate ? 'bg-[#F59E0B] w-[50%]' : 'bg-[#C5F82A] w-[30%]'
+                      }`}
+                    />
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-xs text-[#69766D]">No nutritional breakdown available.</p>
+          )}
+        </div>
+      </section>
+
+      {/* Section 03: Complete Ingredients List */}
+      <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-lg bg-[#C5F82A] text-[#111F15] border border-[#111F15] flex items-center justify-center text-xs font-black">
+              03
+            </span>
+            <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
+              Complete Ingredients List
             </h2>
           </div>
           <span className="text-[10px] font-mono text-white bg-[#111F15] px-2 py-0.5 rounded-full font-bold">
-            14 Identified
+            {product.ingredients.length} Listed
           </span>
         </div>
 
-        {/* Clean Pill List matching Stitch */}
+        {/* Dynamic Ingredient Pills */}
         <div className="flex flex-wrap gap-1.5 pt-1">
-          <span className="px-3 py-1.5 rounded-full bg-[#EDF6EA] dark:bg-[#15271B] border-2 border-[#111F15] text-xs font-extrabold flex items-center gap-1.5">
-            <span className="text-[#005128]">★</span> Finger Millet (Ragi) 32%
-            <span className="px-1.5 py-0.2 rounded bg-[#C5F82A] text-[9px] border border-[#111F15]">Beneficial</span>
-          </span>
-
-          <span className="px-3 py-1.5 rounded-full bg-[#EDF6EA] dark:bg-[#15271B] border-2 border-[#111F15] text-xs font-extrabold flex items-center gap-1.5">
-            <span className="text-[#005128]">★</span> Sorghum (Jowar) 24%
-            <span className="px-1.5 py-0.2 rounded bg-[#C5F82A] text-[9px] border border-[#111F15]">Beneficial</span>
-          </span>
-
-          <span className="px-3 py-1.5 rounded-full bg-[#EDF6EA] dark:bg-[#15271B] border-2 border-[#111F15] text-xs font-extrabold flex items-center gap-1.5">
-            <span className="text-[#005128]">★</span> Foxtail Millet 14%
-            <span className="px-1.5 py-0.2 rounded bg-[#C5F82A] text-[9px] border border-[#111F15]">Beneficial</span>
-          </span>
-
-          <span className="px-3 py-1.5 rounded-full bg-white dark:bg-[#1A2A1F] border border-[#111F15]/30 text-xs font-bold text-[#404940] dark:text-[#9BAA9E]">
-            • Himalayan Pink Salt 1.4%
-          </span>
-
-          <span className="px-3 py-1.5 rounded-full bg-white dark:bg-[#1A2A1F] border border-[#111F15]/30 text-xs font-bold text-[#404940] dark:text-[#9BAA9E]">
-            • Dehydrated Onion & Garlic 1.2%
-          </span>
-
-          <span className="px-3 py-1.5 rounded-full bg-white dark:bg-[#1A2A1F] border border-[#111F15]/30 text-xs font-bold text-[#404940] dark:text-[#9BAA9E]">
-            • Black Pepper Extract 0.4%
-          </span>
-
-          {/* Red Flagged Palm Olein */}
-          <span className="px-3 py-1.5 rounded-full bg-[#FEF2F2] dark:bg-[#3D1414] border-2 border-[#DC2626] text-xs font-extrabold text-[#DC2626] flex items-center gap-1.5">
-            <span>▲</span> Refined Palm Olein Oil
-            <span className="px-1.5 py-0.2 rounded bg-[#DC2626] text-white text-[9px]">Moderate Concern</span>
-          </span>
-        </div>
-
-        {/* Why is Palm Olein Oil Flagged Card */}
-        <div
-          onClick={() => setIsPalmOilAccordionOpen(!isPalmOilAccordionOpen)}
-          className="p-3.5 rounded-2xl bg-[#EDF6EA] dark:bg-[#15271B] border-2 border-[#111F15] cursor-pointer"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-[#DC2626] text-white flex items-center justify-center font-bold text-xs">
-                !
+          {product.ingredients.map((ing) => {
+            const isHigh = ing.riskLevel === 'high';
+            const isMod = ing.riskLevel === 'moderate';
+            return (
+              <span
+                key={ing.id}
+                onClick={() => setSelectedIngredient(ing)}
+                className={`px-3 py-1.5 rounded-full border text-xs font-extrabold flex items-center gap-1.5 cursor-pointer transition-transform hover:scale-105 ${
+                  isHigh
+                    ? 'bg-[#FEF2F2] dark:bg-[#3D1414] border-[#DC2626] text-[#DC2626]'
+                    : isMod
+                    ? 'bg-[#FFFBEB] dark:bg-[#382810] border-[#F59E0B] text-[#B45309] dark:text-[#FBBF24]'
+                    : 'bg-[#EDF6EA] dark:bg-[#15271B] border-[#111F15]/30 text-[#111F15] dark:text-[#E4F5E5]'
+                }`}
+              >
+                <span>{isHigh ? '🚨' : isMod ? '⚠️' : '✓'}</span>
+                <span>{ing.name}</span>
+                {isHigh && (
+                  <span className="px-1.5 py-0.2 rounded bg-[#DC2626] text-white text-[9px]">High</span>
+                )}
+                {isMod && (
+                  <span className="px-1.5 py-0.2 rounded bg-[#F59E0B] text-black text-[9px]">Watch</span>
+                )}
               </span>
-              <div>
-                <h4 className="text-xs font-black font-['Plus_Jakarta_Sans']">
-                  Why is Palm Olein Oil flagged?
-                </h4>
-                <p className="text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
-                  Tap to inspect lipid breakdown & processing analysis
-                </p>
-              </div>
-            </div>
-            {isPalmOilAccordionOpen ? (
-              <ChevronUp className="w-4 h-4 text-[#111F15]" />
-            ) : (
-              <ChevronDown className="w-4 h-4 text-[#111F15]" />
-            )}
-          </div>
-
-          {isPalmOilAccordionOpen && (
-            <div className="mt-2.5 pt-2 border-t border-[#111F15]/20 text-[11px] text-[#404940] dark:text-[#9BAA9E] leading-relaxed animate-fade-in">
-              Industrial seasoning sprays require a carrier fat with high smoke point and robust resistance to oxidative rancidity in tropical shelf environments. Palm olein contains 44% palmitic acid which can elevate low-density lipoprotein (LDL) when consumed regularly.
-            </div>
-          )}
+            );
+          })}
         </div>
       </section>
 

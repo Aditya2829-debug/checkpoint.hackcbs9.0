@@ -22,7 +22,8 @@ export const ENDPOINTS = {
     CATEGORIES: '/products/categories',
   },
   SCANNING: {
-    BARCODE_LOOKUP: '/scanning/barcode',
+    BARCODE_LOOKUP: (barcode: string) => `/scan/${barcode}`,
+    LABEL_ANALYZE: '/scan/label',
     OCR_EXTRACT: '/scanning/ocr/extract',
     OCR_SUBMIT: '/scanning/ocr/analyze',
   },

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "alcohol",
+    "name": "Alcohol",
+    "patterns": ["alcohol", "ethanol", "wine", "beer", "rum", "liqueur", "spirits"],
+    "warning": "Contains alcohol: contraindicated during pregnancy."
+  },
+  {
+    "id": "caffeine",
+    "name": "Caffeine / Guarana",
+    "patterns": ["caffeine", "guarana", "coffee extract", "energy blend"],
+    "warning": "High caffeine / guarana content: excessive intake should be limited during pregnancy."
+  },
+  {
+    "id": "unpasteurised",
+    "name": "Raw / Unpasteurised items",
+    "patterns": ["unpasteurised", "unpasteurized", "raw milk", "raw egg", "raw cheese"],
+    "warning": "May contain raw or unpasteurised ingredients: risk of bacterial infection (e.g. Listeria)."
+  },
+  {
+    "id": "retinol",
+    "name": "Retinol / Vitamin A high-dose",
+    "patterns": ["retinol", "retinyl palmitate", "retinoid", "vitamin a excess"],
+    "warning": "Contains retinol / high-dose vitamin A: high levels may pose teratogenic risks during pregnancy."
+  },
+  {
+    "id": "st_johns_wort",
+    "name": "St. John's Wort",
+    "patterns": ["st john", "hypericum perforatum"],
+    "warning": "Contains St. John's Wort: herbal supplement not recommended during pregnancy."
+  },
+  {
+    "id": "dong_quai",
+    "name": "Dong Quai",
+    "patterns": ["dong quai", "angelica sinensis"],
+    "warning": "Contains Dong Quai: uterine stimulant herbs are unsafe during pregnancy."
+  }
+]

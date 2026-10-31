@@ -1,3 +1,9 @@
+import 'dotenv/config';
+import { setDefaultResultOrder, setServers } from 'node:dns';
+
+setDefaultResultOrder('ipv4first');
+setServers(['1.1.1.1', '1.0.0.1']);
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
@@ -58,6 +64,17 @@ const hasMongoConfig = Boolean(
     await request(app.getHttpServer())
       .get('/api/v1/products/does-not-exist-product-id')
       .expect(404);
+  });
+
+  it('GET /api/v1/scan/:barcode returns NOT_FOUND with needsLabelPhoto true for unknown barcode', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/scan/9999999999999')
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      status: 'NOT_FOUND',
+      needsLabelPhoto: true,
+    });
   });
 
   afterAll(async () => {

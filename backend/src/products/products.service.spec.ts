@@ -1,9 +1,12 @@
-import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { CreateProductDto } from './dto/create-product.dto';
-import { ListProductsQueryDto } from './dto/list-products.query.dto';
 import { ProductsRepository } from './products.repository';
 import { ProductsService } from './products.service';
 
@@ -83,11 +86,15 @@ describe('ProductsService', () => {
         productId: 'existing-product',
       });
 
-      await expect(service.findByProductId('existing-product')).resolves.toEqual({
+      await expect(
+        service.findByProductId('existing-product'),
+      ).resolves.toEqual({
         _id: 'mongo-id',
         productId: 'existing-product',
       });
-      expect(repository.findByProductId).toHaveBeenCalledWith('existing-product');
+      expect(repository.findByProductId).toHaveBeenCalledWith(
+        'existing-product',
+      );
     });
 
     it('throws NotFoundException when the product does not exist', async () => {
@@ -140,9 +147,9 @@ describe('ProductsService', () => {
     });
 
     it('throws BadRequestException (400) for invalid barcode input (letters)', async () => {
-      await expect(service.findByBarcode('invalid-barcode')).rejects.toBeInstanceOf(
-        BadRequestException,
-      );
+      await expect(
+        service.findByBarcode('invalid-barcode'),
+      ).rejects.toBeInstanceOf(BadRequestException);
       expect(repository.findByBarcode).not.toHaveBeenCalled();
     });
 

@@ -1,4 +1,4 @@
-export type HealthGrade = 'A' | 'B' | 'C' | 'D';
+export type HealthGrade = 'A' | 'B' | 'C' | 'D' | 'E';
 export type ProductCategory = 'food' | 'women-hygiene' | 'personal-care';
 
 export interface Ingredient {

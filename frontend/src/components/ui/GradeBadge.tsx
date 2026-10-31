@@ -29,8 +29,12 @@ export const GradeBadge: React.FC<GradeBadgeProps> = ({
       label: 'Grade C • Cautionary',
     },
     D: {
-      bg: 'bg-[#FF5E5E] text-white -rotate-2',
-      label: 'Grade D • High Hazard',
+      bg: 'bg-[#FF8A00] text-white -rotate-1',
+      label: 'Grade D • High Concern',
+    },
+    E: {
+      bg: 'bg-[#E53935] text-white -rotate-2',
+      label: 'Grade E • Severe Hazard',
     },
   }[grade];
 

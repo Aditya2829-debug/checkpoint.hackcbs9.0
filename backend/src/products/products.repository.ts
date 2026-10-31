@@ -68,8 +68,37 @@ export class ProductsRepository implements OnModuleInit {
   }
 
   async findByBarcode(barcode: string): Promise<ProductDocument | null> {
-    const document = await this.collection.findOne({ barcode });
-    return document ?? null;
+    const document = await this.collection.findOne({
+      $or: [{ barcode }, { productId: barcode }],
+    });
+    if (document) {
+      return document;
+    }
+
+    // Fallback: check other collections in the database (products, food_database, pads)
+    try {
+      const db = this.connection.db;
+      if (db) {
+        const otherCollections = ['products', 'food_database', 'pads'].filter(
+          (name) => name !== this.collection.collectionName,
+        );
+        for (const colName of otherCollections) {
+          const col = db.collection<ProductDocument>(colName);
+          const found = await col.findOne({
+            $or: [{ barcode }, { productId: barcode }],
+          });
+          if (found) {
+            return found;
+          }
+        }
+      }
+    } catch (err: unknown) {
+      this.logger.warn(
+        `Fallback collection search failed: ${(err as Error).message}`,
+      );
+    }
+
+    return null;
   }
 
   // ─── Write ───────────────────────────────────────────────────────────────
@@ -121,18 +150,19 @@ export class ProductsRepository implements OnModuleInit {
       const result = await this.collection.insertOne(document);
       return { ...document, _id: result.insertedId };
     } catch (err: unknown) {
-      if (
-        err instanceof MongoServerError &&
-        err.code === MONGO_DUPLICATE_KEY
-      ) {
-        const keyPattern = err.keyPattern as Record<string, unknown> | undefined;
+      if (err instanceof MongoServerError && err.code === MONGO_DUPLICATE_KEY) {
+        const keyPattern = err.keyPattern as
+          Record<string, unknown> | undefined;
         const field =
           keyPattern && 'barcode' in keyPattern ? 'barcode' : 'productId';
         throw new ConflictException(
           `A product with this ${field} already exists`,
         );
       }
-      this.logger.error('Unexpected error inserting product', (err as Error).stack);
+      this.logger.error(
+        'Unexpected error inserting product',
+        (err as Error).stack,
+      );
       throw new InternalServerErrorException('Failed to create product');
     }
   }

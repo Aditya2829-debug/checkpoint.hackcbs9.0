@@ -1,5 +1,6 @@
-import { setServers } from 'node:dns';
+import { setDefaultResultOrder, setServers } from 'node:dns';
 
+setDefaultResultOrder('ipv4first');
 setServers(['1.1.1.1', '1.0.0.1']);
 
 import { NestFactory } from '@nestjs/core';

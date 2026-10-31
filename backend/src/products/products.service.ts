@@ -66,9 +66,7 @@ export class ProductsService {
     const product = await this.productsRepository.findByBarcode(barcode);
 
     if (!product) {
-      throw new NotFoundException(
-        `Product not found for barcode "${barcode}"`,
-      );
+      throw new NotFoundException(`Product not found for barcode "${barcode}"`);
     }
 
     return this.serialize(product);
@@ -102,7 +100,9 @@ export class ProductsService {
       'toString' in serialized._id &&
       typeof (serialized._id as { toString: unknown }).toString === 'function'
     ) {
-      serialized._id = (serialized._id as { toString: () => string }).toString();
+      serialized._id = (
+        serialized._id as { toString: () => string }
+      ).toString();
     }
 
     return serialized;

@@ -44,7 +44,11 @@ describe('ProductsController', () => {
   });
 
   it('should delegate findAll() to ProductsService.findAll', async () => {
-    const query: ListProductsQueryDto = { page: 1, limit: 10, category: 'SNACKS' };
+    const query: ListProductsQueryDto = {
+      page: 1,
+      limit: 10,
+      category: 'SNACKS',
+    };
     const expected = { data: [], page: 1, limit: 10, total: 0, totalPages: 0 };
     service.findAll.mockResolvedValue(expected);
 
@@ -71,4 +75,3 @@ describe('ProductsController', () => {
     expect(service.findByProductId).toHaveBeenCalledWith('p-1');
   });
 });
-
