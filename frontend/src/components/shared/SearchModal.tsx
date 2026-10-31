@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, X, ChevronRight, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { productService } from '../../services/api/productService';
+import { useLanguageStore } from '../../store/useLanguageStore';
 import { GradeBadge } from '../ui/GradeBadge';
 import { Badge } from '../ui/Badge';
 import type { Product } from '../../types';
@@ -16,6 +17,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   const [category, setCategory] = useState<string>('all');
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const { t } = useLanguageStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-start items-center p-4 sm:pt-16 animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-start items-center p-4 sm:pt-16 animate-fade-in text-[#111F15] dark:text-[#E4F5E5]">
       <div
         className="w-full max-w-xl bg-white dark:bg-[#1A2A1F] rounded-2xl shadow-2xl border border-[#E3EAE1] dark:border-[#2D3E33] overflow-hidden flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
@@ -43,23 +45,23 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
           <Search className="w-5 h-5 text-[#69766D] dark:text-[#9BAA9E]" />
           <input
             type="text"
-            placeholder="Search by brand, product name, or barcode..."
+            placeholder={t('searchPlaceholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
-            className="flex-1 bg-transparent text-sm font-medium text-[#111F15] dark:text-[#E4F5E5] placeholder-[#69766D] focus:outline-none"
+            className="flex-1 bg-transparent text-sm font-medium placeholder-[#69766D] focus:outline-none"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="p-1 rounded-full text-[#69766D] hover:bg-black/5 dark:hover:bg-white/5"
+              className="p-1 rounded-full text-[#69766D] hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           )}
           <button
             onClick={onClose}
-            className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-[#EDF6EA] dark:bg-[#253429] text-[#005128] dark:text-[#98E9AB]"
+            className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-[#EDF6EA] dark:bg-[#253429] text-[#005128] dark:text-[#98E9AB] cursor-pointer"
           >
             Esc
           </button>
@@ -68,14 +70,14 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
         {/* Filter Pills */}
         <div className="px-4 py-2.5 bg-[#F7FAF6] dark:bg-[#15271B] border-b border-[#E3EAE1] dark:border-[#2D3E33] flex items-center gap-2 overflow-x-auto no-scrollbar">
           {[
-            { id: 'all', label: 'All Items' },
-            { id: 'food', label: 'Food & Nutrition' },
-            { id: 'women-hygiene', label: "Women's Hygiene" },
+            { id: 'all', label: t('allItems') },
+            { id: 'food', label: t('foodNutrition') },
+            { id: 'women-hygiene', label: t('womensHygiene') },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setCategory(tab.id)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                 category === tab.id
                   ? 'bg-[#005128] text-white shadow-sm'
                   : 'bg-white dark:bg-[#1A2A1F] text-[#404940] dark:text-[#9BAA9E] border border-[#E3EAE1] dark:border-[#2D3E33]'
@@ -90,16 +92,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
         <div className="flex-1 overflow-y-auto p-3 space-y-2">
           {loading ? (
             <div className="py-12 text-center text-sm text-[#69766D] dark:text-[#9BAA9E]">
-              Searching verified database...
+              {t('searchingDb')}
             </div>
           ) : results.length === 0 ? (
             <div className="py-12 text-center">
               <Sparkles className="w-8 h-8 text-[#83C94B] mx-auto mb-2 opacity-60" />
-              <p className="text-sm font-semibold text-[#111F15] dark:text-[#E4F5E5]">
-                No matching products found
-              </p>
-              <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-1">
-                Try scanning the product barcode or photographing its ingredient label.
+              <p className="text-sm font-semibold">
+                {t('noMatchingProducts')}
               </p>
             </div>
           ) : (
@@ -110,30 +109,30 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                   onClose();
                   navigate(`/product/${product.id}`);
                 }}
-                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-[#EDF6EA] dark:hover:bg-[#15271B] border border-transparent hover:border-[#E3EAE1] dark:hover:border-[#2D3E33] cursor-pointer transition-all"
+                className="p-3 rounded-xl border border-transparent hover:border-[#E3EAE1] dark:hover:border-[#2D3E33] hover:bg-[#F7FAF6] dark:hover:bg-[#15271B] transition-all flex items-center justify-between cursor-pointer"
               >
-                <img
-                  src={product.imageUrl}
-                  alt={product.name}
-                  className="w-12 h-12 rounded-lg object-cover bg-white shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-[#69766D] dark:text-[#9BAA9E] uppercase tracking-wide">
-                      {product.brand}
-                    </span>
-                    <Badge
-                      variant={product.category === 'women-hygiene' ? 'lavender' : 'default'}
-                      size="sm"
-                    >
-                      {product.categoryLabel}
-                    </Badge>
+                <div className="flex items-center gap-3">
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-10 h-10 rounded-lg object-cover bg-white"
+                  />
+                  <div>
+                    <h4 className="text-xs font-bold font-['Plus_Jakarta_Sans'] line-clamp-1">
+                      {product.name}
+                    </h4>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
+                        {product.brand}
+                      </span>
+                      <span className="text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
+                        • {product.barcode}
+                      </span>
+                    </div>
                   </div>
-                  <h4 className="text-sm font-bold text-[#111F15] dark:text-[#E4F5E5] truncate font-['Plus_Jakarta_Sans']">
-                    {product.name}
-                  </h4>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+
+                <div className="flex items-center gap-2">
                   <GradeBadge grade={product.grade} size="sm" />
                   <ChevronRight className="w-4 h-4 text-[#69766D]" />
                 </div>

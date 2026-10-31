@@ -16,7 +16,7 @@ import { useLanguageStore } from '../../store/useLanguageStore';
 export const HomeScreen: React.FC = () => {
   const { openScanner } = useScanStore();
   const { products, setCurrentProduct } = useProductStore();
-  const { t } = useLanguageStore();
+  const { language, t } = useLanguageStore();
   const navigate = useNavigate();
 
   const handleProductClick = (product: (typeof products)[0]) => {
@@ -259,7 +259,7 @@ export const HomeScreen: React.FC = () => {
                       : 'bg-[#D96E61] text-white'
                   }`}
                 >
-                  GRADE {product.grade} ★
+                  {t('nutriGrade')} {product.grade} ★
                 </span>
               </div>
 
@@ -287,10 +287,10 @@ export const HomeScreen: React.FC = () => {
 
               <div className="mt-3.5 pt-3 border-t border-[#111F15]/10 dark:border-[#2D3E33] flex items-center justify-between text-xs">
                 <span className="px-2.5 py-0.5 rounded-full bg-[#EDF6EA] dark:bg-[#15271B] text-[#005128] dark:text-[#AAF470] font-bold border border-[#111F15]/15 flex items-center gap-1">
-                  ✓ {product.gradeScore}/100 Clean
+                  ✓ {product.gradeScore}/100 {language === 'hi' ? 'स्वच्छ' : 'Clean'}
                 </span>
                 <span className="text-[#69766D] dark:text-[#9BAA9E] font-mono text-[11px]">
-                  Verified
+                  {language === 'hi' ? 'सत्यापित' : 'Verified'}
                 </span>
               </div>
             </div>

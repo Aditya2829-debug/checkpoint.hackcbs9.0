@@ -2,16 +2,18 @@ import React from 'react';
 import { Scan, History, Compass, User } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useScanStore } from '../../store/useScanStore';
+import { useLanguageStore } from '../../store/useLanguageStore';
 import { cn } from '../../utils/cn';
 
 export const BottomNav: React.FC = () => {
   const { openScanner } = useScanStore();
+  const { t } = useLanguageStore();
 
   const navItems = [
-    { label: 'Scan', to: '/', icon: Scan, isScanBtn: true },
-    { label: 'History', to: '/history', icon: History },
-    { label: 'Explore', to: '/explore', icon: Compass },
-    { label: 'Profile', to: '/profile', icon: User },
+    { label: t('scan'), to: '/', icon: Scan, isScanBtn: true },
+    { label: t('history'), to: '/history', icon: History },
+    { label: t('explore'), to: '/explore', icon: Compass },
+    { label: t('profile'), to: '/profile', icon: User },
   ];
 
   return (
@@ -22,7 +24,7 @@ export const BottomNav: React.FC = () => {
           if (item.isScanBtn) {
             return (
               <NavLink
-                key={item.label}
+                key={item.to}
                 to="/"
                 className={({ isActive }) =>
                   cn(
@@ -45,7 +47,7 @@ export const BottomNav: React.FC = () => {
                     <Icon className="w-5 h-5 stroke-[2.2]" />
                     {isActive && (
                       <span className="text-xs font-['Plus_Jakarta_Sans'] font-extrabold tracking-tight">
-                        Scan
+                        {item.label}
                       </span>
                     )}
                   </div>
@@ -56,7 +58,7 @@ export const BottomNav: React.FC = () => {
 
           return (
             <NavLink
-              key={item.label}
+              key={item.to}
               to={item.to}
               className={({ isActive }) =>
                 cn(

@@ -11,6 +11,7 @@ import {
 import { productService } from '../../services/api/productService';
 import { scanService } from '../../services/api/scanService';
 import { useProductStore } from '../../store/useProductStore';
+import { useLanguageStore } from '../../store/useLanguageStore';
 import { IngredientDetailModal } from '../ingredients/IngredientDetailModal';
 import type { Ingredient, Product } from '../../types';
 
@@ -18,6 +19,7 @@ export const ProductAnalysisScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isWatchlisted, toggleWatchlist, currentProduct } = useProductStore();
+  const { language, t, translateNutrient, translateReason } = useLanguageStore();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,8 +54,8 @@ export const ProductAnalysisScreen: React.FC = () => {
 
   if (loading || !product) {
     return (
-      <div className="py-20 text-center text-xs font-mono font-bold">
-        Loading Product Audit...
+      <div className="py-20 text-center text-xs font-mono font-bold text-[#111F15] dark:text-[#E4F5E5]">
+        {t('loadingProductAudit')}
       </div>
     );
   }
@@ -69,11 +71,11 @@ export const ProductAnalysisScreen: React.FC = () => {
           className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border-2 border-[#111F15] dark:border-white/30 text-xs font-bold hover:bg-[#C5F82A] hover:text-[#111F15] transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
-          <span>Back</span>
+          <span>{t('back')}</span>
         </button>
 
         <span className="font-['Plus_Jakarta_Sans'] font-black text-sm text-[#69766D] dark:text-[#9BAA9E]">
-          Product Inspection
+          {t('productInspection')}
         </span>
 
         <div className="flex items-center gap-2">
@@ -83,11 +85,11 @@ export const ProductAnalysisScreen: React.FC = () => {
                 navigator.share({ title: product.name, url: window.location.href }).catch(() => {});
               } else {
                 navigator.clipboard.writeText(window.location.href);
-                alert('Analysis link copied!');
+                alert(language === 'hi' ? 'विश्लेषण लिंक कॉपी हो गया!' : 'Analysis link copied!');
               }
             }}
             className="w-8 h-8 rounded-full border border-[#111F15]/30 dark:border-white/30 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
-            title="Share"
+            title={t('share')}
           >
             <Share2 className="w-3.5 h-3.5" />
           </button>
@@ -96,7 +98,7 @@ export const ProductAnalysisScreen: React.FC = () => {
             className={`w-8 h-8 rounded-full border border-[#111F15]/30 dark:border-white/30 flex items-center justify-center transition-colors cursor-pointer ${
               isFavorite ? 'bg-[#C5F82A] text-[#111F15] border-[#111F15]' : ''
             }`}
-            title="Bookmark"
+            title={t('bookmark')}
           >
             <Bookmark className={`w-3.5 h-3.5 ${isFavorite ? 'fill-current' : ''}`} />
           </button>
@@ -112,7 +114,7 @@ export const ProductAnalysisScreen: React.FC = () => {
             className="w-full h-full object-cover"
           />
           <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-[#C5F82A] text-[#111F15] border border-[#111F15] text-[9px] font-black uppercase tracking-wider shadow-sm">
-            ROASTED 100%
+            {language === 'hi' ? '100% सत्यापित लैब' : 'ROASTED 100%'}
           </span>
         </div>
 
@@ -122,7 +124,7 @@ export const ProductAnalysisScreen: React.FC = () => {
               {product.categoryLabel}
             </span>
             <span className="text-[10px] font-mono text-[#69766D] dark:text-[#9BAA9E]">
-              Barcode: {product.barcode}
+              {language === 'hi' ? 'बारकोड:' : 'Barcode:'} {product.barcode}
             </span>
           </div>
 
@@ -147,48 +149,48 @@ export const ProductAnalysisScreen: React.FC = () => {
         };
         const colors = gradeColorMap[product.grade] || gradeColorMap.C;
 
-        const gradeStatusText = {
-          A: 'EXCELLENT NUTRITIONAL QUALITY • CLEAN INGREDIENTS',
-          B: 'HEALTHIER CHOICE • BALANCED NUTRIENT PROFILE',
-          C: 'MODERATE NUTRITIONAL VALUE • CONSUME OCCASIONALLY',
-          D: 'HIGH CONCERN NUTRIENTS • RESTRAIN CONSUMPTION',
-          E: 'CRITICAL HEALTH CONCERN • HIGH SUGAR / SFA / PALM OIL',
-        }[product.grade] || 'COMPREHENSIVE HEALTH AUDIT';
+        const gradeStatusKey = {
+          A: 'gradeA',
+          B: 'gradeB',
+          C: 'gradeC',
+          D: 'gradeD',
+          E: 'gradeE',
+        }[product.grade] || 'comprehensiveAudit';
 
         return (
           <div className="p-4 rounded-3xl bg-gradient-to-b from-[#E2F7D8] to-[#D0F0C0] dark:from-[#1A2E1F] dark:to-[#122316] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-3 text-center">
             <span className="inline-block px-3 py-0.5 rounded-full bg-white/70 dark:bg-black/40 border border-[#111F15]/20 text-[9px] font-mono font-black uppercase tracking-wider">
-              IN-CODE NUTRI-SCORE RATING ENGINE
+              {t('nutriScoreEngine')}
             </span>
 
             {/* Big Grade Box */}
             <div className="flex justify-center">
               <div className={`relative ${colors.bg} ${colors.text} border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] rounded-3xl px-9 py-3 text-center`}>
                 <span className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-md bg-[#5EEAD4] text-[#111F15] border border-[#111F15] text-[9px] font-black uppercase">
-                  VERIFIED ✓
+                  {t('verified')}
                 </span>
                 <span className="text-[10px] font-extrabold font-mono tracking-widest block uppercase opacity-85">
-                  NUTRI-GRADE
+                  {t('nutriGrade')}
                 </span>
                 <span className="text-5xl font-black font-['Plus_Jakarta_Sans'] leading-none">
                   {product.grade}
                 </span>
                 <span className="text-[11px] font-mono font-bold block mt-1 opacity-90">
-                  {product.gradeScore} / 100 Score
+                  {product.gradeScore} / 100 {t('score')}
                 </span>
               </div>
             </div>
 
             {/* Status bar */}
             <div className="bg-[#111F15] text-white py-1.5 px-3 rounded-xl text-[10px] font-extrabold tracking-wide uppercase">
-              {gradeStatusText}
+              {t(gradeStatusKey)}
             </div>
 
             {/* In-Code Rating Reasons & Points Breakdown */}
             {product.geminiExplainer?.whyThisGrade && product.geminiExplainer.whyThisGrade.length > 0 && (
               <div className="text-left bg-white/80 dark:bg-black/30 rounded-2xl p-3 border border-[#111F15]/15 space-y-1.5">
                 <p className="text-[10px] font-mono font-black text-[#111F15] dark:text-[#E4F5E5] uppercase tracking-wider">
-                  Rating Calculation Breakdown:
+                  {t('ratingBreakdown')}
                 </p>
                 <div className="space-y-1">
                   {product.geminiExplainer.whyThisGrade.map((reason, idx) => (
@@ -197,7 +199,7 @@ export const ProductAnalysisScreen: React.FC = () => {
                         {reason.toLowerCase().includes('palm') ? '🚨' : reason.toLowerCase().includes('high') ? '⚠️' : '✓'}
                       </span>
                       <span className="font-medium text-[11px] leading-tight">
-                        {reason}
+                        {translateReason(reason)}
                       </span>
                     </div>
                   ))}
@@ -206,7 +208,7 @@ export const ProductAnalysisScreen: React.FC = () => {
             )}
 
             <p className="text-[10px] text-[#404940] dark:text-[#9BAA9E] leading-tight">
-              Calculated via pure deterministic Nutri-Score algorithm & FSSAI standards. Grade is never generated by AI.
+              {t('deterministicNotice')}
             </p>
 
             {/* Ask Gemini Explainer CTA Button */}
@@ -215,7 +217,7 @@ export const ProductAnalysisScreen: React.FC = () => {
               className="w-full py-2.5 rounded-2xl bg-[#5EEAD4] text-[#111F15] font-['Plus_Jakarta_Sans'] font-black text-xs uppercase tracking-wider border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>⚡</span>
-              <span>Ask Gemini Nutritionist Deep Dive</span>
+              <span>{t('askGeminiNutritionist')}</span>
               <span>⚡</span>
             </button>
           </div>
@@ -239,23 +241,23 @@ export const ProductAnalysisScreen: React.FC = () => {
                   01
                 </span>
                 <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
-                  Harmful Chemicals & Additives Watchlist
+                  {t('harmfulChemicalsTitle')}
                 </h2>
               </div>
               <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${
                 harmfulIngredients.length > 0 ? 'bg-[#FEE2E2] text-[#B91C1C] border border-[#B91C1C]' : 'bg-[#EDF6EA] text-[#005128]'
               }`}>
-                {harmfulIngredients.length} Flagged
+                {harmfulIngredients.length} {t('flagged')}
               </span>
             </div>
 
             {harmfulIngredients.length === 0 ? (
               <div className="p-3 rounded-2xl bg-[#EDF6EA] dark:bg-[#15271B] border border-[#111F15]/15 text-center">
                 <p className="text-xs font-bold text-[#005128]">
-                  ✓ Zero High or Moderate Risk Chemicals Detected!
+                  {t('zeroHarmfulDetected')}
                 </p>
                 <p className="text-[10px] text-[#69766D] mt-0.5">
-                  All identified ingredients are natural dietary components.
+                  {t('allNaturalIngredients')}
                 </p>
               </div>
             ) : (
@@ -288,13 +290,13 @@ export const ProductAnalysisScreen: React.FC = () => {
                             ? 'bg-[#DC2626] text-white border-[#991B1B]'
                             : 'bg-[#F59E0B] text-black border-[#B45309]'
                         }`}>
-                          {isHighRisk ? 'High Concern' : 'Moderate / Watch'}
+                          {isHighRisk ? t('highConcern') : t('moderateWatch')}
                         </span>
                       </div>
 
                       <div className="mt-1.5 flex items-center gap-2">
                         <span className="text-[10px] font-mono font-bold text-[#69766D] dark:text-[#9BAA9E] uppercase">
-                          Purpose: {item.purpose}
+                          {t('purpose')}: {item.purpose}
                         </span>
                       </div>
 
@@ -304,7 +306,7 @@ export const ProductAnalysisScreen: React.FC = () => {
 
                       <div className="mt-2 flex items-center justify-between border-t border-[#111F15]/10 pt-1 text-[9px] font-mono text-[#69766D] dark:text-[#9BAA9E]">
                         <span>{item.regulatoryStatusIndia}</span>
-                        <span className="underline font-bold text-[#111F15] dark:text-white">Tap for Toxicology Dossier →</span>
+                        <span className="underline font-bold text-[#111F15] dark:text-white">{t('toxicologyDossier')}</span>
                       </div>
                     </div>
                   );
@@ -325,10 +327,10 @@ export const ProductAnalysisScreen: React.FC = () => {
                     </span>
                     <div>
                       <h4 className="text-xs font-black font-['Plus_Jakarta_Sans'] text-[#DC2626] dark:text-[#FFA4A0]">
-                        Palm Oil Penalty Applied (-1 Grade)
+                        {t('palmOilPenalty')}
                       </h4>
                       <p className="text-[10px] text-[#69766D] dark:text-[#D1D5DB]">
-                        Tap to inspect why palm oil triggered an automatic grade penalty
+                        {t('palmOilInspect')}
                       </p>
                     </div>
                   </div>
@@ -341,7 +343,7 @@ export const ProductAnalysisScreen: React.FC = () => {
 
                 {isPalmOilAccordionOpen && (
                   <div className="mt-2.5 pt-2 border-t border-[#DC2626]/20 text-[11px] text-[#404940] dark:text-[#E4F5E5] leading-relaxed animate-fade-in">
-                    Refined palm oil contains over 44% palmitic acid (a saturated fatty acid). According to ICMR-NIN and WHO cardiometabolic guidelines, high dietary palmitic acid elevates serum low-density lipoprotein (LDL) cholesterol and induces systemic vascular inflammation. Our deterministic rating engine penalizes every product containing palm oil with a 1-grade downgrade.
+                    {t('palmOilExplanation')}
                   </div>
                 )}
               </div>
@@ -358,11 +360,11 @@ export const ProductAnalysisScreen: React.FC = () => {
               02
             </span>
             <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
-              Nutritional Profile
+              {t('nutritionalProfile')}
             </h2>
           </div>
           <span className="text-[10px] font-mono text-[#69766D] dark:text-[#9BAA9E] bg-[#EDF6EA] dark:bg-[#15271B] px-2 py-0.5 rounded border border-[#111F15]/10">
-            Per 100g serving
+            {t('per100gServing')}
           </span>
         </div>
 
@@ -371,6 +373,8 @@ export const ProductAnalysisScreen: React.FC = () => {
             product.nutritionFacts.map((fact, idx) => {
               const isExcessive = fact.flag === 'excessive';
               const isModerate = fact.flag === 'moderate';
+              const flagText = isExcessive ? t('excessive') : isModerate ? t('moderate') : t('healthy');
+
               return (
                 <div
                   key={idx}
@@ -384,7 +388,7 @@ export const ProductAnalysisScreen: React.FC = () => {
                 >
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-extrabold uppercase tracking-wide text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
-                      {fact.nutrient}
+                      {translateNutrient(fact.nutrient)}
                     </span>
                     {fact.flag && (
                       <span
@@ -396,7 +400,7 @@ export const ProductAnalysisScreen: React.FC = () => {
                             : 'bg-[#C5F82A] text-[#111F15] border-[#111F15]'
                         }`}
                       >
-                        {fact.flag.toUpperCase()}
+                        {flagText}
                       </span>
                     )}
                   </div>
@@ -414,7 +418,7 @@ export const ProductAnalysisScreen: React.FC = () => {
               );
             })
           ) : (
-            <p className="text-xs text-[#69766D]">No nutritional breakdown available.</p>
+            <p className="text-xs text-[#69766D]">{t('noNutritionalBreakdown')}</p>
           )}
         </div>
       </section>
@@ -427,11 +431,11 @@ export const ProductAnalysisScreen: React.FC = () => {
               03
             </span>
             <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
-              Complete Ingredients List
+              {t('completeIngredientsList')}
             </h2>
           </div>
           <span className="text-[10px] font-mono text-white bg-[#111F15] px-2 py-0.5 rounded-full font-bold">
-            {product.ingredients.length} Listed
+            {product.ingredients.length} {t('listed')}
           </span>
         </div>
 
@@ -455,10 +459,10 @@ export const ProductAnalysisScreen: React.FC = () => {
                 <span>{isHigh ? '🚨' : isMod ? '⚠️' : '✓'}</span>
                 <span>{ing.name}</span>
                 {isHigh && (
-                  <span className="px-1.5 py-0.2 rounded bg-[#DC2626] text-white text-[9px]">High</span>
+                  <span className="px-1.5 py-0.2 rounded bg-[#DC2626] text-white text-[9px]">{t('highConcern')}</span>
                 )}
                 {isMod && (
-                  <span className="px-1.5 py-0.2 rounded bg-[#F59E0B] text-black text-[9px]">Watch</span>
+                  <span className="px-1.5 py-0.2 rounded bg-[#F59E0B] text-black text-[9px]">{t('moderateWatch')}</span>
                 )}
               </span>
             );
@@ -466,19 +470,19 @@ export const ProductAnalysisScreen: React.FC = () => {
         </div>
       </section>
 
-      {/* Section 03: Additive Assessment */}
+      {/* Section 04: Additive Assessment */}
       <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-lg bg-[#C5F82A] text-[#111F15] border border-[#111F15] flex items-center justify-center text-xs font-black">
-              03
+              04
             </span>
             <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
-              Additive Assessment
+              {t('additiveAssessment')}
             </h2>
           </div>
           <span className="text-[10px] font-mono text-[#69766D] dark:text-[#9BAA9E] bg-[#EDF6EA] dark:bg-[#15271B] px-2 py-0.5 rounded border border-[#111F15]/10">
-            2 Approved Additives
+            {t('approvedAdditives')}
           </span>
         </div>
 
@@ -489,14 +493,16 @@ export const ProductAnalysisScreen: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-black">INS 330</span>
                 <span className="px-1.5 py-0.2 rounded bg-[#5EEAD4] text-[#111F15] text-[9px] font-extrabold border border-[#111F15]">
-                  SAFE
+                  {t('safe')}
                 </span>
-                <span className="text-xs font-bold">Citric Acid</span>
+                <span className="text-xs font-bold">{language === 'hi' ? 'साइट्रिक एसिड (नींबू सत्व)' : 'Citric Acid'}</span>
               </div>
               <Check className="w-4 h-4 text-[#005128] stroke-[3]" />
             </div>
             <p className="text-[10px] text-[#404940] dark:text-[#9BAA9E]">
-              Natural acidity regulator & antioxidant synergist. Zero toxicological flags reported by JECFA.
+              {language === 'hi'
+                ? 'प्राकृतिक अम्लता नियामक और एंटीऑक्सीडेंट। JECFA द्वारा सुरक्षित घोषित।'
+                : 'Natural acidity regulator & antioxidant synergist. Zero toxicological flags reported by JECFA.'}
             </p>
           </div>
 
@@ -506,32 +512,34 @@ export const ProductAnalysisScreen: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-black">INS 551</span>
                 <span className="px-1.5 py-0.2 rounded bg-[#C5F82A] text-[#111F15] text-[9px] font-extrabold border border-[#111F15]">
-                  PERMITTED
+                  {t('permitted')}
                 </span>
-                <span className="text-xs font-bold">Silicon Dioxide</span>
+                <span className="text-xs font-bold">{language === 'hi' ? 'सिलिकॉन डाइऑक्साइड' : 'Silicon Dioxide'}</span>
               </div>
               <Check className="w-4 h-4 text-[#005128] stroke-[3]" />
             </div>
             <p className="text-[10px] text-[#404940] dark:text-[#9BAA9E]">
-              Anti-caking agent present at 0.02% (Max permissible limit: 2.0%). Passes standard elimination safely.
+              {language === 'hi'
+                ? 'एंटी-केकिंग एजेंट 0.02% पर उपस्थित (अधिकतम स्वीकार्य सीमा: 2.0%)। सुरक्षित रूप से उत्सर्जित होता है।'
+                : 'Anti-caking agent present at 0.02% (Max permissible limit: 2.0%). Passes standard elimination safely.'}
             </p>
           </div>
         </div>
       </section>
 
-      {/* Section 04: Regulatory Transparency */}
+      {/* Section 05: Regulatory Transparency */}
       <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-lg bg-[#C5F82A] text-[#111F15] border border-[#111F15] flex items-center justify-center text-xs font-black">
-              04
+              05
             </span>
             <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
-              Regulatory Transparency
+              {t('regulatoryTransparency')}
             </h2>
           </div>
           <span className="text-[10px] font-mono text-[#111F15] bg-[#C5F82A] px-2 py-0.5 rounded-full font-bold border border-[#111F15]">
-            Active & Compliant
+            {t('activeCompliant')}
           </span>
         </div>
 
@@ -544,17 +552,17 @@ export const ProductAnalysisScreen: React.FC = () => {
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-mono font-bold text-[#69766D] uppercase">
-                  FSSAI LICENSE
+                  {t('fssaiLicense')}
                 </span>
                 <span className="px-1.5 py-0.2 rounded bg-[#5EEAD4] text-[#111F15] text-[8px] font-bold">
-                  ACTIVE
+                  {t('activeBadge')}
                 </span>
               </div>
               <h4 className="text-xs font-black font-mono mt-0.5">
                 Lic. 10018022008451
               </h4>
               <p className="text-[9px] text-[#69766D]">
-                Validated against National FoSCoS portal
+                {t('foscosValidation')}
               </p>
             </div>
           </div>
@@ -568,13 +576,13 @@ export const ProductAnalysisScreen: React.FC = () => {
             </div>
             <div>
               <span className="text-[10px] font-mono font-bold text-[#69766D] uppercase block">
-                DIETARY CLASSIFICATION
+                {t('dietaryClassification')}
               </span>
               <h4 className="text-xs font-black mt-0.5">
-                100% Vegetarian (Green Dot)
+                {t('vegGreenDot')}
               </h4>
               <p className="text-[9px] text-[#69766D]">
-                Zero animal derivations / gelatin free
+                {t('vegGuarantee')}
               </p>
             </div>
           </div>

@@ -3,6 +3,7 @@ import { Bookmark, ChevronRight, BookmarkX, ScanLine } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useProductStore } from '../../store/useProductStore';
 import { useScanStore } from '../../store/useScanStore';
+import { useLanguageStore } from '../../store/useLanguageStore';
 import { GradeBadge } from '../../components/ui/GradeBadge';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
@@ -11,6 +12,7 @@ import { Button } from '../../components/ui/Button';
 export const WatchlistScreen: React.FC = () => {
   const { watchlistIds, products, setCurrentProduct, toggleWatchlist } = useProductStore();
   const { openScanner } = useScanStore();
+  const { t } = useLanguageStore();
   const navigate = useNavigate();
 
   const savedProducts = watchlistIds
@@ -18,15 +20,15 @@ export const WatchlistScreen: React.FC = () => {
     .filter((p): p is (typeof products)[0] => p !== undefined);
 
   return (
-    <div className="space-y-6 pb-24 animate-fade-in max-w-3xl mx-auto">
+    <div className="space-y-6 pb-24 animate-fade-in max-w-3xl mx-auto text-[#111F15] dark:text-[#E4F5E5]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-[#111F15] dark:text-[#E4F5E5] font-['Plus_Jakarta_Sans']">
-            Saved Watchlist
+          <h1 className="text-2xl font-black font-['Plus_Jakarta_Sans']">
+            {t('savedWatchlist')}
           </h1>
           <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-0.5">
-            {savedProducts.length} monitored grocery and sanitary essentials
+            {savedProducts.length} {t('monitoredEssentials')}
           </p>
         </div>
 
@@ -37,7 +39,7 @@ export const WatchlistScreen: React.FC = () => {
           className="gap-1.5"
         >
           <ScanLine className="w-4 h-4" />
-          <span>Add More</span>
+          <span>{t('addMore')}</span>
         </Button>
       </div>
 
@@ -45,14 +47,14 @@ export const WatchlistScreen: React.FC = () => {
       {savedProducts.length === 0 ? (
         <div className="py-20 text-center">
           <Bookmark className="w-12 h-12 text-[#69766D] mx-auto mb-3 opacity-40" />
-          <h3 className="text-base font-bold text-[#111F15] dark:text-[#E4F5E5]">
-            No items in your watchlist
+          <h3 className="text-base font-bold">
+            {t('noItemsWatchlist')}
           </h3>
-          <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-1 mb-4">
-            Tap the bookmark icon on any product analysis page to monitor its safety score here.
+          <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-1 mb-4 max-w-sm mx-auto">
+            {t('startScanningPrompt')}
           </p>
           <Button onClick={() => navigate('/')} variant="primary">
-            Explore Products
+            {t('exploreProducts')}
           </Button>
         </div>
       ) : (
@@ -79,7 +81,7 @@ export const WatchlistScreen: React.FC = () => {
                       <span className="text-[10px] font-bold text-[#69766D] dark:text-[#9BAA9E] uppercase">
                         {product.brand}
                       </span>
-                      <h3 className="text-xs font-bold text-[#111F15] dark:text-[#E4F5E5] font-['Plus_Jakarta_Sans'] line-clamp-1">
+                      <h3 className="text-xs font-bold font-['Plus_Jakarta_Sans'] line-clamp-1">
                         {product.name}
                       </h3>
                     </div>
@@ -90,7 +92,7 @@ export const WatchlistScreen: React.FC = () => {
                       e.stopPropagation();
                       toggleWatchlist(product.id);
                     }}
-                    className="p-1 text-[#69766D] hover:text-[#BA1A1A] transition-colors"
+                    className="p-1 text-[#69766D] hover:text-[#BA1A1A] transition-colors cursor-pointer"
                     title="Remove from Watchlist"
                   >
                     <BookmarkX className="w-4 h-4" />
@@ -102,11 +104,8 @@ export const WatchlistScreen: React.FC = () => {
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-[#E3EAE1] dark:border-[#2D3E33] flex items-center justify-between">
-                <Badge
-                  variant={product.category === 'women-hygiene' ? 'lavender' : 'default'}
-                  size="sm"
-                >
+              <div className="flex items-center justify-between pt-3 mt-3 border-t border-[#E3EAE1] dark:border-[#2D3E33]">
+                <Badge variant="outline" size="sm">
                   {product.categoryLabel}
                 </Badge>
                 <div className="flex items-center gap-2">

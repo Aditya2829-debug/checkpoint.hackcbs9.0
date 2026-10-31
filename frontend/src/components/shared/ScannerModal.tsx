@@ -16,11 +16,12 @@ import {
   ImageIcon,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeSupportedFormats, type Html5QrcodeCameraScanConfig } from 'html5-qrcode';
 import { useScanStore } from '../../store/useScanStore';
 import { useProductStore } from '../../store/useProductStore';
 import { useLanguageStore } from '../../store/useLanguageStore';
 import { scanService } from '../../services/api/scanService';
+import { validateScannedBarcode } from '../../utils/barcodeValidator';
 import { Button } from '../ui/Button';
 
 // Play a pleasant supermarket scanner beep via Web Audio API
@@ -40,7 +41,7 @@ const playBeep = () => {
     osc.start();
     osc.stop(ctx.currentTime + 0.15);
   } catch {
-    // Ignore audio errors on unsupported browsers
+    // Ignore audio errors on unsupported environments
   }
 };
 
@@ -68,7 +69,7 @@ export const ScannerModal: React.FC = () => {
   } = useScanStore();
 
   const { setCurrentProduct } = useProductStore();
-  const { t } = useLanguageStore();
+  const { language, t } = useLanguageStore();
   const navigate = useNavigate();
 
   const [ocrStep, setOcrStep] = useState<'capture' | 'verify'>('capture');
@@ -77,13 +78,19 @@ export const ScannerModal: React.FC = () => {
   const [cameraErrorMsg, setCameraErrorMsg] = useState<string>('');
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [detectedCode, setDetectedCode] = useState<string | null>(null);
-  const [selectedCameraId, setSelectedCameraId] = useState<string>('');
   const [isCapturingFrame, setIsCapturingFrame] = useState(false);
   const [isSwitchingCamera, setIsSwitchingCamera] = useState(false);
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const isScanningLockedRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Anti-mismatch frame consistency buffer
+  const candidateRef = useRef<{ code: string; count: number; lastTime: number }>({
+    code: '',
+    count: 0,
+    lastTime: 0,
+  });
 
   const onScanSuccessRef = useRef<(decodedText: string) => void>(() => {});
   const onScanErrorRef = useRef<() => void>(() => {});
@@ -108,6 +115,7 @@ export const ScannerModal: React.FC = () => {
     stopCamera();
     setDetectedCode(null);
     isScanningLockedRef.current = false;
+    candidateRef.current = { code: '', count: 0, lastTime: 0 };
     closeScanner();
   }, [stopCamera, closeScanner]);
 
@@ -116,7 +124,7 @@ export const ScannerModal: React.FC = () => {
     const clean = barcodeToLookup.trim();
     if (!clean) return;
     try {
-      // Backend automatically checks MongoDB -> scan_cache -> Gemini API (zero friction, no prompt)
+      // Backend automatically checks MongoDB -> scan_cache -> Gemini API (sub-second lookup)
       const product = await scanService.lookupBarcode(clean);
       setCurrentProduct(product);
       recordScan(product.id);
@@ -124,39 +132,83 @@ export const ScannerModal: React.FC = () => {
       navigate(`/product/${product.id}`);
     } catch (err: any) {
       if (err?.needsLabelPhoto) {
-        // If neither DB nor Gemini identified by barcode number alone, switch smoothly to label photo mode without confirmation dialog
+        // If unlisted, smoothly switch to label photo mode without confirmation dialog
         setManualBarcodeInput(clean);
         setActiveMode('ocr');
       } else {
-        alert(err?.message || `Barcode "${clean}" could not be processed.`);
+        alert(err?.message || (language === 'hi' ? `बारकोड "${clean}" नहीं मिल सका।` : `Barcode "${clean}" could not be processed.`));
       }
       setDetectedCode(null);
       isScanningLockedRef.current = false;
+      candidateRef.current = { code: '', count: 0, lastTime: 0 };
     }
-  }, [handleClose, navigate, recordScan, setCurrentProduct, setActiveMode, setManualBarcodeInput]);
+  }, [handleClose, navigate, recordScan, setCurrentProduct, setActiveMode, setManualBarcodeInput, language]);
 
-  // Set up scan callback refs to avoid stale closures
+  // Set up scan callback refs with Checksum & Anti-Mismatch Logic
   useEffect(() => {
     onScanSuccessRef.current = (decodedText: string) => {
-      if (isScanningLockedRef.current || !decodedText.trim()) return;
-      isScanningLockedRef.current = true;
-      const clean = decodedText.trim();
-      setDetectedCode(clean);
-      playBeep();
+      if (isScanningLockedRef.current) return;
 
-      if (html5QrCodeRef.current?.isScanning) {
-        html5QrCodeRef.current.stop().then(() => html5QrCodeRef.current?.clear()).catch(() => {});
+      // 1. Validate barcode mathematically (EAN-13, UPC-A, EAN-8)
+      const validation = validateScannedBarcode(decodedText);
+      if (!validation.isValid) {
+        // Drop noisy/partial lines from motion blur
+        return;
       }
 
-      setTimeout(() => {
-        handleBarcodeSubmit(clean);
-      }, 500);
+      const clean = validation.cleanCode;
+      const now = Date.now();
+      const c = candidateRef.current;
+
+      // 2. Anti-Mismatch Verification:
+      // If code passes standard GS1 modulo-10 checksum (e.g. real EAN-13 / UPC-A / EAN-8) -> 100% verified!
+      // If check digit is unverified, require 2 consecutive frames reading identical digits within 600ms.
+      const isGs1Verified = !validation.warning;
+
+      if (isGs1Verified || (c.code === clean && now - c.lastTime < 600)) {
+        isScanningLockedRef.current = true;
+        setDetectedCode(clean);
+        playBeep();
+
+        if (html5QrCodeRef.current?.isScanning) {
+          html5QrCodeRef.current.stop().then(() => html5QrCodeRef.current?.clear()).catch(() => {});
+        }
+
+        setTimeout(() => {
+          handleBarcodeSubmit(clean);
+        }, 450);
+      } else {
+        // Store first frame candidate and wait for immediate second-frame confirmation
+        candidateRef.current = { code: clean, count: 1, lastTime: now };
+      }
     };
 
     onScanErrorRef.current = () => {
-      // Searching frame for barcode
+      // Searching viewfinder
     };
   }, [handleBarcodeSubmit]);
+
+  // Attempt continuous hardware autofocus on the video stream track
+  const applyAutofocusConstraints = useCallback(() => {
+    try {
+      const container = document.getElementById('interactive-barcode-scanner');
+      const video = container?.querySelector('video') as HTMLVideoElement | null;
+      if (video && video.srcObject) {
+        const stream = video.srcObject as MediaStream;
+        const track = stream.getVideoTracks()[0];
+        if (track && track.applyConstraints) {
+          track.applyConstraints({
+            advanced: [
+              { focusMode: 'continuous' } as any,
+              { exposureMode: 'continuous' } as any,
+            ],
+          }).catch(() => {});
+        }
+      }
+    } catch {
+      // Ignore if browser does not expose advanced focusMode
+    }
+  }, []);
 
   // Initialize and run HTML5 Camera Barcode Scanner
   useEffect(() => {
@@ -178,41 +230,60 @@ export const ScannerModal: React.FC = () => {
       setCameraErrorMsg('');
       setDetectedCode(null);
       isScanningLockedRef.current = false;
+      candidateRef.current = { code: '', count: 0, lastTime: 0 };
 
       try {
+        // Construct Html5Qrcode with hardware BarcodeDetector and clean retail formats
         const qrcode = new Html5Qrcode('interactive-barcode-scanner', {
           formatsToSupport: [
             Html5QrcodeSupportedFormats.EAN_13,
-            Html5QrcodeSupportedFormats.EAN_8,
             Html5QrcodeSupportedFormats.UPC_A,
+            Html5QrcodeSupportedFormats.EAN_8,
             Html5QrcodeSupportedFormats.UPC_E,
             Html5QrcodeSupportedFormats.CODE_128,
-            Html5QrcodeSupportedFormats.CODE_39,
-            Html5QrcodeSupportedFormats.CODE_93,
-            Html5QrcodeSupportedFormats.CODABAR,
-            Html5QrcodeSupportedFormats.ITF,
             Html5QrcodeSupportedFormats.QR_CODE,
           ],
+          useBarCodeDetectorIfSupported: true, // Native Android / Chrome Google Play Services MLKit
           verbose: false,
         });
 
         html5QrCodeRef.current = qrcode;
 
-        const scanConfig = {
-          fps: 15,
+        // High Definition configuration with reticle bounding box
+        const scanConfig: Html5QrcodeCameraScanConfig = {
+          fps: 20,
           disableFlip: false,
+          qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+            const width = Math.min(Math.floor(viewfinderWidth * 0.88), 340);
+            const height = Math.min(Math.floor(width * 0.65), 220);
+            return { width, height };
+          },
+          videoConstraints: {
+            facingMode: { ideal: facingMode },
+            width: { min: 1280, ideal: 1920, max: 2560 },
+            height: { min: 720, ideal: 1080, max: 1440 },
+          },
         };
 
-        // Query available devices
+        // Query available camera devices
         const devices = await Html5Qrcode.getCameras().catch(() => []);
+        let targetCamera: string | MediaTrackConstraints = {
+          facingMode: { ideal: facingMode },
+          width: { min: 1280, ideal: 1920 },
+          height: { min: 720, ideal: 1080 },
+        };
 
-        // Default to environment (back) camera for barcode scanning
-        let targetCamera: string | MediaTrackConstraints = { facingMode: 'environment' };
         if (devices && devices.length > 0) {
-          const backCam = devices.find((d) => /back|rear|environment|main/i.test(d.label));
-          if (backCam) {
-            targetCamera = backCam.id;
-            setSelectedCameraId(backCam.id);
+          if (facingMode === 'environment') {
+            const backCam = devices.find((d) => /back|rear|environment|main|0/i.test(d.label));
+            if (backCam) {
+              targetCamera = backCam.id;
+            }
+          } else {
+            const frontCam = devices.find((d) => /front|user|selfie|integrated|1/i.test(d.label));
+            if (frontCam) {
+              targetCamera = frontCam.id;
+            }
           }
         }
 
@@ -223,20 +294,14 @@ export const ScannerModal: React.FC = () => {
             (decodedText) => onScanSuccessRef.current(decodedText),
             () => onScanErrorRef.current(),
           );
-          setFacingMode('environment');
         } catch (initialErr) {
-          console.warn('Initial back camera target failed, falling back to user/webcam...', initialErr);
-          const fallbackTarget = devices && devices.length > 0 ? devices[0].id : { facingMode: 'user' };
+          console.warn('Initial camera target failed, trying direct facingMode constraint...', initialErr);
           await qrcode.start(
-            fallbackTarget,
+            { facingMode: { ideal: facingMode } },
             scanConfig,
             (decodedText) => onScanSuccessRef.current(decodedText),
             () => onScanErrorRef.current(),
           );
-          setFacingMode('user');
-          if (typeof fallbackTarget === 'string') {
-            setSelectedCameraId(fallbackTarget);
-          }
         }
 
         if (isCancelled) {
@@ -248,12 +313,13 @@ export const ScannerModal: React.FC = () => {
         }
 
         setCameraState('active');
+        applyAutofocusConstraints();
       } catch (err: unknown) {
         if (isCancelled) return;
         const msg =
           err instanceof Error
             ? err.message
-            : 'Camera could not be accessed. Please ensure permissions are granted.';
+            : 'Camera could not be accessed. Please ensure camera permissions are granted.';
         setCameraState('error');
         setCameraErrorMsg(msg);
       }
@@ -265,118 +331,43 @@ export const ScannerModal: React.FC = () => {
       isCancelled = true;
       stopCamera();
     };
-  }, [isScannerOpen, activeMode, stopCamera]);
+  }, [isScannerOpen, activeMode, facingMode, stopCamera, applyAutofocusConstraints]);
 
-  // Toggle Camera Front / Back (seamless switch without unmounting)
+  // Toggle Camera Front / Back
   const handleSwitchCamera = useCallback(async () => {
-    if (isSwitchingCamera || !html5QrCodeRef.current) return;
+    if (isSwitchingCamera) return;
     setIsSwitchingCamera(true);
 
     try {
-      const qrcode = html5QrCodeRef.current;
-      if (qrcode.isScanning) {
-        await qrcode.stop();
-      }
-      qrcode.clear();
-
+      await stopCamera();
       const nextFacing: 'environment' | 'user' = facingMode === 'environment' ? 'user' : 'environment';
-
-      // Refresh camera devices list with permissions granted
-      const devices = await Html5Qrcode.getCameras().catch(() => []);
-
-      let target: string | MediaTrackConstraints = { facingMode: nextFacing };
-
-      if (devices && devices.length > 0) {
-        if (nextFacing === 'environment') {
-          const backCam = devices.find((d) => /back|rear|environment|main/i.test(d.label));
-          if (backCam) {
-            target = backCam.id;
-          } else if (devices.length > 1 && selectedCameraId) {
-            const otherCam = devices.find((d) => d.id !== selectedCameraId);
-            if (otherCam) target = otherCam.id;
-          }
-        } else {
-          const frontCam = devices.find((d) => /front|user|selfie|integrated|webcam/i.test(d.label));
-          if (frontCam) {
-            target = frontCam.id;
-          } else if (devices.length > 1 && selectedCameraId) {
-            const otherCam = devices.find((d) => d.id !== selectedCameraId);
-            if (otherCam) target = otherCam.id;
-          }
-        }
-      }
-
-      const scanConfig = {
-        fps: 15,
-        disableFlip: false,
-      };
-
-      try {
-        await qrcode.start(
-          target,
-          scanConfig,
-          (decodedText) => onScanSuccessRef.current(decodedText),
-          () => onScanErrorRef.current(),
-        );
-        setFacingMode(nextFacing);
-        if (typeof target === 'string') {
-          setSelectedCameraId(target);
-        } else {
-          setSelectedCameraId('');
-        }
-        setCameraState('active');
-      } catch (switchErr) {
-        console.warn('Target camera start failed, trying standard facingMode constraint...', switchErr);
-        try {
-          await qrcode.start(
-            { facingMode: nextFacing },
-            scanConfig,
-            (decodedText) => onScanSuccessRef.current(decodedText),
-            () => onScanErrorRef.current(),
-          );
-          setFacingMode(nextFacing);
-          setSelectedCameraId('');
-          setCameraState('active');
-        } catch {
-          // If switching to that camera failed (e.g. single camera laptop), revert to current facing camera
-          alert(`The ${nextFacing === 'environment' ? 'back' : 'front'} camera is not available on this device.`);
-          const revertTarget = devices && devices.length > 0 ? devices[0].id : { facingMode };
-          await qrcode.start(
-            revertTarget,
-            scanConfig,
-            (decodedText) => onScanSuccessRef.current(decodedText),
-            () => onScanErrorRef.current(),
-          );
-          setCameraState('active');
-        }
-      }
+      setFacingMode(nextFacing);
+      setCameraState('initializing');
     } catch (err: any) {
       console.error('Camera switch error:', err);
-      setCameraState('error');
-      setCameraErrorMsg(err?.message || 'Error switching camera.');
     } finally {
       setIsSwitchingCamera(false);
     }
-  }, [facingMode, isSwitchingCamera, selectedCameraId]);
+  }, [facingMode, isSwitchingCamera, stopCamera]);
 
-  // Instant Snapshot & High-Precision Barcode Capture (for laptop webcams without autofocus)
+  // Instant Snapshot & High-Precision Barcode Capture
   const handleCaptureFrame = async () => {
     const container = document.getElementById('interactive-barcode-scanner');
     const video = container?.querySelector('video') as HTMLVideoElement | null;
     if (!video || video.readyState < 2) {
-      alert('Camera stream is still starting. Please wait a moment.');
+      alert(language === 'hi' ? 'कैमरा स्ट्रीम शुरू हो रहा है। कृपया प्रतीक्षा करें।' : 'Camera stream is still starting. Please wait a moment.');
       return;
     }
 
     setIsCapturingFrame(true);
     try {
       const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth || 1280;
-      canvas.height = video.videoHeight || 720;
+      canvas.width = video.videoWidth || 1920;
+      canvas.height = video.videoHeight || 1080;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Draw exact frame
+      // Draw high resolution frame
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const blob = await new Promise<Blob | null>((resolve) =>
@@ -389,16 +380,13 @@ export const ScannerModal: React.FC = () => {
       const decoder = new Html5Qrcode('barcode-file-decoder-temp', {
         formatsToSupport: [
           Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
           Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.EAN_8,
           Html5QrcodeSupportedFormats.UPC_E,
           Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.CODE_39,
-          Html5QrcodeSupportedFormats.CODE_93,
-          Html5QrcodeSupportedFormats.CODABAR,
-          Html5QrcodeSupportedFormats.ITF,
           Html5QrcodeSupportedFormats.QR_CODE,
         ],
+        useBarCodeDetectorIfSupported: true,
         verbose: false,
       });
 
@@ -411,18 +399,20 @@ export const ScannerModal: React.FC = () => {
         playBeep();
         setTimeout(() => {
           handleBarcodeSubmit(clean);
-        }, 500);
+        }, 450);
       }
     } catch {
       alert(
-        'Could not detect barcode from the captured frame.\n\nTips for laptop webcams:\n• Hold the barcode steady ~25–35 cm from camera (where it is sharp and in focus).\n• Avoid reflective plastic glare from room lights.\n• Or tap "Upload Barcode Photo" or a sample button below.'
+        language === 'hi'
+          ? 'कैप्चर किए गए फ्रेम से बारकोड नहीं मिला।\n\nसुझाव:\n• बारकोड को कैमरे के 25-35 सेमी पास रखें ताकि वह स्पष्ट और फोकस में रहे।\n• चकाचौंध या तेज रोशनी से बचें।'
+          : 'Could not detect barcode from the captured frame.\n\nTips:\n• Hold the barcode steady ~25–35 cm from camera where it is in focus.\n• Avoid reflective glare from overhead lights.'
       );
     } finally {
       setIsCapturingFrame(false);
     }
   };
 
-  // Handle Barcode Image File Scan (direct upload from gallery/desktop)
+  // Handle Barcode Image File Scan (direct upload from gallery)
   const handleBarcodeFileScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -431,17 +421,13 @@ export const ScannerModal: React.FC = () => {
       const qrcode = new Html5Qrcode('barcode-file-decoder-temp', {
         formatsToSupport: [
           Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
           Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.EAN_8,
           Html5QrcodeSupportedFormats.UPC_E,
           Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.CODE_39,
-          Html5QrcodeSupportedFormats.CODE_93,
-          Html5QrcodeSupportedFormats.CODABAR,
-          Html5QrcodeSupportedFormats.ITF,
           Html5QrcodeSupportedFormats.QR_CODE,
-          Html5QrcodeSupportedFormats.DATA_MATRIX,
         ],
+        useBarCodeDetectorIfSupported: true,
         verbose: false,
       });
 
@@ -454,10 +440,10 @@ export const ScannerModal: React.FC = () => {
         playBeep();
         setTimeout(() => {
           handleBarcodeSubmit(clean);
-        }, 500);
+        }, 450);
       }
     } catch {
-      alert('Could not detect a clear barcode from the photo. Please ensure it is well-lit or enter the digits manually.');
+      alert(language === 'hi' ? 'फोटो से स्पष्ट बारकोड नहीं मिल सका। कृपया बारकोड नंबर मैन्युअल दर्ज करें।' : 'Could not detect a clear barcode from the photo. Please enter digits manually.');
     } finally {
       if (e.target) {
         e.target.value = '';
@@ -485,7 +471,7 @@ export const ScannerModal: React.FC = () => {
     handleBarcodeSubmit(code);
   };
 
-  // Compress large smartphone photos to max 1280px (100x speedup over mobile data)
+  // Compress large smartphone photos to max 1280px
   const compressImage = async (file: File): Promise<{ base64: string; mimeType: string }> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -553,7 +539,7 @@ export const ScannerModal: React.FC = () => {
       console.warn('Backend label analysis notice:', err?.message);
       const result = await scanService.extractFromImage(file);
       setExtractedIngredients(result.extractedIngredients);
-      setProductNameDraft(result.productNameCandidates[0] || 'Extracted Product');
+      setProductNameDraft(result.productNameCandidates[0] || (language === 'hi' ? 'पहचाना गया उत्पाद' : 'Extracted Product'));
       setIsExtracting(false);
       setOcrStep('verify');
     }
@@ -597,7 +583,7 @@ export const ScannerModal: React.FC = () => {
               }`}
             >
               <ScanBarcode className="w-4 h-4" />
-              <span>Barcode</span>
+              <span>{language === 'hi' ? 'बारकोड' : 'Barcode'}</span>
             </button>
             <button
               onClick={() => {
@@ -611,18 +597,18 @@ export const ScannerModal: React.FC = () => {
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>OCR Label</span>
+              <span>{language === 'hi' ? 'लेबल OCR' : 'OCR Label'}</span>
             </button>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Camera Switch / Flip (for phones with front/back or laptops with webcams) */}
+          {/* Camera Switch / Flip */}
           {activeMode === 'barcode' && (
             <button
               type="button"
               onClick={handleSwitchCamera}
-              disabled={isSwitchingCamera || cameraState !== 'active'}
+              disabled={isSwitchingCamera}
               className="p-2.5 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all cursor-pointer disabled:opacity-50"
               title={facingMode === 'environment' ? 'Switch to Front Camera' : 'Switch to Back Camera'}
             >
@@ -637,7 +623,7 @@ export const ScannerModal: React.FC = () => {
               className={`p-2.5 rounded-xl border border-white/20 transition-all cursor-pointer ${
                 torchOn ? 'bg-[#D7FF63] text-[#0F3822]' : 'bg-white/10 text-white'
               }`}
-              title="Toggle Flashlight"
+              title={t('flashLight')}
             >
               {torchOn ? <Zap className="w-5 h-5 fill-current" /> : <ZapOff className="w-5 h-5" />}
             </button>
@@ -647,17 +633,17 @@ export const ScannerModal: React.FC = () => {
           <button
             onClick={handleClose}
             className="p-2.5 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all cursor-pointer"
-            title="Close Scanner"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      {/* Main Viewport Content (Responsive on desktop: max-w-xl md:max-w-2xl) */}
+      {/* Main Viewport Content */}
       <div className="flex-1 flex flex-col items-center justify-center p-4 relative overflow-y-auto z-10">
         {activeMode === 'barcode' ? (
-          /* ================= BARCODE SCANNER VIEWPORT WITH LIVE REAL-TIME CAMERA ================= */
+          /* ================= BARCODE SCANNER VIEWPORT ================= */
           <div className="w-full max-w-lg md:max-w-xl flex flex-col items-center">
             {/* Live Camera Viewfinder Box */}
             <div
@@ -676,10 +662,10 @@ export const ScannerModal: React.FC = () => {
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/85 text-center px-4">
                   <RefreshCw className="w-10 h-10 text-[#D7FF63] animate-spin mx-auto mb-3" />
                   <p className="text-sm font-bold text-white">
-                    Initializing Barcode Scanner...
+                    {language === 'hi' ? 'उच्च गुणवत्ता वाला स्कैनर लोड हो रहा है...' : 'Initializing Barcode Scanner...'}
                   </p>
                   <p className="text-xs text-white/70 mt-1 max-w-xs">
-                    Please click "Allow" on your browser camera permission prompt.
+                    {language === 'hi' ? 'कैमरा अनुमति दें।' : 'High-definition autofocus enabled.'}
                   </p>
                 </div>
               )}
@@ -688,13 +674,13 @@ export const ScannerModal: React.FC = () => {
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/90 text-center px-4">
                   <AlertCircle className="w-10 h-10 text-[#FF5E5E] mx-auto mb-3" />
                   <p className="text-sm font-bold text-white">
-                    Camera access unavailable
+                    {language === 'hi' ? 'कैमरा उपलब्ध नहीं है' : 'Camera access unavailable'}
                   </p>
                   <p className="text-xs text-white/70 mt-1 max-w-xs">
                     {cameraErrorMsg || 'Permission was denied or no camera device found.'}
                   </p>
                   <p className="text-xs text-[#D7FF63] mt-3 font-bold">
-                    You can still upload a barcode photo or use sample buttons below!
+                    {language === 'hi' ? 'आप फोटो अपलोड कर सकते हैं या नीचे दिए गए नमूने इस्तेमाल करें!' : 'You can upload a barcode photo or use sample buttons below!'}
                   </p>
                 </div>
               )}
@@ -704,16 +690,16 @@ export const ScannerModal: React.FC = () => {
                 <div className="absolute inset-0 bg-[#005128]/85 backdrop-blur-sm z-30 flex flex-col items-center justify-center text-center p-4 animate-fade-in">
                   <CheckCircle2 className="w-12 h-12 text-[#C5F82A] mb-2 animate-bounce" />
                   <p className="text-sm font-black text-[#C5F82A] uppercase tracking-wider font-mono">
-                    Barcode Scanned!
+                    {language === 'hi' ? 'सत्यापित बारकोड स्कैन हुआ!' : 'Barcode Verified & Scanned!'}
                   </p>
                   <p className="text-xl font-black text-white font-mono mt-1">
                     {detectedCode}
                   </p>
                   <p className="text-xs text-white/80 mt-1">
-                    Analyzing ingredients & nutrition...
+                    {language === 'hi' ? 'सामग्री और पोषण का विश्लेषण जारी...' : 'Analyzing ingredients & nutrition...'}
                   </p>
                   <p className="text-[10px] text-[#D7FF63] mt-1 animate-pulse">
-                    ⚡ Querying database & AI engine
+                    ⚡ {language === 'hi' ? 'डेटाबेस एवं AI इंजन से तुरंत मिलान' : 'Querying database & AI engine'}
                   </p>
                 </div>
               )}
@@ -741,21 +727,29 @@ export const ScannerModal: React.FC = () => {
                     ? 'bg-[#D7FF63] text-[#0F3822] border-[#C5F82A] shadow-sm hover:brightness-105 active:scale-95'
                     : 'bg-white/10 text-white/40 border-white/10 cursor-not-allowed'
                 }`}
-                title="Capture still snapshot and decode immediately"
+                title="Capture still snapshot and decode"
               >
                 <Camera className="w-4 h-4" />
-                <span>{isCapturingFrame ? 'Analyzing Frame...' : '📸 Capture & Scan Frame'}</span>
+                <span>
+                  {isCapturingFrame
+                    ? (language === 'hi' ? 'विश्लेषण हो रहा है...' : 'Analyzing Frame...')
+                    : (language === 'hi' ? '📸 फोटो खींचें और स्कैन करें' : '📸 Capture & Scan Frame')}
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={handleSwitchCamera}
-                disabled={cameraState !== 'active' || isSwitchingCamera}
+                disabled={isSwitchingCamera}
                 className="py-2 px-3 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-xs font-bold text-white flex items-center gap-1.5 cursor-pointer transition-all disabled:opacity-50"
                 title={facingMode === 'environment' ? 'Switch to Front Camera' : 'Switch to Back Camera'}
               >
                 <SwitchCamera className={`w-4 h-4 text-[#D7FF63] ${isSwitchingCamera ? 'animate-spin' : ''}`} />
-                <span>{facingMode === 'environment' ? 'To Front Cam' : 'To Back Cam'}</span>
+                <span>
+                  {facingMode === 'environment'
+                    ? (language === 'hi' ? 'सामने का कैमरा' : 'To Front Cam')
+                    : (language === 'hi' ? 'पिछला कैमरा' : 'To Back Cam')}
+                </span>
               </button>
             </div>
 
@@ -765,20 +759,22 @@ export const ScannerModal: React.FC = () => {
                 {t('alignBarcode')}
               </p>
               <p className="text-[10px] text-[#D7FF63]/90 font-medium">
-                💡 Laptop tip: Hold barcode ~25–35 cm away where it is in focus. Avoid glare!
+                {language === 'hi'
+                  ? '💡 बारकोड को 20–30 सेमी की दूरी पर रखें ताकि वह साफ और फोकस में रहे।'
+                  : '💡 Hold barcode ~25–35 cm away where it is in focus. Avoid glare!'}
               </p>
             </div>
 
-            {/* Quick Demo Barcode Buttons with Real Database Products */}
+            {/* Quick Demo Barcode Buttons */}
             <div className="mt-4 w-full">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[11px] font-bold text-white/60 uppercase tracking-wider font-mono">
-                  {t('quickSamples')} (Database Matches)
+                  {t('quickSamples')}
                 </p>
                 {/* Upload barcode image fallback */}
                 <label className="text-[11px] font-bold text-[#D7FF63] flex items-center gap-1 cursor-pointer hover:underline">
                   <ImageIcon className="w-3.5 h-3.5" />
-                  <span>Upload Barcode Photo</span>
+                  <span>{language === 'hi' ? 'गैलरी से फोटो चुनें' : 'Upload Barcode Photo'}</span>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -795,42 +791,42 @@ export const ScannerModal: React.FC = () => {
                   className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-left border border-white/15 transition-all text-xs cursor-pointer"
                 >
                   <span className="font-bold block text-[#D7FF63] truncate">Hide & Seek®</span>
-                  <span className="text-[10px] text-white/60">Palm Oil • Grade E</span>
+                  <span className="text-[10px] text-white/60">{language === 'hi' ? 'पाम ऑयल • ग्रेड E' : 'Palm Oil • Grade E'}</span>
                 </button>
                 <button
                   onClick={() => handleQuickBarcodePick('8901063012128')}
                   className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-left border border-white/15 transition-all text-xs cursor-pointer"
                 >
                   <span className="font-bold block text-[#D7FF63] truncate">Nutrichoice</span>
-                  <span className="text-[10px] text-white/60">Sat Fat • Grade E</span>
+                  <span className="text-[10px] text-white/60">{language === 'hi' ? 'संतृप्त वसा • ग्रेड E' : 'Sat Fat • Grade E'}</span>
                 </button>
                 <button
                   onClick={() => handleQuickBarcodePick('8901725181223')}
                   className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-left border border-white/15 transition-all text-xs cursor-pointer"
                 >
                   <span className="font-bold block text-[#D7FF63] truncate">Dark Fantasy</span>
-                  <span className="text-[10px] text-white/60">5 Additives • Grade E</span>
+                  <span className="text-[10px] text-white/60">{language === 'hi' ? '5 एडिटिव्स • ग्रेड E' : '5 Additives • Grade E'}</span>
                 </button>
                 <button
                   onClick={() => handleQuickBarcodePick('8901030383748')}
                   className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-left border border-white/15 transition-all text-xs cursor-pointer"
                 >
                   <span className="font-bold block text-[#BCA5FF] truncate">Stayfree Secure</span>
-                  <span className="text-[10px] text-white/60">Hygiene • Grade D</span>
+                  <span className="text-[10px] text-white/60">{language === 'hi' ? 'स्वच्छता • ग्रेड D' : 'Hygiene • Grade D'}</span>
                 </button>
                 <button
                   onClick={() => handleQuickBarcodePick('8901234567890')}
                   className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-left border border-white/15 transition-all text-xs cursor-pointer"
                 >
                   <span className="font-bold block text-[#D7FF63] truncate">Test Biscuit</span>
-                  <span className="text-[10px] text-white/60">Database • Grade E</span>
+                  <span className="text-[10px] text-white/60">{language === 'hi' ? 'डेटाबेस • ग्रेड E' : 'Database • Grade E'}</span>
                 </button>
                 <button
                   onClick={() => handleQuickBarcodePick('8886467100017')}
                   className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-left border border-white/15 transition-all text-xs cursor-pointer"
                 >
                   <span className="font-bold block text-[#FF8A8A] truncate">Pringles Original</span>
-                  <span className="text-[10px] text-white/60">Potato Chips • Grade E</span>
+                  <span className="text-[10px] text-white/60">{language === 'hi' ? 'आलू चिप्स • ग्रेड E' : 'Potato Chips • Grade E'}</span>
                 </button>
               </div>
             </div>
@@ -852,7 +848,7 @@ export const ScannerModal: React.FC = () => {
                   className="flex-1 bg-transparent px-3 text-xs sm:text-sm font-semibold text-white placeholder-white/50 focus:outline-none"
                 />
                 <Button type="submit" size="sm" variant="secondary">
-                  Look Up
+                  {language === 'hi' ? 'खोजें' : 'Look Up'}
                 </Button>
               </form>
             </div>
@@ -865,10 +861,12 @@ export const ScannerModal: React.FC = () => {
                 <div className="w-full aspect-[4/3] rounded-3xl border-2 border-dashed border-white/40 bg-white/5 flex flex-col items-center justify-center p-6 relative">
                   <Camera className="w-14 h-14 text-[#D7FF63] mb-3" />
                   <h3 className="font-bold text-base sm:text-lg mb-1 font-['Space_Grotesk']">
-                    Capture Ingredient Label
+                    {language === 'hi' ? 'सामग्री लेबल की फोटो लें' : 'Capture Ingredient Label'}
                   </h3>
                   <p className="text-xs sm:text-sm text-white/70 max-w-sm mb-5">
-                    Photograph the ingredients or nutrition table on packaging for instant AI text extraction.
+                    {language === 'hi'
+                      ? 'पैकेट पर सामग्री सूची या पोषण तालिका की फोटो खींचें ताकि AI तुरंत पहचान सके।'
+                      : 'Photograph the ingredients or nutrition table on packaging for instant AI text extraction.'}
                   </p>
 
                   <label className="cursor-pointer">
@@ -881,7 +879,7 @@ export const ScannerModal: React.FC = () => {
                     />
                     <div className="px-6 py-3 rounded-2xl bg-[#D7FF63] text-[#0F3822] font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg hover:bg-[#c2ed4a] transition-all">
                       <Upload className="w-4 h-4" />
-                      <span>Take Photo / Upload Image</span>
+                      <span>{language === 'hi' ? 'फोटो लें / इमेज अपलोड करें' : 'Take Photo / Upload Image'}</span>
                     </div>
                   </label>
                 </div>
@@ -892,13 +890,15 @@ export const ScannerModal: React.FC = () => {
                 <div className="flex items-center justify-between pb-3 border-b border-[#2D2B38]">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-[#D7FF63]" />
-                    <span className="font-bold text-sm sm:text-base">Verify Extracted Label</span>
+                    <span className="font-bold text-sm sm:text-base">
+                      {language === 'hi' ? 'निकाले गए लेबल की पुष्टि करें' : 'Verify Extracted Label'}
+                    </span>
                   </div>
                   <button
                     onClick={() => setOcrStep('capture')}
                     className="text-xs text-white/60 hover:text-white cursor-pointer"
                   >
-                    Retake
+                    {language === 'hi' ? 'पुनः प्रयास' : 'Retake'}
                   </button>
                 </div>
 
@@ -906,7 +906,7 @@ export const ScannerModal: React.FC = () => {
                   {/* Category selector */}
                   <div>
                     <label className="text-xs font-bold text-white/70 block mb-1.5">
-                      Product Category
+                      {language === 'hi' ? 'उत्पाद श्रेणी' : 'Product Category'}
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
@@ -918,7 +918,7 @@ export const ScannerModal: React.FC = () => {
                             : 'bg-white/5 border-white/15 text-white/70'
                         }`}
                       >
-                        Food & Beverages
+                        {language === 'hi' ? 'खाद्य एवं पेय' : 'Food & Beverages'}
                       </button>
                       <button
                         type="button"
@@ -929,7 +929,7 @@ export const ScannerModal: React.FC = () => {
                             : 'bg-white/5 border-white/15 text-white/70'
                         }`}
                       >
-                        Women's Hygiene
+                        {language === 'hi' ? 'महिला स्वच्छता' : "Women's Hygiene"}
                       </button>
                     </div>
                   </div>
@@ -937,7 +937,7 @@ export const ScannerModal: React.FC = () => {
                   {/* Product Name Candidate */}
                   <div>
                     <label className="text-xs font-bold text-white/70 block mb-1.5">
-                      Product Name
+                      {language === 'hi' ? 'उत्पाद का नाम' : 'Product Name'}
                     </label>
                     <input
                       type="text"
@@ -950,7 +950,7 @@ export const ScannerModal: React.FC = () => {
                   {/* Extracted Ingredients Chips */}
                   <div>
                     <label className="text-xs font-bold text-white/70 block mb-1.5">
-                      Extracted Ingredients ({extractedIngredients.length})
+                      {language === 'hi' ? `पहचानी गई सामग्रियां (${extractedIngredients.length})` : `Extracted Ingredients (${extractedIngredients.length})`}
                     </label>
                     <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
                       {extractedIngredients.map((ing, idx) => (
@@ -972,7 +972,7 @@ export const ScannerModal: React.FC = () => {
                     <div className="mt-2.5 flex gap-2">
                       <input
                         type="text"
-                        placeholder="Add missed ingredient..."
+                        placeholder={language === 'hi' ? 'छूटी हुई सामग्री जोड़ें...' : 'Add missed ingredient...'}
                         value={newIngredientInput}
                         onChange={(e) => setNewIngredientInput(e.target.value)}
                         className="flex-1 bg-black/40 border border-white/20 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none"
@@ -990,7 +990,7 @@ export const ScannerModal: React.FC = () => {
                         }}
                         className="px-3 py-1.5 bg-white/10 rounded-xl text-xs font-semibold hover:bg-white/20 cursor-pointer"
                       >
-                        Add
+                        {language === 'hi' ? 'जोड़ें' : 'Add'}
                       </button>
                     </div>
                   </div>
@@ -1003,7 +1003,7 @@ export const ScannerModal: React.FC = () => {
                     className="w-full py-2.5"
                     isLoading={isExtracting}
                   >
-                    <span>Submit for Official Grading</span>
+                    <span>{language === 'hi' ? 'सुरक्षा एवं ग्रेड ऑडिट शुरू करें' : 'Submit for Official Grading'}</span>
                     <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 </div>
@@ -1014,7 +1014,9 @@ export const ScannerModal: React.FC = () => {
       </div>
 
       <div className="px-6 py-4 text-center text-xs text-white/60 z-10">
-        All product grades are evaluated through regulatory FSSAI & BIS safety algorithms.
+        {language === 'hi'
+          ? 'सभी उत्पाद ग्रेड FSSAI और BIS सुरक्षा मानकों के आधार पर निष्पक्ष रूप से विश्लेषित किए जाते हैं।'
+          : 'All product grades are evaluated through regulatory FSSAI & BIS safety algorithms.'}
       </div>
     </div>
   );

@@ -10,11 +10,13 @@ import {
 } from 'lucide-react';
 import { productService } from '../../services/api/productService';
 import { aiService, type AiChatMessage } from '../../services/api/aiService';
+import { useLanguageStore } from '../../store/useLanguageStore';
 import type { Product } from '../../types';
 
 export const GeminiExplainerScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { language, toggleLanguage, t } = useLanguageStore();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [messages, setMessages] = useState<AiChatMessage[]>([]);
@@ -41,6 +43,10 @@ export const GeminiExplainerScreen: React.FC = () => {
 
   const handleSendPrompt = async (promptText: string) => {
     if (!product || isAsking) return;
+    const finalPrompt = language === 'hi' && !promptText.includes('हिन्दी')
+      ? `${promptText} (कृपया सरल हिन्दी में समझाएं)`
+      : promptText;
+
     const userMsg: AiChatMessage = {
       id: `usr-${Date.now()}`,
       sender: 'user',
@@ -51,7 +57,7 @@ export const GeminiExplainerScreen: React.FC = () => {
     setIsAsking(true);
 
     try {
-      const answer = await aiService.askQuestion(product.id, promptText);
+      const answer = await aiService.askQuestion(product.id, finalPrompt);
       const aiMsg: AiChatMessage = {
         id: `ai-${Date.now()}`,
         sender: 'assistant',
@@ -65,7 +71,7 @@ export const GeminiExplainerScreen: React.FC = () => {
         {
           id: `err-${Date.now()}`,
           sender: 'assistant',
-          content: 'Unable to connect to AI gateway. Please try again.',
+          content: language === 'hi' ? 'AI सर्वर से जुड़ने में समस्या हुई। कृपया पुनः प्रयास करें।' : 'Unable to connect to AI gateway. Please try again.',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -76,35 +82,38 @@ export const GeminiExplainerScreen: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="py-20 text-center text-xs font-mono font-bold">
-        Loading Gemini Intelligence...
+      <div className="py-20 text-center text-xs font-mono font-bold text-[#111F15] dark:text-[#E4F5E5]">
+        {language === 'hi' ? 'Gemini AI विश्लेषण लोड हो रहा है...' : 'Loading Gemini Intelligence...'}
       </div>
     );
   }
 
   return (
     <div className="space-y-4 px-4 pt-3 pb-8 animate-fade-in text-[#111F15] dark:text-[#E4F5E5]">
-      {/* Top Header Bar matching Stitch Screen 4 */}
+      {/* Top Header Bar */}
       <div className="flex items-center justify-between pb-2 border-b border-[#111F15]/10 dark:border-[#2D3E33]">
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-8 h-8 rounded-full border-2 border-[#111F15] dark:border-white/40 flex items-center justify-center hover:bg-[#C5F82A]"
+            className="w-8 h-8 rounded-full border-2 border-[#111F15] dark:border-white/40 flex items-center justify-center hover:bg-[#C5F82A] cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
           </button>
           <div>
             <span className="font-['Plus_Jakarta_Sans'] font-black text-sm tracking-tight block">
-              CheckPoint!!
+              {t('appName')}
             </span>
             <span className="text-[9px] font-mono text-[#69766D] dark:text-[#9BAA9E] uppercase block -mt-0.5">
-              FOOD SCI VERIFIED
+              {language === 'hi' ? 'खाद्य विज्ञान सत्यापित' : 'FOOD SCI VERIFIED'}
             </span>
           </div>
         </div>
 
-        <button className="px-2.5 py-0.5 rounded-full border border-[#111F15] text-[10px] font-black bg-[#C5F82A] text-[#111F15]">
-          EN/HI
+        <button
+          onClick={toggleLanguage}
+          className="px-2.5 py-0.5 rounded-full border border-[#111F15] text-[10px] font-black bg-[#C5F82A] text-[#111F15] cursor-pointer"
+        >
+          {language === 'en' ? 'EN / HI' : 'हिन्दी'}
         </button>
       </div>
 
@@ -116,19 +125,21 @@ export const GeminiExplainerScreen: React.FC = () => {
               <Sparkles className="w-4 h-4" />
             </div>
             <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
-              CheckPoint Intelligence
+              {language === 'hi' ? 'चेकपॉइंट AI इंटेलिजेंस' : 'CheckPoint Intelligence'}
             </h2>
           </div>
           <span className="px-2 py-0.5 rounded-md bg-[#C5F82A] text-[#111F15] text-[9px] font-black border border-[#111F15] uppercase">
-            RUN FLASH
+            GEMINI 3 FLASH
           </span>
         </div>
         <p className="text-[11px] text-[#404940] dark:text-[#9BAA9E] leading-snug">
-          Real-time biochemical evaluation calibrated to Indian dietary patterns
+          {language === 'hi'
+            ? 'भारतीय खान-पान और ICMR-NIN पोषण मानकों पर आधारित रीयल-टाइम जैव रासायनिक विश्लेषण'
+            : 'Real-time biochemical evaluation calibrated to Indian dietary patterns'}
         </p>
         <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#005128] dark:text-[#C5F82A] pt-1">
           <span className="w-2 h-2 rounded-full bg-[#C5F82A] animate-ping" />
-          ACTIVE SESSION
+          {language === 'hi' ? 'सक्रिय सत्र' : 'ACTIVE SESSION'}
         </span>
       </div>
 
@@ -148,7 +159,7 @@ export const GeminiExplainerScreen: React.FC = () => {
               {product.name}
             </h3>
             <span className="text-[10px] text-[#69766D] font-mono block">
-              {product.packSize} • Extruded Multi-Millet Puffs
+              {product.packSize}
             </span>
           </div>
         </div>
@@ -166,14 +177,16 @@ export const GeminiExplainerScreen: React.FC = () => {
         <div>
           <div className="flex items-center gap-1.5">
             <span className="text-[9px] font-mono text-[#C5F82A] font-extrabold uppercase">
-              AI SYNTHESIS IN-SITU
+              {language === 'hi' ? 'त्वरित AI विश्लेषण' : 'AI SYNTHESIS IN-SITU'}
             </span>
             <span className="text-[8px] bg-white/20 px-1 py-0.2 rounded text-white font-mono">
-              ZERO LATENCY
+              FSSAI / ICMR
             </span>
           </div>
           <p className="text-xs font-bold font-['Plus_Jakarta_Sans'] text-white/90">
-            Synthesizing ICMR-NIN Guidelines & Molecular Safety Data...
+            {language === 'hi'
+              ? 'ICMR-NIN पोषण दिशानिर्देशों और आणविक सुरक्षा डेटा का विश्लेषण...'
+              : 'Synthesizing ICMR-NIN Guidelines & Molecular Safety Data...'}
           </p>
         </div>
       </div>
@@ -186,177 +199,49 @@ export const GeminiExplainerScreen: React.FC = () => {
               01
             </span>
             <h2 className="text-sm font-black font-['Plus_Jakarta_Sans'] uppercase tracking-tight">
-              THE BIG PICTURE
+              {language === 'hi' ? 'मुख्य विश्लेषण एवं निष्कर्ष' : 'THE BIG PICTURE'}
             </h2>
           </div>
           <span className="text-[9px] font-mono text-[#69766D] uppercase">
-            CORE VERDICT
+            {language === 'hi' ? 'लैब फैसला' : 'CORE VERDICT'}
           </span>
         </div>
 
         <p className="text-xs text-[#404940] dark:text-[#9BAA9E] leading-relaxed">
-          While marketed under the wholesome banner of <span className="font-bold text-[#111F15] dark:text-white">seven ancient millets</span> (ragi, jowar, bajra, foxtail, barnyard, kodo, proso), <span className="font-bold text-[#111F15] dark:text-white">industrial high-heat puffing fractures native seed structures into fast-digesting starch matrices</span>. In typical Indian retail snacks, this processing method yields an elevated glycemic index comparable to white rice, despite the <span className="font-bold text-[#111F15] dark:text-white">superior micronutrient base</span>.
+          {language === 'hi'
+            ? 'विज्ञापनों में स्वस्थ होने का दावा किए जाने के बावजूद, अत्यधिक प्रसंस्करण और औद्योगिक तेल मिश्रण प्राकृतिक पोषक तत्वों के अवशोषण को प्रभावित करते हैं। उत्पाद में पोषक तत्वों का आधार तो है लेकिन अतिरिक्त वसा और सोडियम पर सतर्कता बरतने की आवश्यकता है।'
+            : 'While marketed under wholesome banners, industrial processing fractures native seed structures into fast-digesting starch matrices. In typical Indian retail snacks, this processing method yields an elevated glycemic index despite a superior micronutrient base.'}
         </p>
-
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          <span className="px-2.5 py-1 rounded-full bg-[#EDF6EA] dark:bg-[#15271B] border border-[#111F15]/30 text-[10px] font-bold text-[#005128] dark:text-[#C5F82A]">
-            ⚡ 90% Ancient Grains Blend
-          </span>
-          <span className="px-2.5 py-1 rounded-full bg-[#EDF6EA] dark:bg-[#15271B] border border-[#111F15]/30 text-[10px] font-bold text-[#005128] dark:text-[#C5F82A]">
-            ⚡ Ultra-Extruded Puffs
-          </span>
-          <span className="px-2.5 py-1 rounded-full bg-[#EDF6EA] dark:bg-[#15271B] border border-[#111F15]/30 text-[10px] font-bold text-[#005128] dark:text-[#C5F82A]">
-            ⚡ Moderate Satiety Index
-          </span>
-        </div>
       </section>
 
-      {/* Section 02: WHY THIS GRADE? */}
-      <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-lg bg-[#C5F82A] text-[#111F15] border border-[#111F15] flex items-center justify-center text-xs font-black">
-              02
-            </span>
-            <h2 className="text-sm font-black font-['Plus_Jakarta_Sans'] uppercase tracking-tight">
-              WHY THIS GRADE? (BACKEND TRANSPARENCY)
-            </h2>
-          </div>
-          <span className="text-[9px] font-mono text-[#111F15] bg-[#C5F82A] px-1.5 py-0.5 rounded border border-[#111F15]">
-            A → B ADJUSTMENT
-          </span>
-        </div>
-
-        <p className="text-xs text-[#404940] dark:text-[#9BAA9E] leading-relaxed">
-          NutriBite entered the matrix with a potential <span className="font-bold">Grade A</span> profile due to zero artificial colorants, no high-fructose corn syrup, and 8.2g of dietary fiber per 100g. However, <span className="font-bold text-[#B91C1C]">two deterministic thresholds</span> lowered its benchmark to <span className="font-bold">Grade B</span>:
-        </p>
-
-        <div className="space-y-2 pt-1">
-          {/* Sodium card */}
-          <div className="p-3 rounded-2xl bg-[#F7FAF6] dark:bg-[#15271B] border border-[#111F15]/20 space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-mono font-bold text-[10px] text-[#69766D]">SODIUM IMPACT</span>
-              <span className="font-mono font-bold text-[#B91C1C] text-xs">280mg / 100g</span>
-            </div>
-            <p className="text-[10px] text-[#404940] dark:text-[#9BAA9E]">
-              Exceeds ICMR daily safe allocation benchmark for convenience dry snacks by 15%.
-            </p>
-          </div>
-
-          {/* Oil formulation card */}
-          <div className="p-3 rounded-2xl bg-[#F7FAF6] dark:bg-[#15271B] border border-[#111F15]/20 space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-mono font-bold text-[10px] text-[#69766D]">OIL FORMULATION</span>
-              <span className="font-mono font-bold text-xs">Refined Fractionated</span>
-            </div>
-            <p className="text-[10px] text-[#404940] dark:text-[#9BAA9E]">
-              Absence of cold-pressed lipids shifts fatty-acid balance toward 41% saturated profile.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 03: WHY IS PALM OIL USED HERE? */}
-      <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-lg bg-[#C5F82A] text-[#111F15] border border-[#111F15] flex items-center justify-center text-xs font-black">
-              03
-            </span>
-            <h2 className="text-sm font-black font-['Plus_Jakarta_Sans'] uppercase tracking-tight">
-              WHY IS PALM OIL USED HERE?
-            </h2>
-          </div>
-          <span className="text-[9px] font-mono text-[#69766D] uppercase">
-            NEUTRAL DEEP DIVE
-          </span>
-        </div>
-
-        <p className="text-xs text-[#404940] dark:text-[#9BAA9E] leading-relaxed">
-          Industrial seasoning sprays require a carrier fat with a high smoke point (235°C) and robust resistance to oxidative rancidity in tropical shelf environments. Palm olein acts as a shelf-stable binder preventing seasoning dropout during monsoon humidity. While industrially superior for preventing staleness without artificial preservatives (BHA/BHT), its high palmitic acid load (44%) warrants portion discretion for cardiovascular wellness.
-        </p>
-
-        <div className="p-2.5 rounded-xl bg-[#EDF6EA] dark:bg-[#15271B] border border-[#111F15]/15 text-[10px] text-[#005128] dark:text-[#C5F82A] font-medium flex items-center gap-2">
-          <span>🏭</span>
-          <span>Engineering Trade-Off: Prevents chemical antioxidants from entering the pack, but delivers elevated saturated fatty acid density.</span>
-        </div>
-      </section>
-
-      {/* Section 04: SCIENTIFIC SOURCES & REGULATIONS */}
-      <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-lg bg-[#C5F82A] text-[#111F15] border border-[#111F15] flex items-center justify-center text-xs font-black">
-              04
-            </span>
-            <h2 className="text-sm font-black font-['Plus_Jakarta_Sans'] uppercase tracking-tight">
-              SCIENTIFIC SOURCES & REGULATIONS
-            </h2>
-          </div>
-          <span className="text-[9px] font-mono text-[#69766D] uppercase">
-            STATUTORY AUDIT
-          </span>
-        </div>
-
-        <div className="space-y-2 pt-1">
-          <div className="p-3 rounded-2xl bg-[#F7FAF6] dark:bg-[#15271B] border border-[#111F15]/20 flex items-start gap-2.5">
-            <BookOpen className="w-4 h-4 text-[#005128] shrink-0 mt-0.5" />
-            <div>
-              <h4 className="text-xs font-black">FSSAI Packaging & Labelling Regs</h4>
-              <p className="text-[10px] text-[#69766D] mt-0.5">
-                Compliant on trans-fat declarations (&lt;0.2% per serving meets "zero trans fat" regulatory ceiling).
-              </p>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-[#F7FAF6] dark:bg-[#15271B] border border-[#111F15]/20 flex items-start gap-2.5">
-            <ShieldCheck className="w-4 h-4 text-[#005128] shrink-0 mt-0.5" />
-            <div>
-              <h4 className="text-xs font-black">ICMR-NIN 2024 Dietary Guidelines</h4>
-              <p className="text-[10px] text-[#69766D] mt-0.5">
-                Flags ultra-extrusion processing. Suggests restricting total added sodium to &lt;2000mg/day across all daily meal intake.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Suggested Prompt Buttons (Stitch Screen 4) */}
+      {/* Suggested Prompt Buttons */}
       <section className="space-y-2 pt-1">
         <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#69766D] dark:text-[#9BAA9E] flex items-center gap-1 font-mono">
-          <span>◎</span> TAP TO EXPLORE DEEPER
+          <span>◎</span> {language === 'hi' ? 'गहराई से जानने के लिए टैप करें' : 'TAP TO EXPLORE DEEPER'}
         </span>
 
         <div className="space-y-1.5">
           <button
-            onClick={() => handleSendPrompt('Why is palm oil used here?')}
-            className="w-full py-2 px-3.5 rounded-2xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] text-left text-xs font-bold flex items-center justify-between shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all"
+            onClick={() => handleSendPrompt(language === 'hi' ? 'इस उत्पाद में पाम ऑयल क्यों इस्तेमाल किया जाता है?' : 'Why is palm oil used here?')}
+            className="w-full py-2 px-3.5 rounded-2xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] text-left text-xs font-bold flex items-center justify-between shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            <span>Why is palm oil used here?</span>
+            <span>{language === 'hi' ? 'इस उत्पाद में पाम ऑयल क्यों है?' : 'Why is palm oil used here?'}</span>
             <span>→</span>
           </button>
 
           <button
-            onClick={() => handleSendPrompt('Is this safe for diabetics?')}
-            className="w-full py-2 px-3.5 rounded-2xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] text-left text-xs font-bold flex items-center justify-between shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all"
+            onClick={() => handleSendPrompt(language === 'hi' ? 'क्या यह डायबिटीज / मधुमेह के रोगियों के लिए सुरक्षित है?' : 'Is this safe for diabetics?')}
+            className="w-full py-2 px-3.5 rounded-2xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] text-left text-xs font-bold flex items-center justify-between shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            <span>Is this safe for diabetics?</span>
+            <span>{language === 'hi' ? 'क्या यह डायबिटीज के लिए सुरक्षित है?' : 'Is this safe for diabetics?'}</span>
             <span>→</span>
           </button>
 
           <button
-            onClick={() => handleSendPrompt('Explain this product in simple Hindi')}
-            className="w-full py-2 px-3.5 rounded-2xl bg-[#C5F82A] text-[#111F15] border-2 border-[#111F15] text-left text-xs font-black flex items-center justify-between shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all"
+            onClick={() => handleSendPrompt(language === 'hi' ? 'इस स्नैक के स्थान पर ग्रेड A स्वस्थ विकल्प सुझाएं' : 'Suggest Grade A clean alternatives for this snack')}
+            className="w-full py-2 px-3.5 rounded-2xl bg-[#5EEAD4] text-[#111F15] border-2 border-[#111F15] text-left text-xs font-black flex items-center justify-between shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
           >
-            <span>Explain in हिन्दी (सरल भाषा)</span>
-            <span>文A</span>
-          </button>
-
-          <button
-            onClick={() => handleSendPrompt('Suggest Grade A clean alternatives for this snack')}
-            className="w-full py-2 px-3.5 rounded-2xl bg-[#5EEAD4] text-[#111F15] border-2 border-[#111F15] text-left text-xs font-black flex items-center justify-between shadow-[2px_2px_0px_#111F15] active:translate-y-[1px] active:shadow-none transition-all"
-          >
-            <span>Suggest Grade A alternatives</span>
+            <span>{language === 'hi' ? 'स्वस्थ ग्रेड A विकल्प सुझाएं' : 'Suggest Grade A alternatives'}</span>
             <span>🌟</span>
           </button>
         </div>
@@ -379,7 +264,7 @@ export const GeminiExplainerScreen: React.FC = () => {
           ))}
           {isAsking && (
             <div className="p-3 rounded-2xl bg-white dark:bg-[#1A2A1F] border border-[#111F15]/20 text-xs italic text-[#69766D]">
-              Consulting ICMR nutritional literature...
+              {language === 'hi' ? 'ICMR और FSSAI वैज्ञानिक साहित्य से परामर्श लिया जा रहा है...' : 'Consulting ICMR nutritional literature...'}
             </div>
           )}
           <div ref={chatBottomRef} />
@@ -400,14 +285,14 @@ export const GeminiExplainerScreen: React.FC = () => {
         <span className="text-[#69766D] pl-2 text-xs">‹</span>
         <input
           type="text"
-          placeholder="Ask Gemini about this product..."
+          placeholder={language === 'hi' ? 'इस उत्पाद के बारे में AI से कोई सवाल पूछें...' : 'Ask Gemini about this product...'}
           value={inputQuestion}
           onChange={(e) => setInputQuestion(e.target.value)}
           className="flex-1 bg-transparent px-2 text-xs font-semibold focus:outline-none"
         />
         <button
           type="submit"
-          className="w-8 h-8 rounded-xl bg-[#C5F82A] border border-[#111F15] flex items-center justify-center text-[#111F15] font-bold"
+          className="w-8 h-8 rounded-xl bg-[#C5F82A] border border-[#111F15] flex items-center justify-center text-[#111F15] font-bold cursor-pointer"
         >
           ↑
         </button>

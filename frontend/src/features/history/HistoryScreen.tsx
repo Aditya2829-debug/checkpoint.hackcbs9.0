@@ -3,6 +3,7 @@ import { History, Trash2, ChevronRight, ScanLine } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useScanStore } from '../../store/useScanStore';
 import { useProductStore } from '../../store/useProductStore';
+import { useLanguageStore } from '../../store/useLanguageStore';
 import { GradeBadge } from '../../components/ui/GradeBadge';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
@@ -11,6 +12,7 @@ import { Button } from '../../components/ui/Button';
 export const HistoryScreen: React.FC = () => {
   const { scanHistoryIds, openScanner } = useScanStore();
   const { products, setCurrentProduct } = useProductStore();
+  const { t } = useLanguageStore();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'food' | 'women-hygiene'>('all');
 
@@ -24,15 +26,15 @@ export const HistoryScreen: React.FC = () => {
       : historyProducts.filter((p) => p.category === filter);
 
   return (
-    <div className="space-y-6 pb-24 animate-fade-in max-w-3xl mx-auto">
+    <div className="space-y-6 pb-24 animate-fade-in max-w-3xl mx-auto text-[#111F15] dark:text-[#E4F5E5]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-[#111F15] dark:text-[#E4F5E5] font-['Plus_Jakarta_Sans']">
-            Scan History
+          <h1 className="text-2xl font-black font-['Plus_Jakarta_Sans']">
+            {t('scanHistory')}
           </h1>
           <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-0.5">
-            {historyProducts.length} verified products inspected
+            {historyProducts.length} {t('productsInspected')}
           </p>
         </div>
 
@@ -43,21 +45,21 @@ export const HistoryScreen: React.FC = () => {
           className="gap-1.5"
         >
           <ScanLine className="w-4 h-4" />
-          <span>New Scan</span>
+          <span>{t('newScan')}</span>
         </Button>
       </div>
 
       {/* Filter Tabs */}
       <div className="flex gap-2 border-b border-[#E3EAE1] dark:border-[#2D3E33] pb-2 overflow-x-auto">
         {[
-          { id: 'all', label: 'All Items' },
-          { id: 'food', label: 'Food & Nutrition' },
-          { id: 'women-hygiene', label: "Women's Hygiene" },
+          { id: 'all', label: t('allItems') },
+          { id: 'food', label: t('foodNutrition') },
+          { id: 'women-hygiene', label: t('womensHygiene') },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setFilter(tab.id as typeof filter)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               filter === tab.id
                 ? 'bg-[#005128] text-white'
                 : 'bg-transparent text-[#69766D] dark:text-[#9BAA9E] hover:text-[#111F15]'
@@ -72,14 +74,14 @@ export const HistoryScreen: React.FC = () => {
       {filteredItems.length === 0 ? (
         <div className="py-20 text-center">
           <History className="w-12 h-12 text-[#69766D] mx-auto mb-3 opacity-40" />
-          <h3 className="text-base font-bold text-[#111F15] dark:text-[#E4F5E5]">
-            No scans recorded yet
+          <h3 className="text-base font-bold">
+            {t('noScansRecorded')}
           </h3>
-          <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-1 mb-4">
-            Scan your first packaged food or sanitary product to see its clinical analysis here.
+          <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-1 mb-4 max-w-sm mx-auto">
+            {t('startScanningPrompt')}
           </p>
           <Button onClick={() => openScanner('barcode')} variant="primary">
-            Start Scanning
+            {t('startScanning')}
           </Button>
         </div>
       ) : (
@@ -102,26 +104,25 @@ export const HistoryScreen: React.FC = () => {
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-extrabold text-[#69766D] dark:text-[#9BAA9E] uppercase">
+                  <span className="text-[10px] font-bold text-[#69766D] dark:text-[#9BAA9E] uppercase">
                     {product.brand}
                   </span>
-                  <Badge
-                    variant={product.category === 'women-hygiene' ? 'lavender' : 'default'}
-                    size="sm"
-                  >
+                  <Badge variant="outline" size="sm">
                     {product.categoryLabel}
                   </Badge>
                 </div>
-                <h3 className="text-sm font-bold text-[#111F15] dark:text-[#E4F5E5] font-['Plus_Jakarta_Sans'] truncate">
+
+                <h3 className="text-sm font-bold truncate font-['Plus_Jakarta_Sans']">
                   {product.name}
                 </h3>
+
                 <p className="text-xs text-[#404940] dark:text-[#9BAA9E] line-clamp-1 mt-0.5">
                   {product.summary}
                 </p>
               </div>
 
-              <div className="flex items-center gap-2.5 shrink-0">
-                <GradeBadge grade={product.grade} size="md" />
+              <div className="flex items-center gap-3 shrink-0">
+                <GradeBadge grade={product.grade} size="sm" />
                 <ChevronRight className="w-4 h-4 text-[#69766D]" />
               </div>
             </Card>
