@@ -6,6 +6,7 @@ import { ProductAnalysisScreen } from '../features/products/ProductAnalysisScree
 import { GeminiExplainerScreen } from '../features/ai-explainer/GeminiExplainerScreen';
 import { WomenHygieneScreen } from '../features/women-hygiene/WomenHygieneScreen';
 import { HistoryScreen } from '../features/history/HistoryScreen';
+import { ExploreScreen } from '../features/explore/ExploreScreen';
 import { WatchlistScreen } from '../features/watchlist/WatchlistScreen';
 import { ProfileScreen } from '../features/profile/ProfileScreen';
 
@@ -19,7 +20,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="women-hygiene" element={<WomenHygieneScreen />} />
         <Route path="women-hygiene/:id" element={<WomenHygieneScreen />} />
         <Route path="history" element={<HistoryScreen />} />
-        <Route path="explore" element={<HomeScreen />} />
+        <Route path="explore" element={<ExploreScreen />} />
         <Route path="watchlist" element={<WatchlistScreen />} />
         <Route path="profile" element={<ProfileScreen />} />
         <Route path="*" element={<Navigate to="/" replace />} />

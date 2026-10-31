@@ -3,6 +3,7 @@ import { Search, X, ChevronRight, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { productService } from '../../services/api/productService';
 import { useLanguageStore } from '../../store/useLanguageStore';
+import { useScanStore } from '../../store/useScanStore';
 import { GradeBadge } from '../ui/GradeBadge';
 import { Badge } from '../ui/Badge';
 import type { Product } from '../../types';
@@ -18,6 +19,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const { t } = useLanguageStore();
+  const { recordProductActivity } = useScanStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -106,6 +108,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
               <div
                 key={product.id}
                 onClick={() => {
+                  recordProductActivity(product, 'search');
                   onClose();
                   navigate(`/product/${product.id}`);
                 }}

@@ -66,6 +66,7 @@ export const ScannerModal: React.FC = () => {
     isExtracting,
     setIsExtracting,
     recordScan,
+    recordProductActivity,
   } = useScanStore();
 
   const { setCurrentProduct } = useProductStore();
@@ -128,6 +129,7 @@ export const ScannerModal: React.FC = () => {
       const product = await scanService.lookupBarcode(clean);
       setCurrentProduct(product);
       recordScan(product.id);
+      recordProductActivity(product, 'barcode');
       handleClose();
       navigate(`/product/${product.id}`);
     } catch (err: any) {
@@ -531,6 +533,7 @@ export const ScannerModal: React.FC = () => {
       });
       setCurrentProduct(product);
       recordScan(product.id);
+      recordProductActivity(product, 'ocr');
       setIsExtracting(false);
       handleClose();
       navigate(`/product/${product.id}`);
@@ -554,6 +557,7 @@ export const ScannerModal: React.FC = () => {
     });
     setCurrentProduct(product);
     recordScan(product.id);
+    recordProductActivity(product, 'ocr');
     setIsExtracting(false);
     handleClose();
     navigate(`/product/${product.id}`);

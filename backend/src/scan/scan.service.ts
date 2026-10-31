@@ -159,6 +159,54 @@ export class ScanService {
       throw err;
     }
 
+    // Check if the extracted product name matches an official database record
+    if (extraction.productName) {
+      try {
+        const matchedDbProduct =
+          await this.productsRepository.findByNameOrKeyword(
+            extraction.productName,
+          );
+        if (matchedDbProduct) {
+          this.logger.log(
+            `[Branch 3 -> DB Name Match] Gemini identified "${extraction.productName}" which matches official DB record "${matchedDbProduct.name}"!`,
+          );
+          const res = this.handleDatabaseProduct(
+            normalizedBarcode,
+            matchedDbProduct,
+          );
+          // Persist to scan_cache so future barcode scans are instant
+          await this.scanCacheRepository.upsert({
+            barcode: normalizedBarcode,
+            category: res.product.category,
+            extraction: {
+              productName: matchedDbProduct.name,
+              brand: matchedDbProduct.brand,
+              category: res.product.category,
+              per100g: {
+                energyKcal: matchedDbProduct.nutrition?.caloriesKcal,
+                carbs: matchedDbProduct.nutrition?.carbs,
+                protein: matchedDbProduct.nutrition?.protein,
+                totalFat: matchedDbProduct.nutrition?.totalFat,
+                satFat: matchedDbProduct.nutrition?.satFat,
+                sugars: matchedDbProduct.nutrition?.sugars,
+                sodiumMg: matchedDbProduct.nutrition?.sodiumMg,
+              },
+              ingredients: res.product.ingredients,
+              ingredientsText: matchedDbProduct.ingredientsText,
+              confidence: 0.99,
+            },
+            source: 'database_match',
+          });
+          this.setMemoryCache(normalizedBarcode, res);
+          return res;
+        }
+      } catch (err: unknown) {
+        this.logger.warn(
+          `Database name cross-check error: ${(err as Error).message}`,
+        );
+      }
+    }
+
     const hasNutrition = Object.values(extraction.per100g || {}).some(
       (v) => v !== null && v !== undefined,
     );

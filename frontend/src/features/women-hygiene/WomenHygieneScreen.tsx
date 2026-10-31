@@ -23,8 +23,14 @@ export const WomenHygieneScreen: React.FC = () => {
     const fetchItem = async () => {
       setLoading(true);
       const items = await productService.getAll();
-      const hygieneItem = items.find((p) => p.category === 'women-hygiene');
-      setProduct(hygieneItem || items[1]);
+      let hygieneItem: Product | undefined;
+      if (id) {
+        hygieneItem = items.find((p) => p.id === id || p.barcode === id);
+      }
+      if (!hygieneItem) {
+        hygieneItem = items.find((p) => p.category === 'women-hygiene') || items[1];
+      }
+      setProduct(hygieneItem);
       setLoading(false);
     };
     fetchItem();

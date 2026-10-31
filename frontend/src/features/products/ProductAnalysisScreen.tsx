@@ -11,6 +11,7 @@ import {
 import { productService } from '../../services/api/productService';
 import { scanService } from '../../services/api/scanService';
 import { useProductStore } from '../../store/useProductStore';
+import { useScanStore } from '../../store/useScanStore';
 import { useLanguageStore } from '../../store/useLanguageStore';
 import { IngredientDetailModal } from '../ingredients/IngredientDetailModal';
 import type { Ingredient, Product } from '../../types';
@@ -18,7 +19,8 @@ import type { Ingredient, Product } from '../../types';
 export const ProductAnalysisScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isWatchlisted, toggleWatchlist, currentProduct } = useProductStore();
+  const { isWatchlisted, toggleWatchlist, currentProduct, addProduct } = useProductStore();
+  const { recordProductActivity } = useScanStore();
   const { language, t, translateNutrient, translateReason } = useLanguageStore();
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -31,6 +33,7 @@ export const ProductAnalysisScreen: React.FC = () => {
       setLoading(true);
       if (currentProduct && (currentProduct.id === id || currentProduct.barcode === id)) {
         setProduct(currentProduct);
+        recordProductActivity(currentProduct, 'search');
         setLoading(false);
         return;
       }
@@ -39,18 +42,27 @@ export const ProductAnalysisScreen: React.FC = () => {
         try {
           const item = await scanService.lookupBarcode(id);
           setProduct(item);
+          addProduct(item);
+          recordProductActivity(item, 'search');
         } catch {
           const item = await productService.getById(id);
-          setProduct(item);
+          if (item) {
+            setProduct(item);
+            addProduct(item);
+            recordProductActivity(item, 'search');
+          }
         }
       } else {
         const items = await productService.getAll();
-        setProduct(items[0]);
+        if (items[0]) {
+          setProduct(items[0]);
+          recordProductActivity(items[0], 'search');
+        }
       }
       setLoading(false);
     };
     fetchProduct();
-  }, [id, currentProduct]);
+  }, [id, currentProduct, addProduct, recordProductActivity]);
 
   if (loading || !product) {
     return (

@@ -156,7 +156,10 @@ export const HomeScreen: React.FC = () => {
           <h2 className="text-base sm:text-lg font-black font-['Plus_Jakarta_Sans'] tracking-tight">
             {t('benchmarkSectors')}
           </h2>
-          <span className="text-xs font-bold text-[#005128] dark:text-[#C5F82A] flex items-center gap-1 cursor-pointer hover:underline">
+          <span
+            onClick={() => navigate('/explore')}
+            className="text-xs font-bold text-[#005128] dark:text-[#C5F82A] flex items-center gap-1 cursor-pointer hover:underline"
+          >
             {t('viewAll')} <ChevronRight className="w-3.5 h-3.5" />
           </span>
         </div>

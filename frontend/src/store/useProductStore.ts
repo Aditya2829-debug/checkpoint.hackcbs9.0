@@ -12,6 +12,7 @@ interface ProductStoreState {
   // Actions
   setCurrentProduct: (product: Product | null) => void;
   setProducts: (products: Product[]) => void;
+  addProduct: (product: Product) => void;
   toggleWatchlist: (productId: string) => void;
   isWatchlisted: (productId: string) => boolean;
   setSearchQuery: (query: string) => void;
@@ -28,6 +29,14 @@ export const useProductStore = create<ProductStoreState>((set, get) => ({
   setCurrentProduct: (product) => set({ currentProduct: product }),
 
   setProducts: (products) => set({ products }),
+
+  addProduct: (product) =>
+    set((state) => {
+      if (state.products.some((p) => p.id === product.id || (p.barcode && p.barcode === product.barcode))) {
+        return state;
+      }
+      return { products: [product, ...state.products] };
+    }),
 
   toggleWatchlist: (productId) =>
     set((state) => {

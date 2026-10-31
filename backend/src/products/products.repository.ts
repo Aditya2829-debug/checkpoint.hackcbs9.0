@@ -54,17 +54,94 @@ export class ProductsRepository implements OnModuleInit {
   ): Promise<{ items: ProductDocument[]; total: number }> {
     const query = this.buildFilterQuery(filters);
 
-    const [items, total] = await Promise.all([
+    let [items, total] = await Promise.all([
       this.collection.find(query).skip(skip).limit(limit).toArray(),
       this.collection.countDocuments(query),
     ]);
+
+    // If configured collection has 1 or fewer items, also query the main products collection
+    if (total <= 1 && this.connection.db && this.collection.collectionName !== 'products') {
+      try {
+        const mainCol = this.connection.db.collection<ProductDocument>('products');
+        const [mainItems, mainTotal] = await Promise.all([
+          mainCol.find(query).skip(skip).limit(limit).toArray(),
+          mainCol.countDocuments(query),
+        ]);
+        if (mainTotal > 0) {
+          items = mainItems;
+          total = mainTotal;
+        }
+      } catch {
+        // Fallback silently to initial items
+      }
+    }
 
     return { items, total };
   }
 
   async findByProductId(productId: string): Promise<ProductDocument | null> {
     const document = await this.collection.findOne({ productId });
-    return document ?? null;
+    if (document) return document;
+
+    // Fallback: check products and pads
+    try {
+      const db = this.connection.db;
+      if (db) {
+        for (const colName of ['products', 'pads']) {
+          if (colName !== this.collection.collectionName) {
+            const found = await db.collection<ProductDocument>(colName).findOne({ productId });
+            if (found) return found;
+          }
+        }
+      }
+    } catch {
+      // Continue
+    }
+
+    return null;
+  }
+
+  async findByNameOrKeyword(nameOrKeyword: string): Promise<ProductDocument | null> {
+    if (!nameOrKeyword || typeof nameOrKeyword !== 'string' || nameOrKeyword.trim().length < 2) {
+      return null;
+    }
+    const clean = nameOrKeyword.trim();
+    const words = clean.split(/\s+/).filter((w) => w.length > 2);
+    const escaped = clean.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const exactRegex = new RegExp(escaped, 'i');
+
+    const db = this.connection.db;
+    const collectionsToSearch = ['products', 'food_database', 'pads'];
+
+    for (const colName of collectionsToSearch) {
+      try {
+        const col = db ? db.collection<ProductDocument>(colName) : this.collection;
+        // 1. Direct regex match on name or brand
+        let found = await col.findOne({
+          $or: [
+            { name: exactRegex },
+            { brand: exactRegex },
+          ],
+        });
+        if (found) return found;
+
+        // 2. Keyword match if multiple words
+        if (words.length > 1) {
+          const keywordRegexes = words.map(
+            (w) => new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
+          );
+          found = await col.findOne({
+            $and: keywordRegexes.map((r) => ({
+              $or: [{ name: r }, { brand: r }, { subCategory: r }],
+            })),
+          });
+          if (found) return found;
+        }
+      } catch (err: unknown) {
+        this.logger.warn(`findByNameOrKeyword error in ${colName}: ${(err as Error).message}`);
+      }
+    }
+    return null;
   }
 
   async findByBarcode(barcode: string): Promise<ProductDocument | null> {

@@ -18,6 +18,7 @@ describe('ScanService Unit Tests (All Decision Branches)', () => {
   beforeEach(() => {
     productsRepository = {
       findByBarcode: jest.fn(),
+      findByNameOrKeyword: jest.fn().mockResolvedValue(null),
     } as any;
 
     scanCacheRepository = {
