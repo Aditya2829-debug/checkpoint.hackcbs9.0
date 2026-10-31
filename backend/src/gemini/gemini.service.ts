@@ -147,6 +147,9 @@ Set confidence between 0.0 and 1.0 based on how accurately the barcode was match
         systemInstruction: effectiveSystemInstruction,
         responseMimeType: 'application/json',
         responseSchema: EXTRACTION_SCHEMA,
+        thinkingConfig: {
+          thinkingBudget: 0,
+        },
       },
     };
 

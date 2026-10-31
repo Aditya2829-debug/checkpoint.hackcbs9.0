@@ -50,6 +50,11 @@ export interface ScanOptions {
 @Injectable()
 export class ScanService {
   private readonly logger = new Logger(ScanService.name);
+  // Ultra-fast in-memory cache for supermarket barcode scans (sub-millisecond hits)
+  private readonly memoryCache = new Map<
+    string,
+    { response: ScanResponse; expiresAt: number }
+  >();
 
   constructor(
     private readonly productsRepository: ProductsRepository,
@@ -58,27 +63,56 @@ export class ScanService {
     private readonly geminiService: GeminiService,
   ) {}
 
+  private setMemoryCache(barcode: string, response: ScanResponse): void {
+    if (this.memoryCache.size > 2000) {
+      const oldestKey = this.memoryCache.keys().next().value;
+      if (oldestKey) this.memoryCache.delete(oldestKey);
+    }
+    // Cache for 2 hours in memory
+    this.memoryCache.set(barcode, {
+      response,
+      expiresAt: Date.now() + 2 * 60 * 60 * 1000,
+    });
+  }
+
   async scan(options: ScanOptions): Promise<ScanResponse> {
     const normalizedBarcode = normalizeBarcode(options.barcode);
 
+    // Sub-millisecond in-memory cache hit (no I/O)
+    if (!options.image?.imageBase64) {
+      const memHit = this.memoryCache.get(normalizedBarcode);
+      if (memHit && Date.now() < memHit.expiresAt) {
+        this.logger.log(
+          `[Memory Cache] Instant sub-millisecond hit for barcode: ${normalizedBarcode}`,
+        );
+        return memHit.response;
+      }
+    }
+
+    // Parallel DB and cache lookups to eliminate sequential network roundtrip latency
+    const [dbProduct, cachedDoc] = await Promise.all([
+      this.productsRepository.findByBarcode(normalizedBarcode),
+      this.scanCacheRepository.findByBarcode(normalizedBarcode),
+    ]);
+
     // ─── 1) IF document exists in the product collection ─────────────────────
-    const dbProduct =
-      await this.productsRepository.findByBarcode(normalizedBarcode);
     if (dbProduct) {
       this.logger.log(
         `[Branch 1] Product found in database for barcode: ${normalizedBarcode}`,
       );
-      return this.handleDatabaseProduct(normalizedBarcode, dbProduct);
+      const res = this.handleDatabaseProduct(normalizedBarcode, dbProduct);
+      this.setMemoryCache(normalizedBarcode, res);
+      return res;
     }
 
     // ─── 2) ELSE IF document exists in the cache collection (scan_cache) ────
-    const cachedDoc =
-      await this.scanCacheRepository.findByBarcode(normalizedBarcode);
     if (cachedDoc) {
       this.logger.log(
         `[Branch 2] Product found in scan_cache for barcode: ${normalizedBarcode}`,
       );
-      return this.handleCachedProduct(normalizedBarcode, cachedDoc);
+      const res = this.handleCachedProduct(normalizedBarcode, cachedDoc);
+      this.setMemoryCache(normalizedBarcode, res);
+      return res;
     }
 
     // ─── 3) ELSE directly delegate to Gemini API (no user prompt needed) ────
@@ -188,7 +222,7 @@ export class ScanService {
       source: 'gemini',
     });
 
-    return {
+    const response: ScanResponse = {
       status: 'OK',
       source: 'gemini',
       product: {
@@ -202,6 +236,9 @@ export class ScanService {
       },
       rating,
     };
+    this.setMemoryCache(normalizedBarcode, response);
+
+    return response;
   }
 
   private handleDatabaseProduct(

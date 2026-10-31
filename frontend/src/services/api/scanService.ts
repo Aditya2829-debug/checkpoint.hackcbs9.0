@@ -305,12 +305,21 @@ export function transformScanResponseToProduct(res: BackendScanResponse, fallbac
   };
 }
 
+// High-speed client-side barcode cache for supermarket scans (0ms instant hits)
+const clientBarcodeCache = new Map<string, Product>();
+
 export const scanService = {
   /**
    * Barcode lookup via backend GET /api/v1/scan/:barcode
    */
   async lookupBarcode(barcode: string): Promise<Product> {
     const cleanBarcode = barcode.trim();
+
+    // Instant 0ms return if already scanned
+    if (clientBarcodeCache.has(cleanBarcode)) {
+      return clientBarcodeCache.get(cleanBarcode)!;
+    }
+
     try {
       const response = await apiClient.get<BackendScanResponse>(
         ENDPOINTS.SCANNING.BARCODE_LOOKUP(cleanBarcode),
@@ -318,7 +327,9 @@ export const scanService = {
       );
 
       if (response.data.status === 'OK' && response.data.product) {
-        return transformScanResponseToProduct(response.data, cleanBarcode);
+        const product = transformScanResponseToProduct(response.data, cleanBarcode);
+        clientBarcodeCache.set(cleanBarcode, product);
+        return product;
       }
 
       if (response.data.status === 'NOT_FOUND' && response.data.needsLabelPhoto) {
