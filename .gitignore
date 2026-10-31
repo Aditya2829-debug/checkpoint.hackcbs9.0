@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# compiled output
+dist/
+build/
+coverage/
+
+# environment
+.env
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
