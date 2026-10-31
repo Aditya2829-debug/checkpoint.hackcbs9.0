@@ -39,7 +39,7 @@ jobs:
       - name: Build Web Assets (Vite)
         working-directory: frontend
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL || vars.VITE_API_URL || '' }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL || vars.VITE_API_URL || 'https://checkpoint-backend-gkm8.onrender.com/api/v1' }}
         run: npm run build
 
       - name: Sync with Capacitor Android
