@@ -1,0 +1,19 @@
+{
+  "name": "checkpoint-promotion",
+  "version": "1.0.0",
+  "description": "CheckPoint!! Official APK Download & Promotional Website",
+  "scripts": {
+    "start": "npx serve -l 3000 .",
+    "serve": "npx serve -l 3000 ."
+  },
+  "keywords": [
+    "checkpoint",
+    "apk",
+    "download",
+    "fssai",
+    "bis",
+    "barcode-scanner"
+  ],
+  "author": "CheckPoint Team",
+  "license": "MIT"
+}
