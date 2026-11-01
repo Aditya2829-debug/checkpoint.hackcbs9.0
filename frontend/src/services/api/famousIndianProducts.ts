@@ -1,357 +1,2342 @@
 import type { Product } from '../../types';
 
 export const FAMOUS_INDIAN_PRODUCTS: Product[] = [
+  {
+    "id": "prod-lays-magic-masala-11b",
+    "barcode": "8901491001014",
+    "name": "Lay's India's Magic Masala Potato Chips",
+    "brand": "Lay's (PepsiCo)",
+    "category": "food",
+    "categoryLabel": "Savory Snacks & Chips",
+    "imageUrl": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=600&q=80",
+    "packSize": "50g (₹20)",
+    "grade": "E",
+    "gradeScore": 16,
+    "summary": "Spicy potato chips deep-fried in palmolein with 820mg sodium and 14.2g saturated fat.",
+    "ingredients": [
+      {
+        "id": "ing-lmm-1",
+        "name": "Potato (52%)",
+        "purpose": "Base",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "Fresh potatoes."
+      },
+      {
+        "id": "ing-lmm-2",
+        "name": "Edible Vegetable Oil (Palmolein)",
+        "purpose": "Frying medium",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Palmolein."
+      },
+      {
+        "id": "ing-lmm-3",
+        "name": "Seasoning (Spices & Condiments, Iodised Salt, Sugar, Maltodextrin)",
+        "purpose": "Flavor",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Spicy masala."
+      },
+      {
+        "id": "ing-lmm-4",
+        "name": "Flavour Enhancers [INS 627, INS 631]",
+        "insNumber": "INS 631",
+        "purpose": "Umami",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Ribonucleotides."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "544 kcal (2276 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "52.8 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "2.5 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "1.8 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "6.9 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "34.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "14.2 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.1 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "820 mg",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "3.5 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "1200 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "22 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.8 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10012011000109",
+        "status": "Compliant",
+        "summary": "PepsiCo facility certified."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "High saturated fat (14.2g) and very high sodium (820mg) in a deep-fried palmolein base.",
+      "whyThisGrade": [
+        "Saturated fat 14.2g/100g",
+        "Sodium 820mg",
+        "Palmolein deep-frying lipid triggers Grade E"
+      ],
+      "suggestedQuestions": [
+        "What gives Magic Masala its distinctive kick?"
+      ]
+    }
+  },
+  {
+    "id": "prod-lays-salted-10",
+    "barcode": "8901491000833",
+    "name": "Lay's Classic Salted Potato Chips",
+    "brand": "Lay's (PepsiCo)",
+    "category": "food",
+    "categoryLabel": "Savory Snacks & Chips",
+    "imageUrl": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=600&q=80",
+    "packSize": "50g (₹20)",
+    "grade": "D",
+    "gradeScore": 26,
+    "summary": "Thinly sliced potatoes deep-fried in palmolein and seasoned with iodised salt. Downgraded to Grade D due to palmolein deep-frying.",
+    "ingredients": [
+      {
+        "id": "ing-ls-1",
+        "name": "Potato (62%)",
+        "purpose": "Base vegetable",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "Fresh sliced potatoes."
+      },
+      {
+        "id": "ing-ls-2",
+        "name": "Edible Vegetable Oil (Palmolein)",
+        "purpose": "Frying medium",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Palmolein oil causes Grade D downgrade."
+      },
+      {
+        "id": "ing-ls-3",
+        "name": "Iodised Salt (1.5%)",
+        "purpose": "Seasoning",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "540mg sodium."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "540 kcal (2259 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "53.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "0.5 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "7.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "33.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "14.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.1 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "0.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "540 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "3.8 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "1270 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "20 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.9 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Vitamin C",
+        "amountPer100g": "14.0 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10012011000109",
+        "status": "Compliant",
+        "summary": "FSSAI registered."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Clean 3-ingredient formulation without chemical flavor enhancers, but deep-frying in palmolein brings high saturated fat.",
+      "whyThisGrade": [
+        "Clean ingredients (potatoes, oil, salt)",
+        "Palmolein deep-frying lipid forces Grade D penalty",
+        "High potassium from real potatoes (1270mg)"
+      ],
+      "suggestedQuestions": [
+        "Is Classic Salted healthier than Magic Masala?"
+      ]
+    }
+  },
+  {
+    "id": "prod-bourbon-07e",
+    "barcode": "8901063014115",
+    "name": "Britannia Bourbon The Original Chocolate Biscuits",
+    "brand": "Britannia",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1548848221-0c2e497ed557?auto=format&fit=crop&w=600&q=80",
+    "packSize": "150g (₹30)",
+    "grade": "E",
+    "gradeScore": 15,
+    "summary": "Chocolate biscuit sandwich with sugar crystals and chocolate creme. Contains 38.3g sugar and refined palm oil.",
+    "ingredients": [
+      {
+        "id": "ing-bb-1",
+        "name": "Refined Wheat Flour (Maida)",
+        "purpose": "Base",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Refined flour."
+      },
+      {
+        "id": "ing-bb-2",
+        "name": "Sugar (38.3%)",
+        "purpose": "Sweetener & sparkling topping",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "38.3g sugar/100g."
+      },
+      {
+        "id": "ing-bb-3",
+        "name": "Refined Palm Oil",
+        "purpose": "Creme & dough lipid",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Palm oil."
+      },
+      {
+        "id": "ing-bb-4",
+        "name": "Cocoa Solids (2.3%)",
+        "purpose": "Chocolate flavor",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Real cocoa."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "493.5 kcal (2065 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "72.7 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "38.3 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "37.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "1.3 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "5.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "20.3 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "10.1 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "119 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "1.5 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "22 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "135 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "2.4 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10015043001129",
+        "status": "Compliant",
+        "summary": "Britannia Industries registered."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Combines 38.3% sugar with palm oil shortening, resulting in an ultra-processed Grade E profile.",
+      "whyThisGrade": [
+        "Extreme sugar content (38.3g)",
+        "Saturated fat 10.1g from palm oil",
+        "Grade E lowest tier"
+      ],
+      "suggestedQuestions": [
+        "What is the difference between Bourbon and Oreo?"
+      ]
+    }
+  },
+  {
+    "id": "prod-dark-fantasy-07d",
+    "barcode": "8901725181223",
+    "name": "Sunfeast Dark Fantasy Choco Fills",
+    "brand": "Sunfeast (ITC)",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1548848221-0c2e497ed557?auto=format&fit=crop&w=600&q=80",
+    "packSize": "75g (₹35)",
+    "grade": "E",
+    "gradeScore": 15,
+    "summary": "Filled chocolate cookies containing 35.7g sugar and 27.3g fat made with Palmolein and Refined Palm Oil.",
+    "ingredients": [
+      {
+        "id": "ing-df-1",
+        "name": "Choco Crème (38%) [Sugar, Refined Palm Oil, Refined Palmolein, Cocoa Solids (5.3%)]",
+        "purpose": "Creme filling",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Palm oil choco creme."
+      },
+      {
+        "id": "ing-df-2",
+        "name": "Refined Wheat Flour (Maida)",
+        "purpose": "Outer cookie",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Maida flour."
+      },
+      {
+        "id": "ing-df-3",
+        "name": "Hydrogenated Vegetable Oil & Palm Oil",
+        "purpose": "Lipid matrix",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Triggers Grade E."
+      },
+      {
+        "id": "ing-df-4",
+        "name": "Sugar",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "35.7g sugar/100g."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "507 kcal (2121 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "61.1 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "35.7 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "34.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "1.2 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "7.3 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "27.3 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "12.7 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.1 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "0.3 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "181.5 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "2.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "30 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "185 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "2.5 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10012031000312",
+        "status": "Compliant",
+        "summary": "ITC Limited registered facility."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "One of the sweetest filled biscuits on Indian shelves with over 35% sugar and 27% fat from palm lipids.",
+      "whyThisGrade": [
+        "Extreme sugar content (35.7g)",
+        "Saturated fat 12.7g from palm lipids",
+        "Grade E lowest tier"
+      ],
+      "suggestedQuestions": [
+        "How much sugar is in one Dark Fantasy cookie?"
+      ]
+    }
+  },
+  {
+    "id": "prod-nutrichoice-07c",
+    "barcode": "8901063012128",
+    "name": "Britannia Nutrichoice Digestive High-Fibre Biscuits",
+    "brand": "Britannia",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
+    "packSize": "100g (₹20)",
+    "grade": "D",
+    "gradeScore": 35,
+    "summary": "Whole wheat flour digestive biscuit with 6.7g dietary fibre, but downgraded to Grade D due to Refined Palm Oil (10.3g saturated fat).",
+    "ingredients": [
+      {
+        "id": "ing-nc-1",
+        "name": "Wheat Flour (Atta) (65.5%)",
+        "purpose": "Whole grain base",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "High fibre atta base."
+      },
+      {
+        "id": "ing-nc-2",
+        "name": "Refined Palm Oil",
+        "purpose": "Shortening",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Refined palm oil triggers Grade D downgrade."
+      },
+      {
+        "id": "ing-nc-3",
+        "name": "Sugar",
+        "purpose": "Sweetener",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "12.7g sugar/100g."
+      },
+      {
+        "id": "ing-nc-4",
+        "name": "Wheat Bran (2.6%)",
+        "purpose": "Fibre supplement",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Insoluble cereal fibre."
+      },
+      {
+        "id": "ing-nc-5",
+        "name": "Invert Sugar Syrup & Malt Extract",
+        "purpose": "Flavor",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Malt flavors."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "483 kcal (2020 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "68.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "12.7 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "11.5 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "1.2 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "9.3 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "20.8 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "10.3 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "0.1 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "362 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "6.7 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "55 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "140 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "2.8 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10015043001129",
+        "status": "Compliant",
+        "summary": "Britannia facility certified."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Has impressive dietary fibre (6.7g) from whole wheat atta, but uses refined palm oil as shortening giving 10.3g saturated fat.",
+      "whyThisGrade": [
+        "Refined Palm Oil detected (Grade downgraded to D)",
+        "High saturated fat (10.3g)",
+        "Excellent dietary fibre (6.7g)"
+      ],
+      "suggestedQuestions": [
+        "Are digestive biscuits truly healthy?"
+      ]
+    }
+  },
+  {
+    "id": "prod-hide-seek-07b",
+    "barcode": "8901719114251",
+    "name": "Parle Hide & Seek Chocolate Chip Cookies",
+    "brand": "Parle",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80",
+    "packSize": "120g (₹30)",
+    "grade": "D",
+    "gradeScore": 20,
+    "summary": "Chocolate chip cookies with 23% chocolate chips and 32.5g sugar. Palm oil and high sugar assign a Grade D rating.",
+    "ingredients": [
+      {
+        "id": "ing-hs-1",
+        "name": "Refined Wheat Flour (Maida)",
+        "purpose": "Base",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Refined flour."
+      },
+      {
+        "id": "ing-hs-2",
+        "name": "Chocolate Chips (23%) [Sugar, Cocoa Mass, Cocoa Butter, Dextrose]",
+        "purpose": "Chocolate inclusion",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Real chocolate chips."
+      },
+      {
+        "id": "ing-hs-3",
+        "name": "Sugar",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "32.5g sugar/100g."
+      },
+      {
+        "id": "ing-hs-4",
+        "name": "Refined Palm Oil",
+        "purpose": "Shortening",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Palm oil triggers Grade D downgrade."
+      },
+      {
+        "id": "ing-hs-5",
+        "name": "Invert Sugar Syrup",
+        "purpose": "Moisture retainer",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Monosaccharide syrup."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "479 kcal (2004 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "73.4 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "32.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "31.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "1.5 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "5.9 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "18.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "9.4 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "114 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "1.6 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "28 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "160 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "3.2 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10013022002253",
+        "status": "Compliant",
+        "summary": "Parle manufacturing license."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Very high sugar cookie (32.5g/100g) combining real cocoa solids with palm oil shortening.",
+      "whyThisGrade": [
+        "High sugar (32.5g/100g)",
+        "Palm oil detected (Grade downgraded to D)",
+        "Saturated fat near 10g"
+      ],
+      "suggestedQuestions": [
+        "How many Hide & Seek cookies make 100 calories?"
+      ]
+    }
+  },
   // ── BISCUITS & COOKIES ────────────────────────────────────────────────────────
-  {
-    id: 'prod-parle-g-01',
-    barcode: '8901719101068',
-    name: 'Parle-G Original Gluco Biscuits',
-    brand: 'Parle',
-    category: 'food',
-    categoryLabel: 'Biscuits & Cookies',
-    imageUrl: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600&q=80',
-    packSize: '80g (₹10)',
-    grade: 'D',
-    gradeScore: 32,
-    summary: 'India\'s quintessential glucose biscuit. Contains 25.5g/100g sugar and refined palm oil, triggering a Nutri-Score downgrade.',
-    ingredients: [
-      { id: 'ing-pg-1', name: 'Refined Wheat Flour (Maida)', purpose: 'Base flour', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'High glycemic index carbohydrate.' },
-      { id: 'ing-pg-2', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '25.5g sugar per 100g.' },
-      { id: 'ing-pg-3', name: 'Refined Palm Oil', purpose: 'Shortening', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Declaration Mandatory', scientificContext: 'High saturated palmitic acid (~44%).' },
-      { id: 'ing-pg-4', name: 'Invert Sugar Syrup', purpose: 'Moisture retainer', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Liquid sucrose/glucose syrup.' },
-      { id: 'ing-pg-5', name: 'Raising Agents [503(ii), 500(ii)]', insNumber: 'INS 503(ii)', purpose: 'Aeration', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Safe baking salts.' },
-      { id: 'ing-pg-6', name: 'Milk Solids & Iodised Salt', purpose: 'Flavor', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Standard dairy and mineral solids.' }
+    {
+    "id": "prod-parle-g-01",
+    "barcode": "8901719101068",
+    "name": "Parle-G Original Gluco Biscuits",
+    "brand": "Parle",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600&q=80",
+    "packSize": "80g (₹10)",
+    "grade": "D",
+    "gradeScore": 28,
+    "summary": "India's quintessential glucose biscuit. Contains 25.5g/100g sugar and refined palm oil, triggering an immediate Grade D penalty.",
+    "ingredients": [
+      {
+        "id": "ing-pg-1",
+        "name": "Refined Wheat Flour (Maida) (67%)",
+        "purpose": "Base flour",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Refined flour with high glycemic index."
+      },
+      {
+        "id": "ing-pg-2",
+        "name": "Sugar (25.5%)",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "High added sugar content."
+      },
+      {
+        "id": "ing-pg-3",
+        "name": "Refined Palm Oil",
+        "purpose": "Shortening",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declaration Mandatory",
+        "scientificContext": "High saturated palmitic acid (~44%), downgrades rating to D."
+      },
+      {
+        "id": "ing-pg-4",
+        "name": "Invert Sugar Syrup",
+        "purpose": "Moisture retainer",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Simple monosaccharide syrup."
+      },
+      {
+        "id": "ing-pg-5",
+        "name": "Raising Agents [INS 503(ii), INS 500(ii)]",
+        "insNumber": "INS 503(ii)",
+        "purpose": "Aeration",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Standard leavening agents."
+      },
+      {
+        "id": "ing-pg-6",
+        "name": "Milk Solids & Iodised Salt",
+        "purpose": "Flavor",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Dairy solids and sodium chloride."
+      }
     ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '454 kcal', flag: 'excessive' },
-      { nutrient: 'Sugars', amountPer100g: '25.5 g', flag: 'excessive' },
-      { nutrient: 'Saturated Fat', amountPer100g: '6.0 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '13.0 g', flag: 'moderate' },
-      { nutrient: 'Protein', amountPer100g: '6.5 g', flag: 'moderate' },
-      { nutrient: 'Sodium', amountPer100g: '260 mg', flag: 'moderate' }
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "454 kcal (1899 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "78.2 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "25.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "24.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "1.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "6.5 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "13.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "6.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "0.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "260 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "1.5 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "40 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "85 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.5 mg",
+        "flag": "moderate"
+      }
     ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10013022002253', status: 'Compliant', summary: 'Registered Parle Products manufacturing facility.' },
-      { authority: 'FSSAI', standardCode: 'Reg. 2.4.2', status: 'Warning', summary: 'Palm oil declaration mandatory; triggers -1 grade downgrade.' }
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10013022002253",
+        "status": "Compliant",
+        "summary": "Registered Parle Products facility."
+      },
+      {
+        "authority": "FSSAI",
+        "standardCode": "Reg. 2.4.2",
+        "status": "Warning",
+        "summary": "Palm oil declaration mandatory; triggers Grade D downgrade."
+      }
     ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'An iconic tea-time biscuit with low sodium but high sugar and refined palm oil.',
-      whyThisGrade: ['Palm oil detected (-1 grade penalty)', 'High sugar (25.5g/100g)', 'Refined maida flour base'],
-      suggestedQuestions: ['What is a healthier alternative to Parle-G?', 'How much palm oil does Parle-G contain?']
-    }
-  },
-  {
-    id: 'prod-good-day-butter-02',
-    barcode: '8901063012013',
-    name: 'Britannia Good Day Butter Cookies',
-    brand: 'Britannia',
-    category: 'food',
-    categoryLabel: 'Biscuits & Cookies',
-    imageUrl: 'https://images.unsplash.com/photo-1548848221-0c2e497ed557?auto=format&fit=crop&w=600&q=80',
-    packSize: '100g (₹20)',
-    grade: 'D',
-    gradeScore: 28,
-    summary: 'Rich butter cookies formulated with refined palm oil, 2% dairy butter, and 23g sugar per 100g.',
-    ingredients: [
-      { id: 'ing-gd-1', name: 'Refined Wheat Flour (Maida)', purpose: 'Base', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Refined flour.' },
-      { id: 'ing-gd-2', name: 'Edible Vegetable Oil (Palm)', purpose: 'Shortening', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Declared', scientificContext: 'Palm oil accounts for majority of fat.' },
-      { id: 'ing-gd-3', name: 'Butter (2%)', purpose: 'Flavor', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Contains 2% true dairy butter.' },
-      { id: 'ing-gd-4', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '23g sugar per 100g.' }
-    ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '490 kcal', flag: 'excessive' },
-      { nutrient: 'Sugars', amountPer100g: '23.0 g', flag: 'excessive' },
-      { nutrient: 'Saturated Fat', amountPer100g: '10.5 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '21.5 g', flag: 'excessive' },
-      { nutrient: 'Sodium', amountPer100g: '220 mg', flag: 'low' }
-    ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10015043001129', status: 'Compliant', summary: 'Britannia Industries verified license.' }
-    ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Marketed as butter cookies, but predominantly uses industrial palm oil with only 2% actual butter.',
-      whyThisGrade: ['Saturated fat exceeds 10g/100g', 'Palm oil used as primary fat', 'High energy density (490 kcal)'],
-      suggestedQuestions: ['How much actual butter is in Good Day Butter?', 'Is Good Day Cashew healthier?']
-    }
-  },
-  {
-    id: 'prod-good-day-cashew-03',
-    barcode: '8901058852341',
-    name: 'Britannia Good Day Cashew Cookies',
-    brand: 'Britannia',
-    category: 'food',
-    categoryLabel: 'Biscuits & Cookies',
-    imageUrl: 'https://images.unsplash.com/photo-1548848221-0c2e497ed557?auto=format&fit=crop&w=600&q=80',
-    packSize: '100g (₹25)',
-    grade: 'D',
-    gradeScore: 26,
-    summary: 'Cashew cookies with 4.5% cashew bits blended with palm oil shortening and 22g sugar.',
-    ingredients: [
-      { id: 'ing-gdc-1', name: 'Refined Wheat Flour (Maida)', purpose: 'Base', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Refined flour.' },
-      { id: 'ing-gdc-2', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '22g sugar/100g.' },
-      { id: 'ing-gdc-3', name: 'Edible Vegetable Oil (Palm)', purpose: 'Fat', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Declared', scientificContext: 'Industrial palm oil shortening.' },
-      { id: 'ing-gdc-4', name: 'Cashew Bits (4.5%)', purpose: 'Nut inclusion', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Real cashew pieces.' }
-    ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '501 kcal', flag: 'excessive' },
-      { nutrient: 'Sugars', amountPer100g: '22.0 g', flag: 'excessive' },
-      { nutrient: 'Saturated Fat', amountPer100g: '10.0 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '23.0 g', flag: 'excessive' },
-      { nutrient: 'Protein', amountPer100g: '7.0 g', flag: 'moderate' }
-    ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10015043001129', status: 'Compliant', summary: 'Britannia Industries registered.' }
-    ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Contains 4.5% cashews giving higher protein, but carries high saturated fat and palm oil.',
-      whyThisGrade: ['Over 500 kcal per 100g', 'High saturated fat (10g/100g)', 'Palm oil shortening'],
-      suggestedQuestions: ['Are cashew cookies better than butter cookies?']
-    }
-  },
-  {
-    id: 'prod-marie-gold-04',
-    barcode: '8901063011030',
-    name: 'Britannia Marie Gold Biscuits',
-    brand: 'Britannia',
-    category: 'food',
-    categoryLabel: 'Biscuits & Cookies',
-    imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80',
-    packSize: '120g (₹15)',
-    grade: 'C',
-    gradeScore: 56,
-    summary: 'Crisp tea biscuit with comparatively lower fat (10g) than cream biscuits, though still contains palm oil.',
-    ingredients: [
-      { id: 'ing-mg-1', name: 'Refined Wheat Flour (Maida)', purpose: 'Base', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Wheat flour.' },
-      { id: 'ing-mg-2', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '21.5g sugar/100g.' },
-      { id: 'ing-mg-3', name: 'Refined Palm Oil', purpose: 'Fat', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Declared', scientificContext: 'Palm oil.' }
-    ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '448 kcal', flag: 'moderate' },
-      { nutrient: 'Sugars', amountPer100g: '21.5 g', flag: 'excessive' },
-      { nutrient: 'Saturated Fat', amountPer100g: '4.5 g', flag: 'moderate' },
-      { nutrient: 'Total Fat', amountPer100g: '10.0 g', flag: 'moderate' },
-      { nutrient: 'Protein', amountPer100g: '8.0 g', flag: 'low' }
-    ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10015043001129', status: 'Compliant', summary: 'FSSAI compliant.' }
-    ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'One of the lighter tea biscuits with moderate total fat (10g) and decent protein (8g).',
-      whyThisGrade: ['Moderate fat compared to cookies', 'Contains palm oil penalty', 'Sugar remains above 20g/100g'],
-      suggestedQuestions: ['Is Marie Gold good for weight loss?']
-    }
-  },
-  {
-    id: 'prod-monaco-05',
-    barcode: '8901719104038',
-    name: 'Parle Monaco Classic Salted Crackers',
-    brand: 'Parle',
-    category: 'food',
-    categoryLabel: 'Biscuits & Cookies',
-    imageUrl: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600&q=80',
-    packSize: '75g (₹10)',
-    grade: 'D',
-    gradeScore: 35,
-    summary: 'Savory salted cracker with low sugar (7.5g) but elevated sodium (890mg/100g) and palm oil.',
-    ingredients: [
-      { id: 'ing-mon-1', name: 'Refined Wheat Flour (Maida)', purpose: 'Base', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Refined flour.' },
-      { id: 'ing-mon-2', name: 'Refined Palm Oil', purpose: 'Shortening', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Declared', scientificContext: 'Saturated fat.' },
-      { id: 'ing-mon-3', name: 'Iodised Salt', purpose: 'Seasoning', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'High sodium content (890mg).' }
-    ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '484 kcal', flag: 'excessive' },
-      { nutrient: 'Sugars', amountPer100g: '7.5 g', flag: 'low' },
-      { nutrient: 'Saturated Fat', amountPer100g: '9.0 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '19.0 g', flag: 'excessive' },
-      { nutrient: 'Sodium', amountPer100g: '890 mg', flag: 'excessive' }
-    ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10013022002253', status: 'Compliant', summary: 'Parle facility certified.' }
-    ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Low in sugar, but sodium is notably high at 890mg per 100g with significant palm oil.',
-      whyThisGrade: ['High sodium (890mg/100g)', 'Palm oil penalty applied', 'Low sugar benefit'],
-      suggestedQuestions: ['Is Monaco safe for hypertension patients?']
-    }
-  },
-  {
-    id: 'prod-krackjack-06',
-    barcode: '8901719103048',
-    name: 'Parle Krackjack Sweet & Salty Crackers',
-    brand: 'Parle',
-    category: 'food',
-    categoryLabel: 'Biscuits & Cookies',
-    imageUrl: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600&q=80',
-    packSize: '75g (₹10)',
-    grade: 'D',
-    gradeScore: 30,
-    summary: 'Dual sweet and salty cracker combining 18.5g sugar with 760mg sodium in a palm oil matrix.',
-    ingredients: [
-      { id: 'ing-kj-1', name: 'Refined Wheat Flour (Maida)', purpose: 'Base', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Refined flour.' },
-      { id: 'ing-kj-2', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '18.5g sugar/100g.' },
-      { id: 'ing-kj-3', name: 'Refined Palm Oil', purpose: 'Shortening', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Declared', scientificContext: 'Palm oil.' },
-      { id: 'ing-kj-4', name: 'Iodised Salt', purpose: 'Seasoning', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '760mg sodium.' }
-    ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '477 kcal', flag: 'excessive' },
-      { nutrient: 'Sugars', amountPer100g: '18.5 g', flag: 'excessive' },
-      { nutrient: 'Saturated Fat', amountPer100g: '8.5 g', flag: 'excessive' },
-      { nutrient: 'Sodium', amountPer100g: '760 mg', flag: 'excessive' }
-    ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10013022002253', status: 'Compliant', summary: 'Parle manufacturing license.' }
-    ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Combines both high sugar and high salt simultaneously, creating a hyper-palatable snack.',
-      whyThisGrade: ['Double penalty for both sugar and sodium', 'Palm oil used as primary fat'],
-      suggestedQuestions: ['Why is Krackjack sweet and salty?']
-    }
-  },
-  {
-    id: 'prod-oreo-vanilla-07',
-    barcode: '7622201740924',
-    name: 'Cadbury Oreo Original Vanilla Creme Biscuits',
-    brand: 'Cadbury (Mondelez)',
-    category: 'food',
-    categoryLabel: 'Biscuits & Cookies',
-    imageUrl: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=600&q=80',
-    packSize: '120g (₹35)',
-    grade: 'E',
-    gradeScore: 16,
-    summary: 'Dark cocoa biscuit sandwiches filled with vanilla creme. Sugar content reaches 38.5g/100g with palm fat.',
-    ingredients: [
-      { id: 'ing-oreo-1', name: 'Refined Wheat Flour (Maida)', purpose: 'Cookie base', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Wheat flour.' },
-      { id: 'ing-oreo-2', name: 'Sugar', purpose: 'Creme & cookie', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '38.5g sugar per 100g.' },
-      { id: 'ing-oreo-3', name: 'Fractionated Palm Oil', purpose: 'Creme filling fat', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Declared', scientificContext: 'High saturated fat creme.' },
-      { id: 'ing-oreo-4', name: 'Cocoa Solids (4.5%)', purpose: 'Chocolate flavor', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: 'Alkalized cocoa.' }
-    ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '480 kcal', flag: 'excessive' },
-      { nutrient: 'Sugars', amountPer100g: '38.5 g', flag: 'excessive' },
-      { nutrient: 'Saturated Fat', amountPer100g: '10.0 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '19.5 g', flag: 'excessive' },
-      { nutrient: 'Sodium', amountPer100g: '430 mg', flag: 'moderate' }
-    ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10014022002711', status: 'Compliant', summary: 'Mondelez India compliant facility.' }
-    ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Over 38% sugar by weight with fractionated palm oil creme, creating an ultra-processed profile.',
-      whyThisGrade: ['Extreme sugar content (38.5g)', 'Palm fat creme filling', 'Grade E lowest nutritional score'],
-      suggestedQuestions: ['How many Oreos is a safe daily portion?']
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "An iconic tea-time biscuit with low sodium but high sugar (25.5g/100g) and refined palm oil.",
+      "whyThisGrade": [
+        "Palm oil detected (Grade capped at D)",
+        "High sugar (25.5g/100g exceeds 14g threshold)",
+        "Refined maida flour base"
+      ],
+      "suggestedQuestions": [
+        "What is a healthier alternative to Parle-G?",
+        "How much palm oil does Parle-G contain?"
+      ]
     }
   },
 
+    {
+    "id": "prod-good-day-butter-02",
+    "barcode": "8901063012013",
+    "name": "Britannia Good Day Butter Cookies",
+    "brand": "Britannia",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1548848221-0c2e497ed557?auto=format&fit=crop&w=600&q=80",
+    "packSize": "100g (₹20)",
+    "grade": "D",
+    "gradeScore": 22,
+    "summary": "Rich cookies formulated with refined palm oil as primary fat, only 2% dairy butter, and 23g sugar per 100g.",
+    "ingredients": [
+      {
+        "id": "ing-gd-1",
+        "name": "Refined Wheat Flour (Maida)",
+        "purpose": "Base",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Refined flour."
+      },
+      {
+        "id": "ing-gd-2",
+        "name": "Edible Vegetable Oil (Palm)",
+        "purpose": "Shortening",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Palm oil accounts for majority of fat (10.5g sat fat)."
+      },
+      {
+        "id": "ing-gd-3",
+        "name": "Butter (2%)",
+        "purpose": "Flavor",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Contains only 2% true dairy butter."
+      },
+      {
+        "id": "ing-gd-4",
+        "name": "Sugar",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "23.0g sugar per 100g."
+      },
+      {
+        "id": "ing-gd-5",
+        "name": "Emulsifiers [INS 322, INS 471, INS 472e]",
+        "insNumber": "INS 471",
+        "purpose": "Texture",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Mono and diglycerides."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "490 kcal (2050 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "68.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "23.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "22.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "1.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "6.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "21.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "10.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "3.5 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "220 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "1.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "32 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "78 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.2 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10015043001129",
+        "status": "Compliant",
+        "summary": "Britannia Industries verified license."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Marketed as butter cookies, but predominantly uses industrial palm oil with only 2% actual butter.",
+      "whyThisGrade": [
+        "Saturated fat exceeds 10g/100g from palm oil",
+        "Grade downgraded to D due to palm oil and high sugar",
+        "Energy density high at 490 kcal"
+      ],
+      "suggestedQuestions": [
+        "How much actual butter is in Good Day Butter?",
+        "Is Good Day Cashew healthier?"
+      ]
+    }
+  },
+
+    {
+    "id": "prod-good-day-cashew-03",
+    "barcode": "8901058852341",
+    "name": "Britannia Good Day Cashew Cookies",
+    "brand": "Britannia",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1548848221-0c2e497ed557?auto=format&fit=crop&w=600&q=80",
+    "packSize": "100g (₹25)",
+    "grade": "D",
+    "gradeScore": 23,
+    "summary": "Cashew cookies with 4.5% cashew bits blended into a palm oil shortening base with 22g sugar.",
+    "ingredients": [
+      {
+        "id": "ing-gdc-1",
+        "name": "Refined Wheat Flour (Maida)",
+        "purpose": "Base",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Refined flour."
+      },
+      {
+        "id": "ing-gdc-2",
+        "name": "Sugar",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "22.0g sugar/100g."
+      },
+      {
+        "id": "ing-gdc-3",
+        "name": "Edible Vegetable Oil (Palm)",
+        "purpose": "Fat",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Industrial palm oil shortening."
+      },
+      {
+        "id": "ing-gdc-4",
+        "name": "Cashew Bits (4.5%)",
+        "purpose": "Nut inclusion",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Real cashew pieces."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "501 kcal (2096 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "67.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "22.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "21.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "1.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "7.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "23.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "10.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "2.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "210 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "1.2 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "35 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "110 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.8 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10015043001129",
+        "status": "Compliant",
+        "summary": "Britannia Industries registered."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Contains 4.5% cashews giving slightly higher protein, but carries high saturated fat and palm oil.",
+      "whyThisGrade": [
+        "Over 500 kcal per 100g",
+        "High saturated fat (10g/100g)",
+        "Palm oil shortening triggers Grade D"
+      ],
+      "suggestedQuestions": [
+        "Are cashew cookies better than butter cookies?"
+      ]
+    }
+  },
+
+    {
+    "id": "prod-marie-gold-04",
+    "barcode": "8901063011030",
+    "name": "Britannia Marie Gold Biscuits",
+    "brand": "Britannia",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80",
+    "packSize": "120g (₹15)",
+    "grade": "D",
+    "gradeScore": 32,
+    "summary": "Crisp tea biscuit marketed as light, but contains 21.5% sugar and refined palm oil, resulting in a Grade D rating.",
+    "ingredients": [
+      {
+        "id": "ing-mg-1",
+        "name": "Refined Wheat Flour (Maida) (68%)",
+        "purpose": "Base",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Wheat flour."
+      },
+      {
+        "id": "ing-mg-2",
+        "name": "Sugar",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "21.5g sugar/100g."
+      },
+      {
+        "id": "ing-mg-3",
+        "name": "Refined Palm Oil",
+        "purpose": "Fat",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Palm oil triggers Grade D downgrade."
+      },
+      {
+        "id": "ing-mg-4",
+        "name": "Invert Sugar Syrup",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Moisture retainer."
+      },
+      {
+        "id": "ing-mg-5",
+        "name": "Dough Conditioner (INS 223)",
+        "insNumber": "INS 223",
+        "purpose": "Preservative",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Sodium metabisulphite."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "446 kcal (1866 kJ)",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "78.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "21.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "20.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "1.5 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "8.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "11.5 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "5.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "0.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "280 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "2.5 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "45 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "95 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "2.1 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10015043001129",
+        "status": "Compliant",
+        "summary": "FSSAI compliant."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Often perceived as healthy, but contains 21.5% sugar and refined palm oil.",
+      "whyThisGrade": [
+        "Palm oil used as shortening (Grade downgraded to D)",
+        "Sugar exceeds 20g per 100g",
+        "Maida base flour"
+      ],
+      "suggestedQuestions": [
+        "Is Marie Gold good for weight loss?"
+      ]
+    }
+  },
+
+    {
+    "id": "prod-monaco-05",
+    "barcode": "8901719104038",
+    "name": "Parle Monaco Classic Salted Crackers",
+    "brand": "Parle",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600&q=80",
+    "packSize": "75g (₹10)",
+    "grade": "D",
+    "gradeScore": 35,
+    "summary": "Savory salted cracker with low sugar (7.5g) but elevated sodium (890mg/100g) and palm oil shortening.",
+    "ingredients": [
+      {
+        "id": "ing-mon-1",
+        "name": "Refined Wheat Flour (Maida)",
+        "purpose": "Base",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Refined flour."
+      },
+      {
+        "id": "ing-mon-2",
+        "name": "Refined Palm Oil",
+        "purpose": "Shortening",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Saturated fat; triggers Grade D."
+      },
+      {
+        "id": "ing-mon-3",
+        "name": "Iodised Salt",
+        "purpose": "Seasoning",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "High sodium content (890mg)."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "484 kcal (2025 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "68.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "7.5 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "6.5 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "8.5 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "19.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "9.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "890 mg",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "2.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "30 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "105 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.4 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10013022002253",
+        "status": "Compliant",
+        "summary": "Parle facility certified."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Low in sugar, but sodium is notably high at 890mg per 100g with significant palm oil.",
+      "whyThisGrade": [
+        "High sodium (890mg/100g)",
+        "Palm oil penalty applied (Grade D)",
+        "Elevated saturated fat (9g)"
+      ],
+      "suggestedQuestions": [
+        "Is Monaco safe for hypertension patients?"
+      ]
+    }
+  },
+
+    {
+    "id": "prod-krackjack-06",
+    "barcode": "8901719103048",
+    "name": "Parle Krackjack Sweet & Salty Crackers",
+    "brand": "Parle",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600&q=80",
+    "packSize": "75g (₹10)",
+    "grade": "D",
+    "gradeScore": 28,
+    "summary": "Dual sweet and salty cracker combining 18.5g sugar with 760mg sodium in a palm oil matrix.",
+    "ingredients": [
+      {
+        "id": "ing-kj-1",
+        "name": "Refined Wheat Flour (Maida)",
+        "purpose": "Base",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Refined flour."
+      },
+      {
+        "id": "ing-kj-2",
+        "name": "Sugar",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "18.5g sugar/100g."
+      },
+      {
+        "id": "ing-kj-3",
+        "name": "Refined Palm Oil",
+        "purpose": "Shortening",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Palm oil."
+      },
+      {
+        "id": "ing-kj-4",
+        "name": "Iodised Salt",
+        "purpose": "Seasoning",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "760mg sodium."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "477 kcal (1996 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "68.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "18.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "17.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "7.5 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "18.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "8.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "760 mg",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "1.8 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "32 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "98 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.3 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10013022002253",
+        "status": "Compliant",
+        "summary": "Parle manufacturing license."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Combines both high sugar and high salt simultaneously, creating a hyper-palatable snack.",
+      "whyThisGrade": [
+        "Double penalty for both high sugar (18.5g) and sodium (760mg)",
+        "Palm oil shortening used"
+      ],
+      "suggestedQuestions": [
+        "Why is Krackjack sweet and salty?"
+      ]
+    }
+  },
+
+    {
+    "id": "prod-oreo-vanilla-07",
+    "barcode": "7622201740924",
+    "name": "Cadbury Oreo Original Vanilla Creme Biscuits",
+    "brand": "Cadbury (Mondelez)",
+    "category": "food",
+    "categoryLabel": "Biscuits & Cookies",
+    "imageUrl": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=600&q=80",
+    "packSize": "120g (₹35)",
+    "grade": "E",
+    "gradeScore": 14,
+    "summary": "Dark cocoa biscuit sandwiches filled with vanilla creme. Sugar content reaches 38.0g/100g with fractionated palm fat.",
+    "ingredients": [
+      {
+        "id": "ing-oreo-1",
+        "name": "Refined Wheat Flour (Maida)",
+        "purpose": "Cookie base",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Wheat flour."
+      },
+      {
+        "id": "ing-oreo-2",
+        "name": "Sugar (38%)",
+        "purpose": "Creme & cookie",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "38.0g sugar per 100g."
+      },
+      {
+        "id": "ing-oreo-3",
+        "name": "Fractionated Palm Oil",
+        "purpose": "Creme filling fat",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "High saturated fat creme."
+      },
+      {
+        "id": "ing-oreo-4",
+        "name": "Cocoa Solids (4.5%)",
+        "purpose": "Chocolate flavor",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "Alkalized cocoa."
+      },
+      {
+        "id": "ing-oreo-5",
+        "name": "Emulsifier [INS 322]",
+        "insNumber": "INS 322",
+        "purpose": "Emulsifier",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Soy lecithin."
+      }
+    ],
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "483 kcal (2020 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "70.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "38.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "37.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "1.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "5.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "20.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "9.8 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "360 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "1.8 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "25 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "145 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "2.9 mg",
+        "flag": "moderate"
+      }
+    ],
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10014022002711",
+        "status": "Compliant",
+        "summary": "Mondelez India compliant facility."
+      }
+    ],
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Over 38% sugar by weight with fractionated palm oil creme, creating an ultra-processed profile.",
+      "whyThisGrade": [
+        "Extreme sugar content (38.0g)",
+        "Palm fat creme filling",
+        "Grade E lowest nutritional tier"
+      ],
+      "suggestedQuestions": [
+        "How many Oreos is a safe daily portion?"
+      ]
+    }
+  },
+
+
   // ── SAVORY SNACKS & CHIPS ─────────────────────────────────────────────────────
-  {
-    id: 'prod-kurkure-masala-08',
-    barcode: '8901491101837',
-    name: 'Kurkure Masala Munch Crisps',
-    brand: 'Kurkure (PepsiCo)',
-    category: 'food',
-    categoryLabel: 'Savory Snacks & Chips',
-    imageUrl: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=600&q=80',
-    packSize: '75g (₹20)',
-    grade: 'E',
-    gradeScore: 14,
-    summary: 'Collet snack made from corn meal, rice meal and gram meal, deep-fried in palmolein with 940mg sodium.',
-    ingredients: [
-      { id: 'ing-km-1', name: 'Rice Meal & Corn Meal & Gram Meal', purpose: 'Extruded grain base', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Extruded cereal-legume blend.' },
-      { id: 'ing-km-2', name: 'Edible Vegetable Oil (Palmolein)', purpose: 'Deep-frying lipid', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Mandatory Declared', scientificContext: 'Over 35% palmolein oil absorption.' },
-      { id: 'ing-km-3', name: 'Spices & Condiments', purpose: 'Flavor', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Chilli, onion, garlic, coriander powders.' },
-      { id: 'ing-km-4', name: 'Flavour Enhancers (INS 627, INS 631)', insNumber: 'INS 631', purpose: 'Savory boost', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved GMP', scientificContext: 'Ribonucleotides excitotoxins.' }
+    {
+    "id": "prod-kurkure-masala-08",
+    "barcode": "8901491101837",
+    "name": "Kurkure Masala Munch Crisps",
+    "brand": "Kurkure (PepsiCo)",
+    "category": "food",
+    "categoryLabel": "Savory Snacks & Chips",
+    "imageUrl": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=600&q=80",
+    "packSize": "75g (₹20)",
+    "grade": "E",
+    "gradeScore": 14,
+    "summary": "Collet snack made from corn meal, rice meal and gram meal, deep-fried in palmolein with 840mg sodium and 15.8g saturated fat.",
+    "ingredients": [
+      {
+        "id": "ing-km-1",
+        "name": "Rice Meal (43.5%), Corn Meal (20.0%), Gram Meal (3.6%)",
+        "purpose": "Extruded grain base",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Extruded cereal-legume blend."
+      },
+      {
+        "id": "ing-km-2",
+        "name": "Edible Vegetable Oil (Palmolein)",
+        "purpose": "Deep-frying lipid",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Mandatory Declared",
+        "scientificContext": "Over 35% palmolein oil absorption with 15.8g saturated fat."
+      },
+      {
+        "id": "ing-km-3",
+        "name": "Spices & Condiments (Chilli, Onion, Garlic, Coriander)",
+        "purpose": "Flavor",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Traditional Indian spices."
+      },
+      {
+        "id": "ing-km-4",
+        "name": "Flavour Enhancers (INS 627, INS 631)",
+        "insNumber": "INS 631",
+        "purpose": "Savory umami boost",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved GMP",
+        "scientificContext": "Ribonucleotides excitotoxins."
+      },
+      {
+        "id": "ing-km-5",
+        "name": "Acidity Regulator (INS 330)",
+        "insNumber": "INS 330",
+        "purpose": "Tangy acidulant",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Citric acid."
+      }
     ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '561 kcal', flag: 'excessive' },
-      { nutrient: 'Saturated Fat', amountPer100g: '16.0 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '35.5 g', flag: 'excessive' },
-      { nutrient: 'Sodium', amountPer100g: '940 mg', flag: 'excessive' },
-      { nutrient: 'Sugars', amountPer100g: '2.5 g', flag: 'low' }
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "561 kcal (2347 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "55.4 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "1.5 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "6.2 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "35.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "15.8 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.1 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "0.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "840 mg",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "2.2 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "14 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "180 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.1 mg",
+        "flag": "moderate"
+      }
     ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10012011000109', status: 'Compliant', summary: 'PepsiCo India Holdings facility.' }
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10012011000109",
+        "status": "Compliant",
+        "summary": "PepsiCo India Holdings facility."
+      },
+      {
+        "authority": "FSSAI",
+        "standardCode": "Reg. 2.4.2",
+        "status": "Warning",
+        "summary": "Palmolein deep-frying oil triggers Grade E downgrade."
+      }
     ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Deep-fried in palmolein oil; delivers 35.5g fat and 940mg sodium per 100g.',
-      whyThisGrade: ['Saturated fat exceeds 15g/100g', 'Extremely high sodium (940mg)', 'Palmolein deep-frying lipid'],
-      suggestedQuestions: ['Is Kurkure fried in palm oil?', 'What are healthy substitutes for Kurkure?']
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Deep-fried in palmolein oil; delivers 35g fat, 15.8g saturated fat and 840mg sodium per 100g.",
+      "whyThisGrade": [
+        "Saturated fat exceeds 15g/100g",
+        "Extremely high sodium (840mg/100g)",
+        "Palmolein deep-frying lipid"
+      ],
+      "suggestedQuestions": [
+        "Is Kurkure fried in palm oil?",
+        "What are healthy substitutes for Kurkure?"
+      ]
     }
   },
-  {
-    id: 'prod-kurkure-chilli-09',
-    barcode: '8901491102834',
-    name: 'Kurkure Chilli Chatka Crisps',
-    brand: 'Kurkure (PepsiCo)',
-    category: 'food',
-    categoryLabel: 'Savory Snacks & Chips',
-    imageUrl: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=600&q=80',
-    packSize: '75g (₹20)',
-    grade: 'E',
-    gradeScore: 15,
-    summary: 'Spicy extruded corn & rice crisps fried in palmolein with 920mg sodium and citric acid tang.',
-    ingredients: [
-      { id: 'ing-kcc-1', name: 'Rice Meal & Corn Meal', purpose: 'Grain base', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Cereal flour.' },
-      { id: 'ing-kcc-2', name: 'Palmolein Oil', purpose: 'Frying oil', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Declared', scientificContext: 'High saturated fatty acids.' },
-      { id: 'ing-kcc-3', name: 'Iodised Salt & Spices', purpose: 'Flavor', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '920mg sodium.' }
+
+    {
+    "id": "prod-kurkure-chilli-09",
+    "barcode": "8901491102834",
+    "name": "Kurkure Chilli Chatka Crisps",
+    "brand": "Kurkure (PepsiCo)",
+    "category": "food",
+    "categoryLabel": "Savory Snacks & Chips",
+    "imageUrl": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=600&q=80",
+    "packSize": "75g (₹20)",
+    "grade": "E",
+    "gradeScore": 12,
+    "summary": "Spicy extruded corn & rice crisps deep-fried in palmolein with 890mg sodium and 15.5g saturated fat.",
+    "ingredients": [
+      {
+        "id": "ing-kcc-1",
+        "name": "Rice Meal & Corn Meal & Gram Meal",
+        "purpose": "Grain base",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Cereal flour."
+      },
+      {
+        "id": "ing-kcc-2",
+        "name": "Palmolein Oil",
+        "purpose": "Frying medium",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "Palmolein oil high in saturated fat."
+      },
+      {
+        "id": "ing-kcc-3",
+        "name": "Iodised Salt & Chilli Seasoning",
+        "purpose": "Flavor",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "890mg sodium."
+      },
+      {
+        "id": "ing-kcc-4",
+        "name": "Flavour Enhancers (INS 627, INS 631)",
+        "insNumber": "INS 631",
+        "purpose": "Umami",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Ribonucleotides."
+      }
     ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '558 kcal', flag: 'excessive' },
-      { nutrient: 'Saturated Fat', amountPer100g: '15.5 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '34.8 g', flag: 'excessive' },
-      { nutrient: 'Sodium', amountPer100g: '920 mg', flag: 'excessive' }
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "558 kcal (2334 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "56.0 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "2.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "6.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "34.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "15.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.1 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "0.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "890 mg",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "2.0 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "12 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "175 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.2 mg",
+        "flag": "moderate"
+      }
     ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10012011000109', status: 'Compliant', summary: 'PepsiCo India registered.' }
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10012011000109",
+        "status": "Compliant",
+        "summary": "PepsiCo India registered."
+      }
     ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Very similar to Masala Munch with elevated capsaicin, high sodium, and high saturated fat.',
-      whyThisGrade: ['Saturated fat 15.5g/100g', 'Deep fried in palmolein', 'Sodium 920mg'],
-      suggestedQuestions: ['How much sodium is in one packet of Kurkure?']
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Delivers 15.5g saturated fat from palmolein oil and 890mg sodium per 100g with capsaicin spice.",
+      "whyThisGrade": [
+        "Saturated fat 15.5g/100g",
+        "Deep fried in palmolein",
+        "Sodium 890mg/100g"
+      ],
+      "suggestedQuestions": [
+        "How much sodium is in one packet of Kurkure?"
+      ]
     }
   },
-  {
-    id: 'prod-lays-salted-10',
-    barcode: '8901491000857',
-    name: "Lay's Classic Salted Potato Chips",
-    brand: "Lay's (PepsiCo)",
-    category: 'food',
-    categoryLabel: 'Savory Snacks & Chips',
-    imageUrl: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=600&q=80',
-    packSize: '50g (₹20)',
-    grade: 'D',
-    gradeScore: 30,
-    summary: 'Thinly sliced potatoes deep-fried in palmolein and seasoned solely with salt. Lower additive burden than flavored chips.',
-    ingredients: [
-      { id: 'ing-ls-1', name: 'Potato', purpose: 'Base vegetable', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: 'Fresh sliced potatoes.' },
-      { id: 'ing-ls-2', name: 'Edible Vegetable Oil (Palmolein)', purpose: 'Frying medium', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Declared', scientificContext: 'Palmolein.' },
-      { id: 'ing-ls-3', name: 'Iodised Salt (1.4%)', purpose: 'Seasoning', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '580mg sodium.' }
+
+    {
+    "id": "prod-lays-cream-onion-11",
+    "barcode": "8901491000857",
+    "name": "Lay's American Style Cream & Onion Chips",
+    "brand": "Lay's (PepsiCo)",
+    "category": "food",
+    "categoryLabel": "Savory Snacks & Chips",
+    "imageUrl": "https://images.unsplash.com/photo-1566478989037-eec170784d0b?auto=format&fit=crop&w=600&q=80",
+    "packSize": "50g (₹20)",
+    "grade": "D",
+    "gradeScore": 24,
+    "summary": "Potato chips coated in dairy whey, onion powder, and flavor enhancers INS 627 and 631, fried in palmolein.",
+    "ingredients": [
+      {
+        "id": "ing-lco-1",
+        "name": "Potato (52%)",
+        "purpose": "Base",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "Fresh potatoes."
+      },
+      {
+        "id": "ing-lco-2",
+        "name": "Palmolein Oil",
+        "purpose": "Frying medium",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Declared",
+        "scientificContext": "High saturated fat."
+      },
+      {
+        "id": "ing-lco-3",
+        "name": "Milk Solids & Onion Powder",
+        "purpose": "Seasoning",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Dairy whey & onion."
+      },
+      {
+        "id": "ing-lco-4",
+        "name": "Sugar",
+        "purpose": "Seasoning sweetener",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "4.8g sugar/100g."
+      },
+      {
+        "id": "ing-lco-5",
+        "name": "Flavour Enhancers [INS 627, INS 631]",
+        "insNumber": "INS 631",
+        "purpose": "Umami enhancer",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Ribonucleotides."
+      }
     ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '545 kcal', flag: 'excessive' },
-      { nutrient: 'Saturated Fat', amountPer100g: '14.0 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '34.0 g', flag: 'excessive' },
-      { nutrient: 'Sodium', amountPer100g: '580 mg', flag: 'moderate' },
-      { nutrient: 'Sugars', amountPer100g: '0.5 g', flag: 'low' }
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "542 kcal (2267 kJ)",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "53.2 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "4.8 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "3.5 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "6.8 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "33.8 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "14.5 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.1 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Cholesterol",
+        "amountPer100g": "0.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "720 mg",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "3.2 g",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "1150 mg",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Calcium",
+        "amountPer100g": "28 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Iron",
+        "amountPer100g": "1.6 mg",
+        "flag": "moderate"
+      }
     ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10012011000109', status: 'Compliant', summary: 'FSSAI registered.' }
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10012011000109",
+        "status": "Compliant",
+        "summary": "PepsiCo facility certified."
+      }
     ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Simpler 3-ingredient formulation without chemical flavor enhancers, but fat remains high.',
-      whyThisGrade: ['Clean ingredients (potatoes, oil, salt)', 'Palmolein frying fat penalty', 'Moderate sodium compared to flavored chips'],
-      suggestedQuestions: ['Is Classic Salted healthier than Magic Masala?']
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Deep-fried in palmolein with dairy whey and ribonucleotide flavor enhancers.",
+      "whyThisGrade": [
+        "Saturated fat 14.5g/100g",
+        "High sodium (720mg)",
+        "Palmolein oil forces Grade D"
+      ],
+      "suggestedQuestions": [
+        "Does Cream & Onion contain real sour cream?"
+      ]
     }
   },
+
   {
     id: 'prod-lays-cream-onion-11',
     barcode: '8901491001038',
@@ -458,76 +2443,296 @@ export const FAMOUS_INDIAN_PRODUCTS: Product[] = [
   },
 
   // ── BEVERAGES & DRINKS ────────────────────────────────────────────────────────
-  {
-    id: 'prod-pepsi-14',
-    barcode: '8901491100014',
-    name: 'Pepsi Carbonated Soft Drink',
-    brand: 'Pepsi (PepsiCo)',
-    category: 'food',
-    categoryLabel: 'Soft Drinks & Juices',
-    imageUrl: 'https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=600&q=80',
-    packSize: '250ml Can (₹20)',
-    grade: 'E',
-    gradeScore: 10,
-    summary: 'Classic cola containing 10.6g liquid sugar per 100ml, phosphoric acid (INS 338), and caffeine.',
-    ingredients: [
-      { id: 'ing-pep-1', name: 'Carbonated Water', purpose: 'Hydration & fizz', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: 'Purified sparkling water.' },
-      { id: 'ing-pep-2', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: 'High free liquid sugar; triggers immediate insulin spike.' },
-      { id: 'ing-pep-3', name: 'Acidity Regulator (INS 338)', insNumber: 'INS 338', purpose: 'Acidulant', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Approved Food Acid', scientificContext: 'Phosphoric acid; linked to tooth enamel erosion and bone demineralization.' },
-      { id: 'ing-pep-4', name: 'Colour (INS 150d)', insNumber: 'INS 150d', purpose: 'Caramel color', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Class IV Caramel', scientificContext: 'Ammonia sulphite caramel containing trace 4-MEI.' },
-      { id: 'ing-pep-5', name: 'Caffeine', purpose: 'Stimulant', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Max 145 ppm', scientificContext: 'Mild central nervous system stimulant.' }
+    {
+    "id": "prod-pepsi-14",
+    "barcode": "8901491100014",
+    "name": "Pepsi Carbonated Soft Drink",
+    "brand": "Pepsi (PepsiCo)",
+    "category": "food",
+    "categoryLabel": "Soft Drinks & Juices",
+    "imageUrl": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=600&q=80",
+    "packSize": "250ml Can (₹20)",
+    "grade": "E",
+    "gradeScore": 10,
+    "summary": "Classic cola containing 10.7g free liquid sugar per 100ml, phosphoric acid (INS 338), and caffeine.",
+    "ingredients": [
+      {
+        "id": "ing-pep-1",
+        "name": "Carbonated Water",
+        "purpose": "Hydration & fizz",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "Purified sparkling water."
+      },
+      {
+        "id": "ing-pep-2",
+        "name": "Sugar",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "10.7g free liquid sugar per 100ml."
+      },
+      {
+        "id": "ing-pep-3",
+        "name": "Acidity Regulator (INS 338)",
+        "insNumber": "INS 338",
+        "purpose": "Acidulant",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Approved Food Acid",
+        "scientificContext": "Phosphoric acid linked to tooth enamel erosion."
+      },
+      {
+        "id": "ing-pep-4",
+        "name": "Colour (INS 150d)",
+        "insNumber": "INS 150d",
+        "purpose": "Caramel color",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Class IV Caramel",
+        "scientificContext": "Ammonia sulphite caramel."
+      },
+      {
+        "id": "ing-pep-5",
+        "name": "Caffeine (10.0 mg/100ml)",
+        "purpose": "Stimulant",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Max 145 ppm",
+        "scientificContext": "Dietary central nervous system stimulant."
+      }
     ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '43 kcal', flag: 'moderate' },
-      { nutrient: 'Sugars', amountPer100g: '10.6 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '0.0 g', flag: 'low' },
-      { nutrient: 'Sodium', amountPer100g: '11 mg', flag: 'low' },
-      { nutrient: 'Caffeine', amountPer100g: '10 mg', flag: 'moderate' }
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "43 kcal (180 kJ)",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "10.7 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "10.7 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "10.7 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "11.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "4.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Caffeine",
+        "amountPer100g": "10.0 mg",
+        "flag": "moderate"
+      }
     ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10012011000109', status: 'Compliant', summary: 'FSSAI carbonated beverage standards compliant.' }
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10012011000109",
+        "status": "Compliant",
+        "summary": "FSSAI carbonated beverage standards compliant."
+      }
     ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Delivers 26.5g of pure liquid sugar in a single 250ml can with zero nutrients and phosphoric acid.',
-      whyThisGrade: ['Liquid sugars absorb instantly', 'Phosphoric acid (INS 338) promotes dental erosion', 'Caramel IV (INS 150d) coloring'],
-      suggestedQuestions: ['What happens to blood sugar within 20 minutes of drinking Pepsi?']
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Delivers 26.8g of pure liquid sugar in a single 250ml can with zero micronutrients and enamel-eroding phosphoric acid.",
+      "whyThisGrade": [
+        "Beverage Nutri-Score Grade E (sugar exceeds 6g/100ml)",
+        "Phosphoric acid (INS 338) promotes dental erosion",
+        "Zero vitamins or minerals"
+      ],
+      "suggestedQuestions": [
+        "What happens to blood sugar within 20 minutes of drinking Pepsi?"
+      ]
     }
   },
-  {
-    id: 'prod-coca-cola-15',
-    barcode: '8901764012216',
-    name: 'Coca-Cola Carbonated Beverage',
-    brand: 'Coca-Cola',
-    category: 'food',
-    categoryLabel: 'Soft Drinks & Juices',
-    imageUrl: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=600&q=80',
-    packSize: '250ml Can (₹20)',
-    grade: 'E',
-    gradeScore: 10,
-    summary: 'Global cola formula with 10.6g sugar per 100ml, phosphoric acid acidulant, and caffeine.',
-    ingredients: [
-      { id: 'ing-coke-1', name: 'Carbonated Water', purpose: 'Fizz', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Carbonated water.' },
-      { id: 'ing-coke-2', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '10.6g free liquid sugar/100ml.' },
-      { id: 'ing-coke-3', name: 'Acidity Regulator (INS 338)', insNumber: 'INS 338', purpose: 'Acidulant', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Phosphoric acid.' },
-      { id: 'ing-coke-4', name: 'Colour (INS 150d) & Flavours', insNumber: 'INS 150d', purpose: 'Caramel & flavor', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Caramel IV.' }
+
+    {
+    "id": "prod-coca-cola-15",
+    "barcode": "8901764012216",
+    "name": "Coca-Cola Carbonated Beverage",
+    "brand": "Coca-Cola",
+    "category": "food",
+    "categoryLabel": "Soft Drinks & Juices",
+    "imageUrl": "https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=600&q=80",
+    "packSize": "250ml Can (₹20)",
+    "grade": "E",
+    "gradeScore": 10,
+    "summary": "Global cola formula with 10.6g liquid sugar per 100ml, phosphoric acid (INS 338), and caffeine.",
+    "ingredients": [
+      {
+        "id": "ing-coke-1",
+        "name": "Carbonated Water",
+        "purpose": "Fizz",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Carbonated water."
+      },
+      {
+        "id": "ing-coke-2",
+        "name": "Sugar",
+        "purpose": "Sweetener",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Standard",
+        "scientificContext": "10.6g free liquid sugar per 100ml."
+      },
+      {
+        "id": "ing-coke-3",
+        "name": "Acidity Regulator (INS 338)",
+        "insNumber": "INS 338",
+        "purpose": "Acidulant",
+        "riskLevel": "high",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Phosphoric acid."
+      },
+      {
+        "id": "ing-coke-4",
+        "name": "Colour (INS 150d) & Flavours",
+        "insNumber": "INS 150d",
+        "purpose": "Caramel & flavor",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Caramel IV."
+      },
+      {
+        "id": "ing-coke-5",
+        "name": "Caffeine (9.7 mg/100ml)",
+        "purpose": "Stimulant",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Mild caffeine stimulant."
+      }
     ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '44 kcal', flag: 'moderate' },
-      { nutrient: 'Sugars', amountPer100g: '10.6 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '0.0 g', flag: 'low' },
-      { nutrient: 'Sodium', amountPer100g: '10 mg', flag: 'low' }
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "44 kcal (184 kJ)",
+        "flag": "moderate"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "10.6 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "10.6 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "10.6 g",
+        "flag": "excessive"
+      },
+      {
+        "nutrient": "Natural Sugars",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "9.5 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "2.5 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Caffeine",
+        "amountPer100g": "9.7 mg",
+        "flag": "moderate"
+      }
     ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10012011000620', status: 'Compliant', summary: 'Hindustan Coca-Cola Beverages license.' }
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10012011000620",
+        "status": "Compliant",
+        "summary": "Hindustan Coca-Cola Beverages license."
+      }
     ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'One of the largest sources of simple dietary liquid sugar in urban nutrition.',
-      whyThisGrade: ['Liquid sugar causes rapid glycemic spikes', 'Enamel-eroding phosphoric acid', 'Zero micronutrients'],
-      suggestedQuestions: ['How much sugar is in a 750ml bottle of Coke?']
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "One of the largest sources of simple dietary liquid sugar in urban nutrition with 10.6g sugar per 100ml.",
+      "whyThisGrade": [
+        "Beverage Nutri-Score Grade E (sugar exceeds 6g/100ml)",
+        "Enamel-eroding phosphoric acid (INS 338)",
+        "Zero beneficial micronutrients"
+      ],
+      "suggestedQuestions": [
+        "How much sugar is in a 750ml bottle of Coke?"
+      ]
     }
   },
+
   {
     id: 'prod-coca-cola-bottle-15b',
     barcode: '8901764012914',
@@ -600,38 +2805,147 @@ export const FAMOUS_INDIAN_PRODUCTS: Product[] = [
       suggestedQuestions: ['Does Thums Up have more caffeine than Coca-Cola?']
     }
   },
-  {
-    id: 'prod-sprite-17',
-    barcode: '8901764032214',
-    name: 'Sprite Lime Carbonated Beverage',
-    brand: 'Sprite (Coca-Cola)',
-    category: 'food',
-    categoryLabel: 'Soft Drinks & Juices',
-    imageUrl: 'https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?auto=format&fit=crop&w=600&q=80',
-    packSize: '250ml Can (₹20)',
-    grade: 'E',
-    gradeScore: 11,
-    summary: 'Clear lemon-lime carbonated beverage with 11.8g sugar/100ml. Free of caffeine and caramel color, but highest in sugar.',
-    ingredients: [
-      { id: 'ing-spr-1', name: 'Carbonated Water', purpose: 'Base', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Water & carbon dioxide.' },
-      { id: 'ing-spr-2', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '11.8g sugar/100ml.' },
-      { id: 'ing-spr-3', name: 'Acidity Regulator (INS 330, INS 331)', insNumber: 'INS 330', purpose: 'Citric acid tang', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Citric acid & sodium citrate.' }
+    {
+    "id": "prod-coke-zero-15c",
+    "barcode": "8901764032214",
+    "name": "Coca-Cola Zero Sugar Soft Drink",
+    "brand": "Coca-Cola",
+    "category": "food",
+    "categoryLabel": "Soft Drinks & Juices",
+    "imageUrl": "https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=600&q=80",
+    "packSize": "300ml Can (₹35)",
+    "grade": "C",
+    "gradeScore": 55,
+    "summary": "Zero sugar cola formulated with intense non-nutritive artificial sweeteners (Aspartame INS 951, Acesulfame K INS 950) and phosphoric acid.",
+    "ingredients": [
+      {
+        "id": "ing-cz-1",
+        "name": "Carbonated Water",
+        "purpose": "Base",
+        "riskLevel": "safe",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Carbonated water."
+      },
+      {
+        "id": "ing-cz-2",
+        "name": "Acidity Regulators (INS 338, INS 331(iii))",
+        "insNumber": "INS 338",
+        "purpose": "Acidulant & buffer",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Phosphoric acid and sodium citrate."
+      },
+      {
+        "id": "ing-cz-3",
+        "name": "Sweeteners (INS 951, INS 950)",
+        "insNumber": "INS 951",
+        "purpose": "Intense artificial sweetness",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Warning Required",
+        "scientificContext": "Contains Aspartame and Acesulfame Potassium. Not recommended for children or phenylketonurics."
+      },
+      {
+        "id": "ing-cz-4",
+        "name": "Preservative (INS 211)",
+        "insNumber": "INS 211",
+        "purpose": "Antimicrobial",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Sodium benzoate."
+      },
+      {
+        "id": "ing-cz-5",
+        "name": "Caffeine (9.6 mg/100ml)",
+        "purpose": "Stimulant",
+        "riskLevel": "moderate",
+        "regulatoryStatusIndia": "FSSAI Approved",
+        "scientificContext": "Stimulant."
+      }
     ],
-    nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '48 kcal', flag: 'moderate' },
-      { nutrient: 'Sugars', amountPer100g: '11.8 g', flag: 'excessive' },
-      { nutrient: 'Total Fat', amountPer100g: '0.0 g', flag: 'low' }
+    "nutritionFacts": [
+      {
+        "nutrient": "Energy",
+        "amountPer100g": "0.3 kcal (1.2 kJ)",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Carbohydrates",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Total Sugars",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Added Sugars",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Protein",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Total Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Saturated Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Trans Fat",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Sodium",
+        "amountPer100g": "7.5 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Dietary Fibre",
+        "amountPer100g": "0.0 g",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Potassium",
+        "amountPer100g": "12.0 mg",
+        "flag": "low"
+      },
+      {
+        "nutrient": "Caffeine",
+        "amountPer100g": "9.6 mg",
+        "flag": "moderate"
+      }
     ],
-    regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10012011000620', status: 'Compliant', summary: 'FSSAI compliant.' }
+    "regulatoryNotices": [
+      {
+        "authority": "FSSAI",
+        "standardCode": "Lic. 10012011000620",
+        "status": "Compliant",
+        "summary": "Contains artificial sweeteners warning."
+      }
     ],
-    scientificEvidence: [],
-    geminiExplainer: {
-      theBigPicture: 'Caffeine-free and free of dark caramel dyes, but has the highest sugar among commercial soft drinks (nearly 12%).',
-      whyThisGrade: ['Extreme free sugar (11.8g/100ml)', 'Caffeine-free advantage', 'Clear without synthetic caramel color'],
-      suggestedQuestions: ['Is Sprite healthier than dark colas?']
+    "scientificEvidence": [],
+    "geminiExplainer": {
+      "theBigPicture": "Zero sugar eliminates caloric spikes, but relies on artificial sweeteners (Aspartame/Acesulfame K) and phosphoric acid.",
+      "whyThisGrade": [
+        "Zero sugar and zero calories",
+        "Carries caution for artificial sweeteners",
+        "Contains phosphoric acid"
+      ],
+      "suggestedQuestions": [
+        "Is Coke Zero better than regular Coke?"
+      ]
     }
   },
+
   {
     id: 'prod-real-mixed-fruit-18',
     barcode: '8901888006363',
