@@ -85,11 +85,56 @@ export class RatingService {
       };
     }
 
-    const nutriResult = computeNutriScore(product.nutrition);
+    const isBeverage =
+      product.isBeverage === true ||
+      product.nutrition?.isBeverage === true ||
+      /coca[- ]?cola|pepsi|thums\s*up|sprite|fanta|mirinda|frooti|maaza|slice|sting|red\s*bull|mountain\s*dew|limca|appy|juice|soda|drink|beverage|cola|sharbat|nectar|squash|iced\s*tea|carbonated/i.test(
+        `${product.name || ''} ${(product.tags || []).join(' ')} ${ingredientsText}`,
+      ) ||
+      (Boolean(product.nutrition?.sugars) &&
+        (product.nutrition?.satFat ?? 0) === 0 &&
+        (product.nutrition?.protein ?? 0) === 0 &&
+        (product.nutrition?.fibre ?? 0) === 0 &&
+        (product.nutrition?.energyKj ?? 0) < 1200);
+
+    const nutriResult = computeNutriScore({
+      ...product.nutrition,
+      isBeverage,
+    });
     grade = nutriResult.grade;
     score = nutriResult.score;
     reasons.push(...nutriResult.reasons);
     dataQuality = nutriResult.dataQuality;
+
+    // Hard high-sugar guardrails:
+    // Any high-sugar item MUST be D or E (never B or A)
+    const sugars = product.nutrition.sugars ?? 0;
+    if (isBeverage) {
+      if (sugars >= 8) {
+        if (grade === 'A' || grade === 'B' || grade === 'C') {
+          grade = sugars >= 10 ? 'E' : 'D';
+        }
+        warnings.push(
+          `High liquid sugar (${sugars}g/100ml) causes rapid glycemic spikes and increases metabolic risk.`,
+        );
+      } else if (sugars >= 4.5 && (grade === 'A' || grade === 'B')) {
+        grade = 'C';
+      }
+    } else {
+      if (sugars >= 25) {
+        if (grade === 'A' || grade === 'B' || grade === 'C') {
+          grade = sugars >= 35 ? 'E' : 'D';
+        }
+        warnings.push(
+          `High sugar (${sugars}g/100g) exceeds 50% of recommended daily sugar intake.`,
+        );
+      } else if (sugars >= 15 && (grade === 'A' || grade === 'B')) {
+        grade = 'D';
+        warnings.push(
+          `High sugar (${sugars}g/100g) exceeds FSSAI benchmark.`,
+        );
+      }
+    }
 
     // Palm oil penalty
     if (palmOil === 'yes') {

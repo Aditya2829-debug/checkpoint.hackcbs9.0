@@ -23,16 +23,27 @@ function mapBackendProductItem(doc: any): Product {
   const sodium = nutrition.sodiumMg || 0;
   const palm = !!doc.palmOil;
 
+  const isBeverage =
+    /coca[- ]?cola|pepsi|thums|sprite|fanta|mirinda|frooti|maaza|slice|sting|dew|limca|juice|soda|drink|beverage|cola/i.test(
+      `${name} ${brand}`,
+    ) || (sugars > 0 && satFat === 0 && (nutrition.protein || 0) === 0);
+
   if (kcal === 0 && sugars === 0 && !palm) {
     grade = 'A';
     gradeScore = 100;
-  } else if (sugars > 30 || satFat > 12 || (palm && sugars > 20)) {
+  } else if (isBeverage && sugars >= 10) {
+    grade = 'E';
+    gradeScore = 10;
+  } else if (isBeverage && sugars >= 6) {
+    grade = 'D';
+    gradeScore = 28;
+  } else if (sugars > 25 || satFat > 12 || (palm && sugars > 15)) {
     grade = 'E';
     gradeScore = 15;
-  } else if (sugars > 18 || satFat > 6 || sodium > 700 || palm) {
+  } else if (sugars > 15 || satFat > 6 || sodium > 700 || palm) {
     grade = 'D';
     gradeScore = 32;
-  } else if (sugars > 10 || satFat > 3 || sodium > 300) {
+  } else if (sugars > 8 || satFat > 3 || sodium > 300) {
     grade = 'C';
     gradeScore = 55;
   } else {

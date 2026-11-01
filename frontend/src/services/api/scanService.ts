@@ -45,7 +45,25 @@ export function transformScanResponseToProduct(res: BackendScanResponse, fallbac
   const barcode = res.product?.barcode || fallbackBarcode || 'UNKNOWN';
   const name = res.product?.name || `Product (${barcode})`;
   const brand = res.product?.brand || 'Brand';
-  const grade = (res.rating?.grade as HealthGrade) || 'C';
+  let grade = (res.rating?.grade as HealthGrade) || 'C';
+
+  // High Sugar Client-side Guardrail:
+  // Never allow high sugar products (sugars >= 7 in drinks or >= 15 in food) to show Grade A or B!
+  const sugars = res.product?.nutrition?.sugars ?? 0;
+  const isBeverage =
+    /coca[- ]?cola|pepsi|thums|sprite|fanta|mirinda|frooti|maaza|slice|sting|dew|limca|juice|soda|drink|beverage|cola/i.test(
+      `${name} ${brand}`,
+    ) || (sugars > 0 && (res.product?.nutrition?.satFat ?? 0) === 0 && (res.product?.nutrition?.protein ?? 0) === 0);
+
+  if (isBeverage && sugars >= 7) {
+    if (grade === 'A' || grade === 'B' || grade === 'C') {
+      grade = sugars >= 10 ? 'E' : 'D';
+    }
+  } else if (!isBeverage && sugars >= 15) {
+    if (grade === 'A' || grade === 'B') {
+      grade = sugars >= 25 ? 'E' : 'D';
+    }
+  }
 
   // Calculate a 0-100 score from Nutri-Score score
   let gradeScore = 50;

@@ -78,6 +78,41 @@ describe('Phase 1 - Rating Engine Unit Tests', () => {
       expect(saltToSodiumMg(2.5)).toBe(1000);
       expect(kcalToKj(100)).toBeCloseTo(418.4, 2);
     });
+
+    it('Coca-Cola beverage with 10.6g sugar receives Grade E or D, NEVER Grade B', () => {
+      const coke = {
+        energyKj: 184,
+        sugars: 10.6,
+        satFat: 0,
+        sodiumMg: 8.5,
+        fibre: 0,
+        protein: 0,
+        fruitVegPct: 0,
+        isBeverage: true,
+      };
+      const res = computeNutriScore(coke);
+      expect(['D', 'E']).toContain(res.grade);
+      expect(res.grade).not.toBe('B');
+      expect(res.grade).not.toBe('A');
+      expect(res.reasons.some((r) => r.toLowerCase().includes('high sugar'))).toBe(true);
+    });
+
+    it('solid food with 25g sugar is downgraded to D or E', () => {
+      const sweetFood = {
+        energyKj: 1600,
+        sugars: 25,
+        satFat: 3,
+        sodiumMg: 150,
+        fibre: 1,
+        protein: 3,
+        fruitVegPct: 0,
+        isBeverage: false,
+      };
+      const res = computeNutriScore(sweetFood);
+      expect(['D', 'E']).toContain(res.grade);
+      expect(res.grade).not.toBe('B');
+      expect(res.grade).not.toBe('A');
+    });
   });
 
   describe('Palm Oil Detection', () => {

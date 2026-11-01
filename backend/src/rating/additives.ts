@@ -7,9 +7,9 @@ const E_NUMBER_REGEX = /\bE[-\s]?([1-9]\d{2,3}[a-z]*(?:\([a-z0-9]+\))?)/gi;
 const INS_NUMBER_REGEX =
   /\bINS[-\s]?([1-9]\d{2,3}[a-z]*(?:\s*\([a-z0-9]+\))?)/gi;
 
-// Matches common functional classes followed directly by INS-style numbers e.g. "Raising Agents 500(ii)"
+// Matches common functional classes followed directly by INS-style numbers e.g. "Raising Agents 500(ii)" or "ACIDITY REGULATOR (338)"
 const FUNCTIONAL_CLASS_CODE_REGEX =
-  /\b(?:Raising Agent[s]?|Emulsifier[s]?|Stabiliser[s]?|Stabilizer[s]?|Acidity Regulator[s]?|Preservative[s]?|Antioxidant[s]?|Colour[s]?|Color[s]?|Flavo[u]?r Enhancer[s]?|Thickener[s]?|Humectant[s]?|Sweetener[s]?|Anti-caking Agent[s]?)\s+([1-9]\d{2,3}[a-z]*(?:\s*\([a-z0-9]+\))?)/gi;
+  /\b(?:Raising Agent[s]?|Emulsifier[s]?|Stabiliser[s]?|Stabilizer[s]?|Acidity Regulator[s]?|Preservative[s]?|Antioxidant[s]?|Colour[s]?|Color[s]?|Flavo[u]?r Enhancer[s]?|Thickener[s]?|Humectant[s]?|Sweetener[s]?|Anti-caking Agent[s]?)\s*\(?\s*([1-9]\d{2,3}[a-z]*(?:\s*\([a-z0-9]+\))?)\)?/gi;
 
 // Matches bracketed additive groups e.g. "Raising Agents [503(ii), 500(ii)]" or "[322, 471, 472e]"
 const BRACKETED_ADDITIVES_REGEX =

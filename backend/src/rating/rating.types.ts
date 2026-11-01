@@ -11,6 +11,7 @@ export interface NutriScoreInput {
   fibre?: number;
   protein?: number;
   fruitVegPct?: number;
+  isBeverage?: boolean;
 }
 
 export interface NutriScoreBreakdown {
@@ -42,6 +43,8 @@ export interface AdditivesResult {
 
 export interface RatingProductInput {
   category: ProductCategory;
+  name?: string | null;
+  isBeverage?: boolean;
   nutrition?: NutriScoreInput;
   ingredients: string[];
   ingredientsText?: string;

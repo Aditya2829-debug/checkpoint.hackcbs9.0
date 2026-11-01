@@ -219,6 +219,7 @@ export class ScanService {
 
     const ratingInput: RatingProductInput = {
       category,
+      name: extraction.productName,
       nutrition: {
         energyKj: extraction.per100g.energyKj ?? undefined,
         sugars: extraction.per100g.sugars ?? undefined,
@@ -302,6 +303,7 @@ export class ScanService {
 
     const ratingInput: RatingProductInput = {
       category,
+      name: (doc.name as string) ?? undefined,
       nutrition: nutrition
         ? {
             energyKj,
@@ -345,6 +347,7 @@ export class ScanService {
 
     const ratingInput: RatingProductInput = {
       category,
+      name: extraction?.productName ?? undefined,
       nutrition: extraction.per100g
         ? {
             energyKj: extraction.per100g.energyKj ?? undefined,
@@ -464,6 +467,7 @@ export class ScanService {
 
       const ratingInput: RatingProductInput = {
         category: 'food',
+        name: productName,
         nutrition: {
           energyKj,
           sugars,

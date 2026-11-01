@@ -529,6 +529,45 @@ export const FAMOUS_INDIAN_PRODUCTS: Product[] = [
     }
   },
   {
+    id: 'prod-coca-cola-bottle-15b',
+    barcode: '8901764012914',
+    name: 'Coca-Cola (Original Taste)',
+    brand: 'The Coca-Cola Company',
+    category: 'food',
+    categoryLabel: 'Soft Drinks & Juices',
+    imageUrl: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=600&q=80',
+    packSize: '750ml Bottle (₹40)',
+    grade: 'E',
+    gradeScore: 10,
+    summary: 'High sugar (10.6g/100ml) carbonated soft drink with phosphoric acid and caramel colour IV (150d).',
+    ingredients: [
+      { id: 'ing-coke-b1', name: 'Carbonated Water', purpose: 'Solvent & Carbonation', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Carbonated water base.' },
+      { id: 'ing-coke-b2', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '10.6g simple liquid sugars per 100ml.' },
+      { id: 'ing-coke-b3', name: 'Acidity Regulator (INS 338)', insNumber: 'INS 338', purpose: 'Acidulant', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Phosphoric acid linked to dental enamel erosion.' },
+      { id: 'ing-coke-b4', name: 'Colour (INS 150d)', insNumber: 'INS 150d', purpose: 'Colourant', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Caramel Colour Class IV (ammonia-sulphite process).' },
+      { id: 'ing-coke-b5', name: 'Caffeine (8.7 mg/100 g)', purpose: 'Stimulant', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Dietary central nervous system stimulant.' }
+    ],
+    nutritionFacts: [
+      { nutrient: 'Energy', amountPer100g: '44 kcal (184 kJ)', flag: 'moderate' },
+      { nutrient: 'Sugars', amountPer100g: '10.6 g', flag: 'excessive' },
+      { nutrient: 'Total Fat', amountPer100g: '0.0 g', flag: 'low' },
+      { nutrient: 'Sodium', amountPer100g: '8.5 mg', flag: 'low' }
+    ],
+    regulatoryNotices: [
+      { authority: 'FSSAI', standardCode: 'Lic. 10012011000620', status: 'Compliant', summary: 'Hindustan Coca-Cola Beverages license.' }
+    ],
+    scientificEvidence: [],
+    geminiExplainer: {
+      theBigPicture: 'Extremely high free sugar concentration. A single bottle contains more sugar than the entire daily recommended limit.',
+      whyThisGrade: [
+        'High sugar penalty: 10.6 g/100 ml liquid sugar exceeds daily healthy limits',
+        'Excessive free sugar (10.6g/100ml) causes steep glucose spikes',
+        'Contains enamel-eroding Acidity Regulator (INS 338) & Colour (INS 150d)'
+      ],
+      suggestedQuestions: ['What happens to the body within 1 hour of drinking Coca-Cola?', 'What are healthy sugar-free beverage alternatives?']
+    }
+  },
+  {
     id: 'prod-thums-up-16',
     barcode: '8901764022215',
     name: 'Thums Up Charged Carbonated Drink',
