@@ -90,75 +90,91 @@ export const WomenHygieneScreen: React.FC = () => {
         </p>
       </div>
 
-      {/* Product Spec Card */}
-      <div className="p-3.5 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-3">
-        <div className="relative aspect-[16/10] rounded-2xl bg-[#EEE7FA] dark:bg-[#251D33] border border-[#111F15]/15 overflow-hidden">
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-          <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-[#C5F82A] text-[#111F15] border border-[#111F15] text-[9px] font-black uppercase tracking-wider shadow-sm">
-            {language === 'hi' ? '12 का पैक' : 'PACK OF 12'}
-          </span>
-          <div className="absolute bottom-2 left-2 right-2 bg-white/90 dark:bg-black/80 px-2 py-1 rounded-lg text-[9px] font-mono font-bold flex justify-between">
-            <span>{language === 'hi' ? 'प्रकार' : 'Form Factor'}</span>
-            <span>{language === 'hi' ? 'विंग्स के साथ अल्ट्रा थिन' : 'Ultra Thin with Wings'}</span>
-          </div>
-        </div>
-
-        <div>
+      {/* Product Details Header (Compact, No Image) */}
+      <div className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-2">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <span className="text-[10px] font-bold text-[#7050A8] dark:text-[#DAD4E6] uppercase tracking-wider block">
             {language === 'hi' ? '🌸 अंतरंग स्वच्छता एवं मासिक धर्म स्वास्थ्य' : '🌸 Intimate Hygiene & Menstrual Health'}
           </span>
-          <h1 className="text-base font-black font-['Plus_Jakarta_Sans'] leading-tight mt-0.5">
-            {product.name}
-          </h1>
-          <p className="text-xs text-[#404940] dark:text-[#9BAA9E] mt-1 leading-snug">
-            {product.summary}
-          </p>
+          <span className="text-[10px] font-mono text-[#69766D] dark:text-[#9BAA9E]">
+            #{product.barcode}
+          </span>
         </div>
+        <h1 className="text-xl font-black font-['Plus_Jakarta_Sans'] leading-tight">
+          {product.name}
+        </h1>
+        <p className="text-xs text-[#404940] dark:text-[#9BAA9E] leading-snug">
+          {product.summary}
+        </p>
       </div>
 
       {/* Grade Hero Card */}
-      <div className="p-4 rounded-3xl bg-[#EEE7FA] dark:bg-[#251D33] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-3 text-center">
-        <div className="flex items-center justify-between">
-          <div className="w-14 h-14 rounded-2xl bg-[#5EEAD4] text-[#111F15] border-2 border-[#111F15] flex flex-col items-center justify-center font-black shadow-sm">
-            <span className="text-[8px] uppercase tracking-widest leading-none">{t('nutriGrade')}</span>
-            <span className="text-2xl leading-none font-['Plus_Jakarta_Sans']">A</span>
+      {(() => {
+        const gradeColorMap: Record<string, { bg: string; text: string }> = {
+          A: { bg: 'bg-[#15803D]', text: 'text-white' }, // Good Green
+          B: { bg: 'bg-[#22C55E]', text: 'text-white' }, // Good Green
+          C: { bg: 'bg-[#EAB308]', text: 'text-[#111F15]' }, // 3: Yellow
+          D: { bg: 'bg-[#F87171]', text: 'text-white' }, // Below 3: Mild Red
+          E: { bg: 'bg-[#DC2626]', text: 'text-white' }, // Below 3: Deep Red
+        };
+        const colors = gradeColorMap[product.grade] || gradeColorMap.A;
+
+        const scoreOutOf5 = {
+          A: '5 / 5',
+          B: '4 / 5',
+          C: '3 / 5',
+          D: '2 / 5',
+          E: '1 / 5',
+        }[product.grade] || '5 / 5';
+
+        const displayScore100 = {
+          A: Math.max(88, product.gradeScore || 96),
+          B: Math.min(85, Math.max(70, product.gradeScore || 80)),
+          C: Math.min(65, Math.max(50, product.gradeScore || 55)),
+          D: Math.min(45, Math.max(25, (product.gradeScore > 50 ? 35 : (product.gradeScore || 35)))),
+          E: Math.min(20, Math.max(5, (product.gradeScore > 30 ? 15 : (product.gradeScore || 15)))),
+        }[product.grade] ?? product.gradeScore;
+
+        return (
+          <div className="p-4 rounded-3xl bg-[#EEE7FA] dark:bg-[#251D33] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-3 text-center">
+            <div className="flex items-center justify-between">
+              <div className={`w-14 h-14 rounded-2xl ${colors.bg} ${colors.text} border-2 border-[#111F15] flex flex-col items-center justify-center font-black shadow-sm`}>
+                <span className="text-[8px] uppercase tracking-widest leading-none">{t('nutriGrade')}</span>
+                <span className="text-2xl leading-none font-['Plus_Jakarta_Sans']">{product.grade}</span>
+              </div>
+
+              <div className="flex-1 text-left pl-3">
+                <span className="px-2 py-0.5 rounded-full bg-[#C5F82A] text-[#111F15] text-[9px] font-black border border-[#111F15] uppercase">
+                  {product.grade === 'A' || product.grade === 'B'
+                    ? (language === 'hi' ? 'सुरक्षित एवं प्रमाणित' : 'SAFE & VERIFIED')
+                    : (language === 'hi' ? 'उच्च जोखिम सामग्री' : 'HIGH CONCERN')}
+                </span>
+                <h3 className="text-sm font-black font-['Plus_Jakarta_Sans'] mt-0.5">
+                  Score: {scoreOutOf5} ({displayScore100}/100)
+                </h3>
+                <p className="text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
+                  {language === 'hi' ? 'म्यूकोसल सुरक्षा एवं BIS IS 5405:2019 परीक्षण' : 'Mucosal safety & BIS IS 5405:2019 benchmark'}
+                </p>
+              </div>
+            </div>
+
+            {/* Purity Bar */}
+            <div className="bg-[#C5F82A] text-[#111F15] py-2 px-3 rounded-2xl border-2 border-[#111F15] text-xs font-black tracking-wider uppercase font-mono shadow-[2px_2px_0px_#111F15]">
+              {language === 'hi' ? `शुद्धता रेटिंग ${displayScore100}/100` : `PURITY RATING ${displayScore100}/100`}
+            </div>
+
+            {/* Pills */}
+            <div className="flex flex-wrap gap-1 justify-center pt-1">
+              <span className="px-2 py-0.5 rounded-full bg-white dark:bg-[#1A2A1F] border border-[#111F15]/20 text-[9px] font-bold">
+                {language === 'hi' ? 'उच्च जैव-अनुकूलता' : 'High Material Biocompatibility'}
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-white dark:bg-[#1A2A1F] border border-[#111F15]/20 text-[9px] font-bold">
+                {language === 'hi' ? 'क्लोरीन मुक्त (TCF)' : 'Elemental Chlorine Free'}
+              </span>
+            </div>
           </div>
-
-          <div className="flex-1 text-left pl-3">
-            <span className="px-2 py-0.5 rounded-full bg-[#C5F82A] text-[#111F15] text-[9px] font-black border border-[#111F15] uppercase">
-              {language === 'hi' ? 'शून्य जलन पैदा करने वाले तत्व' : 'ZERO IRRITANTS'}
-            </span>
-            <h3 className="text-sm font-black font-['Plus_Jakarta_Sans'] mt-0.5">
-              {language === 'hi' ? 'अल्ट्रा-क्लीन और सुरक्षित' : 'Ultra-Clean Profile'}
-            </h3>
-            <p className="text-[10px] text-[#69766D] dark:text-[#9BAA9E]">
-              {language === 'hi' ? 'म्यूकोसल सुरक्षा में शीर्ष 0.5% बेंचमार्क' : 'Top 0.5% benchmark in mucosal safety'}
-            </p>
-          </div>
-        </div>
-
-        {/* Purity Bar */}
-        <div className="bg-[#C5F82A] text-[#111F15] py-2 px-3 rounded-2xl border-2 border-[#111F15] text-xs font-black tracking-wider uppercase font-mono shadow-[2px_2px_0px_#111F15]">
-          {language === 'hi' ? 'शुद्धता रेटिंग 98/100' : 'PURITY RATING 98/100'}
-        </div>
-
-        {/* Pills */}
-        <div className="flex flex-wrap gap-1 justify-center pt-1">
-          <span className="px-2 py-0.5 rounded-full bg-white dark:bg-[#1A2A1F] border border-[#111F15]/20 text-[9px] font-bold">
-            {language === 'hi' ? 'उच्च जैव-अनुकूलता' : 'High Material Biocompatibility'}
-          </span>
-          <span className="px-2 py-0.5 rounded-full bg-white dark:bg-[#1A2A1F] border border-[#111F15]/20 text-[9px] font-bold">
-            {language === 'hi' ? 'क्लोरीन मुक्त (TCF)' : 'Elemental Chlorine Free'}
-          </span>
-          <span className="px-2 py-0.5 rounded-full bg-white dark:bg-[#1A2A1F] border border-[#111F15]/20 text-[9px] font-bold">
-            {language === 'hi' ? 'डाइऑक्सिन मुक्त (<0.01ppt)' : 'Dioxin Undetected'}
-          </span>
-        </div>
-      </div>
+        );
+      })()}
 
       {/* 5-Layer Anatomical Breakdown */}
       <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-3">

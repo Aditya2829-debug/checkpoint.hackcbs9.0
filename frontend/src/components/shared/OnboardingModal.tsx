@@ -22,7 +22,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
   const { language, setLanguage, t } = useLanguageStore();
   const { profile, updateName, toggleAllergy, toggleAdditiveToAvoid, toggleHygieneStandard } = useUserStore();
 
-  const [name, setName] = useState(profile.name || '');
+  const [name, setName] = useState(
+    profile.name || (typeof localStorage !== 'undefined' ? localStorage.getItem('checkpoint_user_name') || '' : '')
+  );
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(language);
 
   // Preference selections state

@@ -9,13 +9,21 @@ interface UserStoreState {
   updateName: (name: string) => void;
 }
 
+const getInitialName = (): string => {
+  try {
+    return localStorage.getItem('checkpoint_user_name') || '';
+  } catch {
+    return '';
+  }
+};
+
 export const useUserStore = create<UserStoreState>((set) => ({
   profile: {
     id: 'user-001',
-    name: 'Aditya Sharma',
-    email: 'aditya.sharma@example.com',
+    name: getInitialName(),
+    email: '',
     memberSince: 'October 2026',
-    totalScans: 48,
+    totalScans: 0,
     preferences: {
       allergies: ['Peanuts / Groundnuts', 'Gluten'],
       dietaryRestrictions: [
@@ -81,11 +89,15 @@ export const useUserStore = create<UserStoreState>((set) => ({
       };
     }),
 
-  updateName: (name) =>
+  updateName: (name: string) => {
+    try {
+      localStorage.setItem('checkpoint_user_name', name);
+    } catch {}
     set((state) => ({
       profile: {
         ...state.profile,
         name,
       },
-    })),
+    }));
+  },
 }));

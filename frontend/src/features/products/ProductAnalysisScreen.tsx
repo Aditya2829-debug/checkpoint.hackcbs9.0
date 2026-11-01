@@ -117,49 +117,60 @@ export const ProductAnalysisScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Product Image & Spec Card */}
-      <div className="p-3.5 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-3">
-        <div className="relative aspect-[16/10] rounded-2xl bg-[#EDF6EA] dark:bg-[#15271B] border border-[#111F15]/15 overflow-hidden">
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-          <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-[#C5F82A] text-[#111F15] border border-[#111F15] text-[9px] font-black uppercase tracking-wider shadow-sm">
-            {language === 'hi' ? '100% सत्यापित लैब' : 'ROASTED 100%'}
+      {/* Product Spec Card (Clean, No Image) */}
+      <div className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-2">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-md bg-[#5EEAD4]/30 text-[#005128] dark:text-[#5EEAD4] text-[10px] font-extrabold uppercase border border-[#111F15]/20">
+              {product.categoryLabel}
+            </span>
+            {product.brand && (
+              <span className="text-[11px] font-black tracking-wider uppercase text-[#005128] dark:text-[#D7FF63]">
+                {product.brand}
+              </span>
+            )}
+          </div>
+          <span className="text-[10px] font-mono font-bold text-[#69766D] dark:text-[#9BAA9E]">
+            {language === 'hi' ? 'बारकोड:' : 'Barcode:'} #{product.barcode}
           </span>
         </div>
 
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md bg-[#5EEAD4]/30 text-[#005128] text-[9px] font-extrabold uppercase border border-[#111F15]/20">
-              {product.categoryLabel}
-            </span>
-            <span className="text-[10px] font-mono text-[#69766D] dark:text-[#9BAA9E]">
-              {language === 'hi' ? 'बारकोड:' : 'Barcode:'} {product.barcode}
-            </span>
-          </div>
+        <h1 className="text-xl sm:text-2xl font-black font-['Plus_Jakarta_Sans'] leading-tight">
+          {product.name}
+        </h1>
 
-          <h1 className="text-lg font-black font-['Plus_Jakarta_Sans'] leading-tight mt-1">
-            {product.name}
-          </h1>
-
-          <p className="text-xs text-[#404940] dark:text-[#9BAA9E] mt-1 leading-snug">
-            {product.summary}
-          </p>
-        </div>
+        <p className="text-xs text-[#404940] dark:text-[#9BAA9E] leading-snug">
+          {product.summary}
+        </p>
       </div>
 
       {/* Grade Hero Card */}
       {(() => {
+        // Below 3: D is Mild Red, E goes Redder (Deep Red). Good is Green.
         const gradeColorMap: Record<string, { bg: string; text: string; badge: string; border: string }> = {
-          A: { bg: 'bg-[#15803D]', text: 'text-white', badge: 'bg-[#C5F82A] text-[#111F15]', border: 'border-[#15803D]' },
-          B: { bg: 'bg-[#84CC16]', text: 'text-[#111F15]', badge: 'bg-[#111F15] text-white', border: 'border-[#84CC16]' },
-          C: { bg: 'bg-[#EAB308]', text: 'text-[#111F15]', badge: 'bg-[#111F15] text-white', border: 'border-[#EAB308]' },
-          D: { bg: 'bg-[#F97316]', text: 'text-white', badge: 'bg-[#111F15] text-white', border: 'border-[#F97316]' },
-          E: { bg: 'bg-[#EF4444]', text: 'text-white', badge: 'bg-[#111F15] text-white', border: 'border-[#EF4444]' },
+          A: { bg: 'bg-[#15803D]', text: 'text-white', badge: 'bg-[#C5F82A] text-[#111F15]', border: 'border-[#15803D]' }, // Good Green
+          B: { bg: 'bg-[#22C55E]', text: 'text-white', badge: 'bg-[#111F15] text-white', border: 'border-[#22C55E]' }, // Good Green
+          C: { bg: 'bg-[#EAB308]', text: 'text-[#111F15]', badge: 'bg-[#111F15] text-white', border: 'border-[#EAB308]' }, // 3: Yellow
+          D: { bg: 'bg-[#F87171]', text: 'text-white', badge: 'bg-[#111F15] text-white', border: 'border-[#EF4444]' }, // Below 3: Mild Red
+          E: { bg: 'bg-[#DC2626]', text: 'text-white', badge: 'bg-[#111F15] text-white', border: 'border-[#991B1B]' }, // Below 3: Goes Redder
         };
         const colors = gradeColorMap[product.grade] || gradeColorMap.C;
+
+        const scoreOutOf5 = {
+          A: '5 / 5',
+          B: '4 / 5',
+          C: '3 / 5',
+          D: '2 / 5',
+          E: '1 / 5',
+        }[product.grade] || '3 / 5';
+
+        const displayScore100 = {
+          A: Math.max(88, product.gradeScore || 95),
+          B: Math.min(85, Math.max(70, product.gradeScore || 80)),
+          C: Math.min(65, Math.max(50, product.gradeScore || 55)),
+          D: Math.min(45, Math.max(25, (product.gradeScore > 50 ? 32 : (product.gradeScore || 30)))),
+          E: Math.min(20, Math.max(5, (product.gradeScore > 30 ? 15 : (product.gradeScore || 15)))),
+        }[product.grade] ?? product.gradeScore;
 
         const gradeStatusKey = {
           A: 'gradeA',
@@ -170,26 +181,27 @@ export const ProductAnalysisScreen: React.FC = () => {
         }[product.grade] || 'comprehensiveAudit';
 
         return (
-          <div className="p-4 rounded-3xl bg-gradient-to-b from-[#E2F7D8] to-[#D0F0C0] dark:from-[#1A2E1F] dark:to-[#122316] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-3 text-center">
+          <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-b from-[#E2F7D8] to-[#D0F0C0] dark:from-[#1A2E1F] dark:to-[#122316] border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] dark:shadow-none space-y-3.5 text-center">
             <span className="inline-block px-3 py-0.5 rounded-full bg-white/70 dark:bg-black/40 border border-[#111F15]/20 text-[9px] font-mono font-black uppercase tracking-wider">
               {t('nutriScoreEngine')}
             </span>
 
             {/* Big Grade Box */}
             <div className="flex justify-center">
-              <div className={`relative ${colors.bg} ${colors.text} border-2 border-[#111F15] shadow-[3px_3px_0px_#111F15] rounded-3xl px-9 py-3 text-center`}>
-                <span className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-md bg-[#5EEAD4] text-[#111F15] border border-[#111F15] text-[9px] font-black uppercase">
+              <div className={`relative ${colors.bg} ${colors.text} border-3 border-[#111F15] shadow-[4px_4px_0px_#111F15] rounded-3xl px-10 py-4 text-center min-w-[210px]`}>
+                <span className="absolute -top-2.5 -right-2.5 px-2.5 py-0.5 rounded-md bg-[#C5F82A] text-[#111F15] border border-[#111F15] text-[9px] font-black uppercase shadow-sm">
                   {t('verified')}
                 </span>
-                <span className="text-[10px] font-extrabold font-mono tracking-widest block uppercase opacity-85">
+                <span className="text-[10px] font-extrabold font-mono tracking-widest block uppercase opacity-90">
                   {t('nutriGrade')}
                 </span>
-                <span className="text-5xl font-black font-['Plus_Jakarta_Sans'] leading-none">
+                <span className="text-5xl sm:text-6xl font-black font-['Plus_Jakarta_Sans'] leading-none my-1 block">
                   {product.grade}
                 </span>
-                <span className="text-[11px] font-mono font-bold block mt-1 opacity-90">
-                  {product.gradeScore} / 100 {t('score')}
-                </span>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 text-white text-xs font-mono font-black mt-1">
+                  <span>Score: {scoreOutOf5}</span>
+                  <span className="opacity-80">({displayScore100}/100)</span>
+                </div>
               </div>
             </div>
 

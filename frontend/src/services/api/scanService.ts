@@ -58,6 +58,13 @@ export function transformScanResponseToProduct(res: BackendScanResponse, fallbac
     else gradeScore = Math.max(10, 30 - (s - 19) * 2);
   }
 
+  // Ensure gradeScore strictly reflects the final evaluated grade (handling palm oil downgrade)
+  if (grade === 'A') gradeScore = Math.max(88, gradeScore);
+  else if (grade === 'B') gradeScore = Math.min(85, Math.max(70, gradeScore));
+  else if (grade === 'C') gradeScore = Math.min(65, Math.max(50, gradeScore));
+  else if (grade === 'D') gradeScore = Math.min(45, Math.max(25, gradeScore > 50 ? 32 : gradeScore));
+  else if (grade === 'E') gradeScore = Math.min(20, Math.max(5, gradeScore > 30 ? 15 : gradeScore));
+
   // Parse ingredients and classify harmful chemicals / additives
   const ingredients: Ingredient[] = (res.product?.ingredients || []).map((ing, idx) => {
     const lower = ing.toLowerCase();

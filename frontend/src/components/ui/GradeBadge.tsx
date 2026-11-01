@@ -17,24 +17,24 @@ export const GradeBadge: React.FC<GradeBadgeProps> = ({
 }) => {
   const gradeStyles = {
     A: {
-      bg: 'bg-[#00C6A5] text-white -rotate-[1.5deg]',
-      label: 'Grade A • Clean & Safe',
+      bg: 'bg-[#15803D] text-white -rotate-[1.5deg]',
+      label: 'Grade A • Clean & Safe (5/5)',
     },
     B: {
-      bg: 'bg-[#D7FF63] text-[#0F3822] rotate-1',
-      label: 'Grade B • Moderate Watch',
+      bg: 'bg-[#22C55E] text-white rotate-1',
+      label: 'Grade B • Good Choice (4/5)',
     },
     C: {
-      bg: 'bg-[#FFD154] text-[#0F3822] rotate-0',
-      label: 'Grade C • Cautionary',
+      bg: 'bg-[#EAB308] text-[#111F15] rotate-0',
+      label: 'Grade C • Moderate (3/5)',
     },
     D: {
-      bg: 'bg-[#FF8A00] text-white -rotate-1',
-      label: 'Grade D • High Concern',
+      bg: 'bg-[#F87171] text-white -rotate-1',
+      label: 'Grade D • Mild Red (2/5)',
     },
     E: {
-      bg: 'bg-[#E53935] text-white -rotate-2',
-      label: 'Grade E • Severe Hazard',
+      bg: 'bg-[#DC2626] text-white -rotate-2',
+      label: 'Grade E • Deep Red (1/5)',
     },
   }[grade];
 
