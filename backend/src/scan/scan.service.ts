@@ -76,10 +76,17 @@ export class ScanService {
   }
 
   async scan(options: ScanOptions): Promise<ScanResponse> {
-    const normalizedBarcode = normalizeBarcode(options.barcode);
+    const hasImage = Boolean(options.image?.imageBase64);
+    let normalizedBarcode: string;
+    if (hasImage && options.barcode && !/^\d{8,14}$/.test(options.barcode.trim())) {
+      normalizedBarcode = `${Date.now()}`;
+    } else {
+      normalizedBarcode = normalizeBarcode(options.barcode || `${Date.now()}`);
+    }
 
-    // Sub-millisecond in-memory cache hit (no I/O)
-    if (!options.image?.imageBase64) {
+    // ─── If NO image was provided: check exact barcode number in DB & cache ──
+    if (!hasImage) {
+      // Sub-millisecond in-memory cache hit (no I/O)
       const memHit = this.memoryCache.get(normalizedBarcode);
       if (memHit && Date.now() < memHit.expiresAt) {
         this.logger.log(
@@ -87,35 +94,43 @@ export class ScanService {
         );
         return memHit.response;
       }
-    }
 
-    // Parallel DB and cache lookups to eliminate sequential network roundtrip latency
-    const [dbProduct, cachedDoc] = await Promise.all([
-      this.productsRepository.findByBarcode(normalizedBarcode),
-      this.scanCacheRepository.findByBarcode(normalizedBarcode),
-    ]);
+      // Exact barcode lookups in MongoDB and scan_cache
+      const [dbProduct, cachedDoc] = await Promise.all([
+        this.productsRepository.findByBarcode(normalizedBarcode),
+        this.scanCacheRepository.findByBarcode(normalizedBarcode),
+      ]);
 
-    // ─── 1) IF document exists in the product collection ─────────────────────
-    if (dbProduct) {
+      // 1) Match EXACT barcode number with MongoDB
+      if (dbProduct) {
+        this.logger.log(
+          `[Branch 1] Product found in MongoDB by exact barcode: ${normalizedBarcode}`,
+        );
+        const res = this.handleDatabaseProduct(normalizedBarcode, dbProduct);
+        this.setMemoryCache(normalizedBarcode, res);
+        return res;
+      }
+
+      // 2) Match EXACT barcode number in scan_cache
+      if (cachedDoc) {
+        this.logger.log(
+          `[Branch 2] Product found in scan_cache by exact barcode: ${normalizedBarcode}`,
+        );
+        const res = this.handleCachedProduct(normalizedBarcode, cachedDoc);
+        this.setMemoryCache(normalizedBarcode, res);
+        return res;
+      }
+
       this.logger.log(
-        `[Branch 1] Product found in database for barcode: ${normalizedBarcode}`,
+        `[Branch 3] Exact barcode ${normalizedBarcode} not found in DB; directly delegating to Gemini AI`,
       );
-      const res = this.handleDatabaseProduct(normalizedBarcode, dbProduct);
-      this.setMemoryCache(normalizedBarcode, res);
-      return res;
-    }
-
-    // ─── 2) ELSE IF document exists in the cache collection (scan_cache) ────
-    if (cachedDoc) {
+    } else {
       this.logger.log(
-        `[Branch 2] Product found in scan_cache for barcode: ${normalizedBarcode}`,
+        `[OCR Image] Direct label image analysis with Gemini AI (barcode: ${normalizedBarcode || 'none'})`,
       );
-      const res = this.handleCachedProduct(normalizedBarcode, cachedDoc);
-      this.setMemoryCache(normalizedBarcode, res);
-      return res;
     }
 
-    // ─── 3) ELSE directly delegate to Gemini API (no user prompt needed) ────
+    // ─── 3) ELSE directly delegate to Gemini API ────────────────────────────
     if (!this.geminiService.isConfigured()) {
       if (!options.image || !options.image.imageBase64) {
         this.logger.log(
@@ -132,9 +147,6 @@ export class ScanService {
       );
     }
 
-    this.logger.log(
-      `[Branch 3] Barcode ${normalizedBarcode} not in DB; directly querying Gemini AI to extract & rate`,
-    );
     let extraction: LabelExtractionResult;
     try {
       extraction = await this.geminiService.extractFromLabel({
@@ -157,56 +169,6 @@ export class ScanService {
         };
       }
       throw err;
-    }
-
-    // Check if the extracted product name matches an official database record
-    if (extraction.productName) {
-      try {
-        const matchedDbProduct =
-          await this.productsRepository.findByNameOrKeyword(
-            extraction.productName,
-          );
-        if (matchedDbProduct) {
-          this.logger.log(
-            `[Branch 3 -> DB Name Match] Gemini identified "${extraction.productName}" which matches official DB record "${matchedDbProduct.name}"!`,
-          );
-          const matchedDoc = matchedDbProduct as any;
-          const res = this.handleDatabaseProduct(
-            normalizedBarcode,
-            matchedDoc,
-          );
-          // Persist to scan_cache so future barcode scans are instant
-          await this.scanCacheRepository.save({
-            barcode: normalizedBarcode,
-            category: res.product?.category || 'food',
-            extraction: {
-              productName: matchedDoc.name || 'Unknown Product',
-              brand: matchedDoc.brand || 'Unknown Brand',
-              category: res.product?.category || 'food',
-              per100g: {
-                energyKcal: matchedDoc.nutrition?.caloriesKcal,
-                carbs: matchedDoc.nutrition?.carbs,
-                protein: matchedDoc.nutrition?.protein,
-                totalFat: matchedDoc.nutrition?.totalFat,
-                satFat: matchedDoc.nutrition?.satFat,
-                sugars: matchedDoc.nutrition?.sugars,
-                sodiumMg: matchedDoc.nutrition?.sodiumMg,
-              },
-              ingredients: res.product?.ingredients || [],
-              ingredientsText: matchedDoc.ingredientsText,
-              confidence: 0.99,
-            },
-            createdAt: new Date(),
-            source: 'gemini',
-          });
-          this.setMemoryCache(normalizedBarcode, res);
-          return res;
-        }
-      } catch (err: unknown) {
-        this.logger.warn(
-          `Database name cross-check error: ${(err as Error).message}`,
-        );
-      }
     }
 
     const hasNutrition = Object.values(extraction.per100g || {}).some(

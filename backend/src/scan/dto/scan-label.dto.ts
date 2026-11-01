@@ -9,11 +9,11 @@ import {
 
 export class ScanLabelDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @Matches(/^\d{8,14}$/, {
     message: 'Barcode must be between 8 and 14 digits.',
   })
-  barcode!: string;
+  barcode?: string;
 
   @IsString()
   @IsNotEmpty()

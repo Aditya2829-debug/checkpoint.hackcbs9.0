@@ -100,10 +100,11 @@ export class GeminiService {
     const parts: any[] = [];
 
     if (imageBase64) {
-      const cleanBase64 = imageBase64.replace(
-        /^data:image\/[a-zA-Z]+;base64,/,
-        '',
-      );
+      let cleanBase64 = imageBase64;
+      if (cleanBase64.includes(',')) {
+        cleanBase64 = cleanBase64.split(',')[1];
+      }
+      cleanBase64 = cleanBase64.replace(/\s+/g, '');
       parts.push({
         inlineData: {
           data: cleanBase64,

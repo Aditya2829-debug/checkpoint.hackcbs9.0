@@ -14,6 +14,9 @@ import {
   RefreshCw,
   SwitchCamera,
   ImageIcon,
+  Check,
+  Loader2,
+  RotateCcw,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Html5Qrcode, Html5QrcodeSupportedFormats, type Html5QrcodeCameraScanConfig } from 'html5-qrcode';
@@ -74,6 +77,7 @@ export const ScannerModal: React.FC = () => {
   const navigate = useNavigate();
 
   const [ocrStep, setOcrStep] = useState<'capture' | 'verify'>('capture');
+  const [selectedOcrImage, setSelectedOcrImage] = useState<string | null>(null);
   const [newIngredientInput, setNewIngredientInput] = useState('');
   const [cameraState, setCameraState] = useState<'initializing' | 'active' | 'error'>('initializing');
   const [cameraErrorMsg, setCameraErrorMsg] = useState<string>('');
@@ -115,6 +119,7 @@ export const ScannerModal: React.FC = () => {
   const handleClose = useCallback(() => {
     stopCamera();
     setDetectedCode(null);
+    setSelectedOcrImage(null);
     isScanningLockedRef.current = false;
     candidateRef.current = { code: '', count: 0, lastTime: 0 };
     closeScanner();
@@ -473,62 +478,102 @@ export const ScannerModal: React.FC = () => {
     handleBarcodeSubmit(code);
   };
 
-  // Compress large smartphone photos to max 1280px
+  // Safely compress smartphone photos to max 1280px with error & timeout handling
   const compressImage = async (file: File): Promise<{ base64: string; mimeType: string }> => {
     return new Promise((resolve) => {
+      const fallbackTimeout = setTimeout(() => {
+        resolve({ base64: '', mimeType: 'image/jpeg' });
+      }, 8000);
+
       const reader = new FileReader();
+      reader.onerror = () => {
+        clearTimeout(fallbackTimeout);
+        resolve({ base64: '', mimeType: 'image/jpeg' });
+      };
       reader.onload = (ev) => {
+        const rawResult = ev.target?.result as string;
+        if (!rawResult) {
+          clearTimeout(fallbackTimeout);
+          resolve({ base64: '', mimeType: 'image/jpeg' });
+          return;
+        }
+
         const img = new Image();
+        img.onerror = () => {
+          clearTimeout(fallbackTimeout);
+          resolve({ base64: rawResult, mimeType: file.type || 'image/jpeg' });
+        };
         img.onload = () => {
-          const maxDim = 1280;
-          let { width, height } = img;
-          if (width > maxDim || height > maxDim) {
-            if (width > height) {
-              height = Math.round((height * maxDim) / width);
-              width = maxDim;
-            } else {
-              width = Math.round((width * maxDim) / height);
-              height = maxDim;
+          clearTimeout(fallbackTimeout);
+          try {
+            const maxDim = 1280;
+            let { width, height } = img;
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
             }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            resolve({
-              base64: canvas.toDataURL('image/jpeg', 0.85),
-              mimeType: 'image/jpeg',
-            });
-            return;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              resolve({
+                base64: canvas.toDataURL('image/jpeg', 0.85),
+                mimeType: 'image/jpeg',
+              });
+              return;
+            }
+          } catch {
+            // fallback if canvas fails
           }
           resolve({
-            base64: ev.target?.result as string,
+            base64: rawResult,
             mimeType: file.type || 'image/jpeg',
           });
         };
-        img.src = ev.target?.result as string;
+        img.src = rawResult;
       };
       reader.readAsDataURL(file);
     });
   };
 
-  // Handle Image Upload / Capture for OCR
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // User selects an image either from Camera or Phone Gallery
+  const handleImageSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsExtracting(true);
     try {
-      const { base64, mimeType } = await compressImage(file);
-      setCapturedImage(base64);
+      const { base64 } = await compressImage(file);
+      if (base64) {
+        setSelectedOcrImage(base64);
+        setCapturedImage(base64);
+      }
+    } catch (err) {
+      console.error('Failed to load image:', err);
+    } finally {
+      // Clear input so re-selecting triggers onChange every time
+      e.target.value = '';
+    }
+  };
 
-      const barcodeToUse = manualBarcodeInput.trim() || '8901030383748';
+  // User taps the Tick (✓) button to send image to Gemini AI
+  const handleSendToGemini = async () => {
+    if (!selectedOcrImage || isExtracting) return;
+    setIsExtracting(true);
+
+    try {
+      // Clean barcode or timestamp
+      const barcodeToUse = manualBarcodeInput.trim() || `${Date.now()}`;
       const product = await scanService.scanLabel({
         barcode: barcodeToUse,
-        imageBase64: base64,
-        mimeType,
+        imageBase64: selectedOcrImage,
+        mimeType: 'image/jpeg',
         categoryHint: categoryDraft === 'women-hygiene' ? 'period' : 'food',
       });
       setCurrentProduct(product);
@@ -537,14 +582,25 @@ export const ScannerModal: React.FC = () => {
       setIsExtracting(false);
       handleClose();
       navigate(`/product/${product.id}`);
-      return;
     } catch (err: any) {
       console.warn('Backend label analysis notice:', err?.message);
-      const result = await scanService.extractFromImage(file);
-      setExtractedIngredients(result.extractedIngredients);
-      setProductNameDraft(result.productNameCandidates[0] || (language === 'hi' ? 'पहचाना गया उत्पाद' : 'Extracted Product'));
-      setIsExtracting(false);
-      setOcrStep('verify');
+      try {
+        const result = await scanService.extractFromImage(selectedOcrImage);
+        setExtractedIngredients(result.extractedIngredients);
+        setProductNameDraft(
+          result.productNameCandidates[0] ||
+            (language === 'hi' ? 'पहचाना गया उत्पाद' : 'Extracted Product'),
+        );
+        setIsExtracting(false);
+        setOcrStep('verify');
+      } catch (fallbackErr) {
+        setIsExtracting(false);
+        alert(
+          language === 'hi'
+            ? 'फोटो का विश्लेषण करने में असमर्थ। कृपया स्पष्ट फोटो लें।'
+            : 'Unable to analyze image. Please take a clearer photo.',
+        );
+      }
     }
   };
 
@@ -862,31 +918,171 @@ export const ScannerModal: React.FC = () => {
           <div className="w-full max-w-md md:max-w-lg flex flex-col items-center">
             {ocrStep === 'capture' ? (
               <div className="w-full flex flex-col items-center text-center">
-                <div className="w-full aspect-[4/3] rounded-3xl border-2 border-dashed border-white/40 bg-white/5 flex flex-col items-center justify-center p-6 relative">
-                  <Camera className="w-14 h-14 text-[#D7FF63] mb-3" />
-                  <h3 className="font-bold text-base sm:text-lg mb-1 font-['Space_Grotesk']">
-                    {language === 'hi' ? 'सामग्री लेबल की फोटो लें' : 'Capture Ingredient Label'}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-white/70 max-w-sm mb-5">
-                    {language === 'hi'
-                      ? 'पैकेट पर सामग्री सूची या पोषण तालिका की फोटो खींचें ताकि AI तुरंत पहचान सके।'
-                      : 'Photograph the ingredients or nutrition table on packaging for instant AI text extraction.'}
-                  </p>
+                {!selectedOcrImage ? (
+                  /* State 1: Choose Camera or Phone Gallery */
+                  <div className="w-full rounded-3xl border-2 border-dashed border-white/30 bg-white/5 flex flex-col items-center justify-center p-6 relative">
+                    <Camera className="w-14 h-14 text-[#D7FF63] mb-2" />
+                    <h3 className="font-bold text-base sm:text-lg mb-1 font-['Space_Grotesk'] text-white">
+                      {language === 'hi' ? 'सामग्री या पोषण लेबल की फोटो' : 'Ingredient / Nutrition Label Photo'}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-white/70 max-w-sm mb-6">
+                      {language === 'hi'
+                        ? 'कैमरा से फोटो खींचें या अपने फ़ोन की गैलरी से इमेज चुनें। Gemini AI सामग्री और सुरक्षा ग्रेड निकालेगा।'
+                        : 'Take a live photo or choose an image from your phone. Gemini AI will extract ingredients and rate safety.'}
+                    </p>
 
-                  <label className="cursor-pointer">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                    <div className="px-6 py-3 rounded-2xl bg-[#D7FF63] text-[#0F3822] font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg hover:bg-[#c2ed4a] transition-all">
-                      <Upload className="w-4 h-4" />
-                      <span>{language === 'hi' ? 'फोटो लें / इमेज अपलोड करें' : 'Take Photo / Upload Image'}</span>
+                    {/* Two action cards: Live Camera & Phone Gallery */}
+                    <div className="w-full grid grid-cols-2 gap-3">
+                      {/* 1. Camera Option */}
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          onChange={handleImageSelected}
+                          className="hidden"
+                        />
+                        <div className="h-full p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 text-center shadow-md">
+                          <div className="w-11 h-11 rounded-full bg-[#D7FF63]/20 flex items-center justify-center text-[#D7FF63]">
+                            <Camera className="w-6 h-6" />
+                          </div>
+                          <span className="font-bold text-xs sm:text-sm text-white">
+                            {language === 'hi' ? 'कैमरा फोटो' : 'Camera Photo'}
+                          </span>
+                          <span className="text-[10px] text-white/60">
+                            {language === 'hi' ? 'लाइव फोटो लें' : 'Snap packaging'}
+                          </span>
+                        </div>
+                      </label>
+
+                      {/* 2. Phone Gallery Option */}
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageSelected}
+                          className="hidden"
+                        />
+                        <div className="h-full p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 flex flex-col items-center justify-center gap-2 transition-all active:scale-95 text-center shadow-md">
+                          <div className="w-11 h-11 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                            <ImageIcon className="w-6 h-6" />
+                          </div>
+                          <span className="font-bold text-xs sm:text-sm text-white">
+                            {language === 'hi' ? 'फ़ोन गैलरी' : 'Phone Gallery'}
+                          </span>
+                          <span className="text-[10px] text-white/60">
+                            {language === 'hi' ? 'फ़ोन से इमेज चुनें' : 'Upload from phone'}
+                          </span>
+                        </div>
+                      </label>
                     </div>
-                  </label>
-                </div>
+                  </div>
+                ) : (
+                  /* State 2: Preview Selected Image + Prominent TICK (✓) Button to Send to Gemini */
+                  <div className="w-full bg-[#191820] rounded-3xl p-4 sm:p-5 border border-[#2D2B38] flex flex-col gap-3 shadow-2xl">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                      <span className="text-xs font-bold text-white/80 uppercase tracking-wider">
+                        {language === 'hi' ? 'चुनी गई फोटो' : 'Selected Photo'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedOcrImage(null)}
+                        disabled={isExtracting}
+                        className="text-xs text-white/60 hover:text-white flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>{language === 'hi' ? 'दूसरी फोटो चुनें' : 'Change'}</span>
+                      </button>
+                    </div>
+
+                    {/* Image Preview with Loading Overlay */}
+                    <div className="relative w-full max-h-60 sm:max-h-72 rounded-2xl overflow-hidden bg-black/60 border border-white/15 flex items-center justify-center">
+                      <img
+                        src={selectedOcrImage}
+                        alt="Product preview"
+                        className="max-h-60 sm:max-h-72 w-full object-contain"
+                      />
+                      {isExtracting && (
+                        <div className="absolute inset-0 bg-black/75 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center z-10">
+                          <Loader2 className="w-10 h-10 text-[#D7FF63] animate-spin mb-3" />
+                          <p className="font-bold text-sm sm:text-base text-white">
+                            {language === 'hi'
+                              ? 'Gemini AI सामग्री और पोषण का विश्लेषण कर रहा है...'
+                              : 'Gemini AI is analyzing ingredients & nutrition...'}
+                          </p>
+                          <p className="text-xs text-white/60 mt-1">
+                            {language === 'hi'
+                              ? 'कृपया प्रतीक्षा करें...'
+                              : 'Please wait a moment...'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Category Selector */}
+                    <div>
+                      <label className="text-[11px] font-bold text-white/70 block mb-1">
+                        {language === 'hi' ? 'उत्पाद श्रेणी चुनें' : 'Select Category'}
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setCategoryDraft('food')}
+                          className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                            categoryDraft === 'food'
+                              ? 'bg-[#0F3822] text-[#D7FF63] border-[#D7FF63]'
+                              : 'bg-white/5 border-white/15 text-white/70'
+                          }`}
+                        >
+                          {language === 'hi' ? 'खाद्य एवं पेय' : 'Food & Beverages'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCategoryDraft('women-hygiene')}
+                          className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                            categoryDraft === 'women-hygiene'
+                              ? 'bg-[#431A60] text-[#BCA5FF] border-[#BCA5FF]'
+                              : 'bg-white/5 border-white/15 text-white/70'
+                          }`}
+                        >
+                          {language === 'hi' ? 'महिला स्वच्छता' : "Women's Hygiene"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons: Retake and Prominent Tick Button */}
+                    <div className="pt-2 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedOcrImage(null)}
+                        disabled={isExtracting}
+                        className="py-3 px-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-40"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        <span>{language === 'hi' ? 'पुनः' : 'Retake'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleSendToGemini}
+                        disabled={isExtracting}
+                        className="flex-1 py-3 px-4 rounded-2xl bg-[#D7FF63] hover:bg-[#c4ec4d] text-[#0F3822] font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-[#D7FF63]/25 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                      >
+                        {isExtracting ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span>{language === 'hi' ? 'विश्लेषण जारी है...' : 'Analyzing...'}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Check className="w-5 h-5 stroke-[3]" />
+                            <span>{language === 'hi' ? '✓ Gemini AI को भेजें' : '✓ Send to Gemini AI'}</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               /* Verification Step */

@@ -28,8 +28,9 @@ export class ScanController {
   @UseGuards(ThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   async scanLabel(@Body() dto: ScanLabelDto): Promise<ScanResponse> {
+    const barcode = dto.barcode?.trim() || `${Date.now()}`;
     return this.scanService.scan({
-      barcode: dto.barcode,
+      barcode,
       image: {
         imageBase64: dto.imageBase64,
         mimeType: dto.mimeType,
