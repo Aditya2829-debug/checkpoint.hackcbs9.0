@@ -512,17 +512,17 @@ export const ExploreScreen: React.FC = () => {
                   />
 
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm sm:text-base font-black text-[#111F15] dark:text-[#E4F5E5] line-clamp-2 font-['Plus_Jakarta_Sans'] group-hover:text-[#005128] dark:group-hover:text-[#D7FF63] transition-colors">
+                    <h3 className="text-sm sm:text-base font-black text-[#111F15] dark:text-[#E4F5E5] line-clamp-2 font-['Plus_Jakarta_Sans'] group-hover:text-[#005128] dark:group-hover:text-[#D7FF63] transition-colors leading-snug">
                       {product.name}
                     </h3>
 
                     {product.barcode && (
-                      <span className="text-[10px] font-mono text-[#69766D] dark:text-[#9BAA9E] block mt-0.5">
+                      <span className="text-[10px] font-mono text-[#69766D] dark:text-[#9BAA9E] block mt-0.5 tracking-tight">
                         #{product.barcode}
                       </span>
                     )}
 
-                    <p className="text-xs text-[#404940] dark:text-[#9BAA9E] line-clamp-2 mt-1 leading-snug">
+                    <p className="text-xs text-[#404940] dark:text-[#9BAA9E] line-clamp-2 mt-1 leading-relaxed">
                       {product.summary}
                     </p>
                   </div>
@@ -543,9 +543,13 @@ export const ExploreScreen: React.FC = () => {
                     </span>
                   )}
 
-                  {product.ingredients.some((i) => /palm/i.test(i.name)) ? (
+                  {product.ingredients.some((i) => /palm|palmolein/i.test(i.name)) ? (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300">
                       ⚠ Palm Oil
+                    </span>
+                  ) : product.ingredients.some((i) => /hydrogenated/i.test(i.name)) ? (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300">
+                      ⚠ Hydro Fat
                     </span>
                   ) : product.category === 'food' ? (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
@@ -553,7 +557,7 @@ export const ExploreScreen: React.FC = () => {
                     </span>
                   ) : null}
 
-                  {product.nutritionFacts?.some((n) => n.nutrient === 'Sugars' && parseFloat(n.amountPer100g) > 25) && (
+                  {product.nutritionFacts?.some((n) => /sugar/i.test(n.nutrient) && parseFloat(n.amountPer100g) > 20) && (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">
                       High Sugar
                     </span>

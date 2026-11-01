@@ -12,10 +12,6 @@ function mapBackendProductItem(doc: any): Product {
     doc.productCategory === 'menstrual_pad' ||
     /hygiene|pad/i.test(doc.category || '');
 
-  // Grade calculation
-  let grade: HealthGrade = 'C';
-  let gradeScore = 50;
-
   const nutrition = doc.nutrition || {};
   const kcal = nutrition.caloriesKcal || 0;
   const sugars = nutrition.sugars || 0;
@@ -23,32 +19,41 @@ function mapBackendProductItem(doc: any): Product {
   const sodium = nutrition.sodiumMg || 0;
   const palm = !!doc.palmOil;
 
-  const isBeverage =
-    /coca[- ]?cola|pepsi|thums|sprite|fanta|mirinda|frooti|maaza|slice|sting|dew|limca|juice|soda|drink|beverage|cola/i.test(
-      `${name} ${brand}`,
-    ) || (sugars > 0 && satFat === 0 && (nutrition.protein || 0) === 0);
+  // Grade calculation
+  let grade: HealthGrade = 'C';
+  let gradeScore = 50;
 
-  if (kcal === 0 && sugars === 0 && !palm) {
-    grade = 'A';
-    gradeScore = 100;
-  } else if (isBeverage && sugars >= 10) {
-    grade = 'E';
-    gradeScore = 10;
-  } else if (isBeverage && sugars >= 6) {
-    grade = 'D';
-    gradeScore = 28;
-  } else if (sugars > 25 || satFat > 12 || (palm && sugars > 15)) {
-    grade = 'E';
-    gradeScore = 15;
-  } else if (sugars > 15 || satFat > 6 || sodium > 700 || palm) {
-    grade = 'D';
-    gradeScore = 32;
-  } else if (sugars > 8 || satFat > 3 || sodium > 300) {
-    grade = 'C';
-    gradeScore = 55;
+  if (doc.rating && doc.rating.grade) {
+    grade = doc.rating.grade;
+    gradeScore = doc.rating.score ?? 50;
   } else {
-    grade = 'B';
-    gradeScore = 75;
+    const isBeverage =
+      /coca[- ]?cola|pepsi|thums|sprite|fanta|mirinda|frooti|maaza|slice|sting|dew|limca|juice|soda|drink|beverage|cola/i.test(
+        `${name} ${brand}`,
+      ) || (sugars > 0 && satFat === 0 && (nutrition.protein || 0) === 0);
+
+    if (kcal === 0 && sugars === 0 && !palm) {
+      grade = 'A';
+      gradeScore = 100;
+    } else if (isBeverage && sugars >= 10) {
+      grade = 'E';
+      gradeScore = 10;
+    } else if (isBeverage && sugars >= 6) {
+      grade = 'D';
+      gradeScore = 28;
+    } else if (sugars > 25 || satFat > 12 || (palm && sugars > 15)) {
+      grade = 'E';
+      gradeScore = 15;
+    } else if (sugars > 15 || satFat > 6 || sodium > 700 || palm) {
+      grade = 'D';
+      gradeScore = 32;
+    } else if (sugars > 8 || satFat > 3 || sodium > 300) {
+      grade = 'C';
+      gradeScore = 55;
+    } else {
+      grade = 'B';
+      gradeScore = 75;
+    }
   }
 
   // Ingredients parse
@@ -204,24 +209,30 @@ export const productService = {
       const response = await apiClient.get<{ data: any[] }>(`${ENDPOINTS.PRODUCTS.LIST}?limit=100`);
       if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
         const backendProducts = response.data.data.map(mapBackendProductItem);
-        const map = new Map<string, Product>();
+        const seen = new Set<string>();
+        const uniqueProducts: Product[] = [];
 
         // Local rich products take priority for full metadata
         for (const p of MOCK_PRODUCTS) {
-          if (p.barcode) map.set(p.barcode, p);
-          map.set(p.id, p);
-        }
-
-        // Add backend products
-        for (const bp of backendProducts) {
-          if (bp.barcode && !map.has(bp.barcode)) {
-            map.set(bp.barcode, bp);
-          } else if (!map.has(bp.id)) {
-            map.set(bp.id, bp);
+          const key = p.barcode || p.id;
+          if (!seen.has(key) && !seen.has(p.id)) {
+            seen.add(key);
+            seen.add(p.id);
+            uniqueProducts.push(p);
           }
         }
 
-        return Array.from(map.values());
+        // Add backend products without duplicating
+        for (const bp of backendProducts) {
+          const key = bp.barcode || bp.id;
+          if (!seen.has(key) && !seen.has(bp.id)) {
+            seen.add(key);
+            seen.add(bp.id);
+            uniqueProducts.push(bp);
+          }
+        }
+
+        return uniqueProducts;
       }
     } catch {
       // Fallback seamlessly to local verified products
