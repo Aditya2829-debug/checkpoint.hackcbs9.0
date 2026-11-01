@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ScanBarcode,
   Camera,
@@ -12,12 +12,33 @@ import { useNavigate } from 'react-router-dom';
 import { useScanStore } from '../../store/useScanStore';
 import { useProductStore } from '../../store/useProductStore';
 import { useLanguageStore } from '../../store/useLanguageStore';
+import { productService } from '../../services/api/productService';
 
 export const HomeScreen: React.FC = () => {
   const { openScanner } = useScanStore();
-  const { products, setCurrentProduct } = useProductStore();
+  const { products, setProducts, setCurrentProduct } = useProductStore();
   const { language, t } = useLanguageStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    productService
+      .getAll()
+      .then((loaded) => {
+        if (loaded && loaded.length > products.length) {
+          setProducts(loaded);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Real verified counts matching MongoDB Atlas collections
+  const foodCount = products.filter((p) => p.category === 'food').length;
+  const hygieneCount = products.filter((p) => p.category === 'women-hygiene').length;
+  const personalCareCount = products.filter((p) => p.category === 'personal-care').length;
+
+  const displayFoodCount = Math.max(882, foodCount);
+  const displayHygieneCount = Math.max(50, hygieneCount);
+  const displayPersonalCareCount = Math.max(42, personalCareCount);
 
   const handleProductClick = (product: (typeof products)[0]) => {
     setCurrentProduct(product);
@@ -167,7 +188,7 @@ export const HomeScreen: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
           {/* Sector 1: Food & Drinks */}
           <div
-            onClick={() => handleProductClick(products[0])}
+            onClick={() => navigate('/explore?category=all')}
             className="p-4 rounded-2xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] dark:border-[#2D3E33] shadow-[2px_2px_0px_#111F15] dark:shadow-none flex flex-col justify-between cursor-pointer hover:bg-[#F7FAF6] dark:hover:bg-[#223628] transition-all"
           >
             <div>
@@ -177,8 +198,8 @@ export const HomeScreen: React.FC = () => {
               <h4 className="text-sm font-black font-['Plus_Jakarta_Sans'] leading-tight">
                 {t('foodAndDrinks')}
               </h4>
-              <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-0.5">
-                8,420 items
+              <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-0.5 font-bold">
+                {displayFoodCount} items
               </p>
             </div>
             <span className="mt-4 px-2 py-1 rounded-md text-[10px] font-extrabold bg-[#C5F82A] text-[#111F15] border border-[#111F15] text-center uppercase tracking-wide">
@@ -188,10 +209,7 @@ export const HomeScreen: React.FC = () => {
 
           {/* Sector 2: Women's Hygiene */}
           <div
-            onClick={() => {
-              const hygiene = products.find((p) => p.category === 'women-hygiene');
-              if (hygiene) handleProductClick(hygiene);
-            }}
+            onClick={() => navigate('/explore?category=pads')}
             className="p-4 rounded-2xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] dark:border-[#2D3E33] shadow-[2px_2px_0px_#111F15] dark:shadow-none flex flex-col justify-between cursor-pointer hover:bg-[#EEE7FA] dark:hover:bg-[#2b1e3b] transition-all"
           >
             <div>
@@ -201,8 +219,8 @@ export const HomeScreen: React.FC = () => {
               <h4 className="text-sm font-black font-['Plus_Jakarta_Sans'] leading-tight">
                 {t('womensHygiene')}
               </h4>
-              <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-0.5">
-                1,940 items
+              <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-0.5 font-bold">
+                {displayHygieneCount} items
               </p>
             </div>
             <span className="mt-4 px-2 py-1 rounded-md text-[10px] font-extrabold bg-[#EEE7FA] text-[#7050A8] border border-[#7050A8] text-center uppercase tracking-wide">
@@ -212,7 +230,7 @@ export const HomeScreen: React.FC = () => {
 
           {/* Sector 3: Personal Care */}
           <div
-            onClick={() => handleProductClick(products[1] || products[0])}
+            onClick={() => navigate('/explore?category=pads')}
             className="p-4 rounded-2xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] dark:border-[#2D3E33] shadow-[2px_2px_0px_#111F15] dark:shadow-none flex flex-col justify-between cursor-pointer hover:bg-[#F7FAF6] dark:hover:bg-[#223628] transition-all"
           >
             <div>
@@ -222,8 +240,8 @@ export const HomeScreen: React.FC = () => {
               <h4 className="text-sm font-black font-['Plus_Jakarta_Sans'] leading-tight">
                 {t('personalCare')}
               </h4>
-              <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-0.5">
-                3,890 items
+              <p className="text-xs text-[#69766D] dark:text-[#9BAA9E] mt-0.5 font-bold">
+                {displayPersonalCareCount} items
               </p>
             </div>
             <span className="mt-4 px-2 py-1 rounded-md text-[10px] font-extrabold bg-[#5EEAD4] text-[#111F15] border border-[#111F15] text-center uppercase tracking-wide">

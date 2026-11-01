@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Compass,
   Search,
@@ -13,10 +13,11 @@ import {
   XCircle,
   ScanLine,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useProductStore } from '../../store/useProductStore';
 import { useScanStore } from '../../store/useScanStore';
 import { useLanguageStore } from '../../store/useLanguageStore';
+import { productService } from '../../services/api/productService';
 import { GradeBadge } from '../../components/ui/GradeBadge';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -162,12 +163,40 @@ const CATEGORY_INSIGHTS: Record<ExploreCategory, CategoryInsight | null> = {
 };
 
 export const ExploreScreen: React.FC = () => {
-  const { products, setCurrentProduct } = useProductStore();
+  const { products, setProducts, setCurrentProduct } = useProductStore();
   const { recordProductActivity, openScanner } = useScanStore();
   const { language, t } = useLanguageStore();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [activeCategory, setActiveCategory] = useState<ExploreCategory>('all');
+  // Load products from backend and local database
+  useEffect(() => {
+    productService
+      .getAll()
+      .then((loaded) => {
+        if (loaded && loaded.length > products.length) {
+          setProducts(loaded);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const urlCategory = searchParams.get('category') as ExploreCategory | null;
+  const [activeCategory, setActiveCategory] = useState<ExploreCategory>(
+    urlCategory && ['all', 'pads', 'noodles', 'chocolates', 'biscuits', 'snacks', 'beverages'].includes(urlCategory)
+      ? urlCategory
+      : 'all'
+  );
+
+  useEffect(() => {
+    if (
+      urlCategory &&
+      ['all', 'pads', 'noodles', 'chocolates', 'biscuits', 'snacks', 'beverages'].includes(urlCategory)
+    ) {
+      setActiveCategory(urlCategory);
+    }
+  }, [urlCategory]);
+
   const [gradeFilter, setGradeFilter] = useState<GradeFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -198,22 +227,42 @@ export const ExploreScreen: React.FC = () => {
 
       // 2. Category matching
       if (activeCategory === 'pads') {
-        return p.category === 'women-hygiene' || /pad|sanitary|whisper|stayfree|carmesi|plush|nua/i.test(p.name);
+        return (
+          p.category === 'women-hygiene' ||
+          /pad|sanitary|whisper|stayfree|sofy|carmesi|plush|nua/i.test(p.name) ||
+          /hygiene|pad/i.test(p.categoryLabel)
+        );
       }
       if (activeCategory === 'noodles') {
-        return /noodle|ramen|maggi|yippee|pasta/i.test(p.name) || /noodle/i.test(p.categoryLabel);
+        return (
+          /noodle|ramen|maggi|yippee|pasta|macaroni/i.test(p.name) ||
+          /noodle|instant food/i.test(p.categoryLabel)
+        );
       }
       if (activeCategory === 'chocolates') {
-        return /choc|cadbury|amul|silk|kitkat|ferrero|5 star/i.test(p.name) || /chocolate/i.test(p.categoryLabel);
+        return (
+          /choc|cadbury|amul|silk|kitkat|ferrero|5 star|dairy milk|bourbon|dark fantasy/i.test(p.name) ||
+          /chocolate/i.test(p.categoryLabel)
+        );
       }
       if (activeCategory === 'biscuits') {
-        return /biscuit|cookie|hide & seek|hide and seek|parle|nutrichoice|dark fantasy|bourbon/i.test(p.name) || /biscuit|cookie/i.test(p.categoryLabel);
+        return (
+          /biscuit|cookie|cracker|hide & seek|hide and seek|parle|good day|marie|monaco|krackjack|nutrichoice|dark fantasy|bourbon|oreo/i.test(p.name) ||
+          /biscuit|cookie/i.test(p.categoryLabel)
+        );
       }
       if (activeCategory === 'snacks') {
-        return /makhana|crisps|lays|kurkure|bhujia|chips/i.test(p.name) || (/food/i.test(p.category) && !/noodle|chocolate|biscuit|drink|juice/i.test(p.categoryLabel));
+        return (
+          /makhana|crisps|lays|kurkure|bhujia|chips|sev|namkeen|angles/i.test(p.name) ||
+          (/food/i.test(p.category) &&
+            !/noodle|chocolate|biscuit|drink|juice|beverage|water/i.test(p.categoryLabel))
+        );
       }
       if (activeCategory === 'beverages') {
-        return /coconut|juice|aamras|drink|beverage/i.test(p.name) || /beverage|juice/i.test(p.categoryLabel);
+        return (
+          /coconut|juice|aamras|drink|beverage|pepsi|coke|sprite|dew|7up|water|bisleri|kinley|aquafina|frooti|maaza|real fruit/i.test(p.name) ||
+          /beverage|juice|drink|water/i.test(p.categoryLabel)
+        );
       }
 
       return true;

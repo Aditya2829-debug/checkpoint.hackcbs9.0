@@ -1,6 +1,7 @@
 import type { Product } from '../../types';
+import { FAMOUS_INDIAN_PRODUCTS } from './famousIndianProducts';
 
-export const MOCK_PRODUCTS: Product[] = [
+const BASE_MOCK_PRODUCTS: Product[] = [
   // ── BISCUITS & COOKIES ────────────────────────────────────────────────────────
   {
     id: 'prod-hide-seek-05',
@@ -1087,4 +1088,9 @@ export const MOCK_PRODUCTS: Product[] = [
       ],
     },
   },
+];
+
+export const MOCK_PRODUCTS: Product[] = [
+  ...BASE_MOCK_PRODUCTS,
+  ...FAMOUS_INDIAN_PRODUCTS,
 ];

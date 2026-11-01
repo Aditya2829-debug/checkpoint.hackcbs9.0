@@ -1,12 +1,24 @@
 import { create } from 'zustand';
 import type { UserProfile } from '../types';
 
+export interface StartupPreferences {
+  veg: boolean;
+  palmOil: boolean;
+  lowSugar: boolean;
+  glutenFree: boolean;
+  lowSodium: boolean;
+  chemicalFreePad: boolean;
+}
+
 interface UserStoreState {
   profile: UserProfile;
+  startupPreferences: StartupPreferences;
   toggleAllergy: (allergy: string) => void;
   toggleAdditiveToAvoid: (additive: string) => void;
   toggleHygieneStandard: (standard: string) => void;
   updateName: (name: string) => void;
+  toggleStartupPreference: (key: keyof StartupPreferences) => void;
+  setStartupPreferences: (prefs: StartupPreferences) => void;
 }
 
 const getInitialName = (): string => {
@@ -15,6 +27,25 @@ const getInitialName = (): string => {
   } catch {
     return '';
   }
+};
+
+const DEFAULT_STARTUP_PREFERENCES: StartupPreferences = {
+  veg: true,
+  palmOil: true,
+  lowSugar: true,
+  glutenFree: false,
+  lowSodium: true,
+  chemicalFreePad: true,
+};
+
+const getInitialPreferences = (): StartupPreferences => {
+  try {
+    const raw = localStorage.getItem('checkpoint_user_preferences');
+    if (raw) {
+      return { ...DEFAULT_STARTUP_PREFERENCES, ...JSON.parse(raw) };
+    }
+  } catch {}
+  return DEFAULT_STARTUP_PREFERENCES;
 };
 
 export const useUserStore = create<UserStoreState>((set) => ({
@@ -37,6 +68,8 @@ export const useUserStore = create<UserStoreState>((set) => ({
       theme: 'light',
     },
   },
+
+  startupPreferences: getInitialPreferences(),
 
   toggleAllergy: (allergy) =>
     set((state) => {
@@ -99,5 +132,24 @@ export const useUserStore = create<UserStoreState>((set) => ({
         name,
       },
     }));
+  },
+
+  toggleStartupPreference: (key) =>
+    set((state) => {
+      const updated = {
+        ...state.startupPreferences,
+        [key]: !state.startupPreferences[key],
+      };
+      try {
+        localStorage.setItem('checkpoint_user_preferences', JSON.stringify(updated));
+      } catch {}
+      return { startupPreferences: updated };
+    }),
+
+  setStartupPreferences: (prefs) => {
+    try {
+      localStorage.setItem('checkpoint_user_preferences', JSON.stringify(prefs));
+    } catch {}
+    set({ startupPreferences: prefs });
   },
 }));

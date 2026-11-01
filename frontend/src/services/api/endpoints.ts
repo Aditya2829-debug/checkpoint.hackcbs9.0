@@ -16,6 +16,7 @@ export const ENDPOINTS = {
   },
   // Products & Scanning
   PRODUCTS: {
+    LIST: '/products',
     BY_BARCODE: (barcode: string) => `/products/barcode/${barcode}`,
     BY_ID: (id: string) => `/products/${id}`,
     SEARCH: '/products/search',

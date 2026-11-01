@@ -20,22 +20,15 @@ interface OnboardingModalProps {
 
 export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) => {
   const { language, setLanguage, t } = useLanguageStore();
-  const { profile, updateName, toggleAllergy, toggleAdditiveToAvoid, toggleHygieneStandard } = useUserStore();
+  const { profile, startupPreferences, updateName, toggleAllergy, toggleAdditiveToAvoid, toggleHygieneStandard, setStartupPreferences } = useUserStore();
 
   const [name, setName] = useState(
     profile.name || (typeof localStorage !== 'undefined' ? localStorage.getItem('checkpoint_user_name') || '' : '')
   );
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(language);
 
-  // Preference selections state
-  const [preferences, setPreferences] = useState({
-    veg: true,
-    palmOil: true,
-    lowSugar: true,
-    glutenFree: false,
-    lowSodium: true,
-    chemicalFreePad: true,
-  });
+  // Preference selections state initialized from store
+  const [preferences, setPreferences] = useState(startupPreferences);
 
   if (!isOpen) return null;
 
@@ -55,6 +48,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClos
     setLanguage(selectedLanguage);
 
     // Save guardrails to user store
+    setStartupPreferences(preferences);
     if (preferences.glutenFree && !profile.preferences.allergies.includes('Gluten')) {
       toggleAllergy('Gluten');
     }
