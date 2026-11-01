@@ -119,7 +119,7 @@ export class GeminiService {
     } else if (barcode) {
       const promptText = `Identify the packaged consumer product with barcode "${barcode}"${categoryHint ? ` (Category hint: ${categoryHint})` : ''}.
 Look up its packaging details, exact product name, brand, complete ingredients array, and nutrition values per 100g (energyKcal, sugars, satFat, sodiumMg, fibre, protein).
-If the product is recognized, provide accurate packaging data and return confidence >= 0.85.`;
+CRITICAL: If you do NOT know the exact product associated with this barcode number, set confidence to 0.0 with empty ingredients and note 'Unknown barcode'. NEVER guess or invent a product.`;
       parts.push({ text: promptText });
     } else {
       throw new BadGatewayException(
@@ -134,7 +134,7 @@ Identify the product associated with the provided barcode number.
 Provide values strictly per 100 g. Convert kcal to kJ (kcal * 4.184) and salt to sodium (salt * 400).
 List every single ingredient in packaging order.
 List any palm-derived ingredients (palm oil, palmolein, palm fat).
-Set confidence between 0.0 and 1.0 based on how accurately the barcode was matched.`;
+CRITICAL: If the barcode does not match a verified known product in your training data, you MUST return confidence 0.0 with empty ingredients. NEVER guess or hallucinate an unrelated product name.`;
 
     const requestPayload = {
       model: this.modelName,
