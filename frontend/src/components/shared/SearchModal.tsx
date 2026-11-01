@@ -6,6 +6,7 @@ import { useLanguageStore } from '../../store/useLanguageStore';
 import { useScanStore } from '../../store/useScanStore';
 import { GradeBadge } from '../ui/GradeBadge';
 import { Badge } from '../ui/Badge';
+import { ProductIllustration } from '../ui/ProductIllustration';
 import type { Product } from '../../types';
 
 interface SearchModalProps {
@@ -115,11 +116,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                 className="p-3 rounded-xl border border-transparent hover:border-[#E3EAE1] dark:hover:border-[#2D3E33] hover:bg-[#F7FAF6] dark:hover:bg-[#15271B] transition-all flex items-center justify-between cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className="w-10 h-10 rounded-lg object-cover bg-white"
-                  />
+                  <ProductIllustration product={product} size="xs" className="shrink-0" />
                   <div>
                     <h4 className="text-xs font-bold font-['Plus_Jakarta_Sans'] line-clamp-1">
                       {product.name}

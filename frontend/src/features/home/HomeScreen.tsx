@@ -13,6 +13,7 @@ import { useScanStore } from '../../store/useScanStore';
 import { useProductStore } from '../../store/useProductStore';
 import { useLanguageStore } from '../../store/useLanguageStore';
 import { productService } from '../../services/api/productService';
+import { ProductIllustration } from '../../components/ui/ProductIllustration';
 
 export const HomeScreen: React.FC = () => {
   const { openScanner } = useScanStore();
@@ -285,13 +286,7 @@ export const HomeScreen: React.FC = () => {
               </div>
 
               <div className="flex gap-3.5 items-start">
-                <div className="w-18 h-18 rounded-2xl bg-[#EDF6EA] dark:bg-[#15271B] border border-[#111F15]/20 overflow-hidden shrink-0">
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <ProductIllustration product={product} size="md" className="shrink-0" />
 
                 <div className="flex-1 min-w-0 pr-20">
                   <span className="text-[10px] font-mono font-bold text-[#69766D] dark:text-[#9BAA9E] uppercase block">

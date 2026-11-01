@@ -20,6 +20,7 @@ import { GradeBadge } from '../../components/ui/GradeBadge';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
+import { ProductIllustration } from '../../components/ui/ProductIllustration';
 
 // Format relative time helper
 const formatRelativeTime = (timestamp: number, lang: 'en' | 'hi'): string => {
@@ -169,10 +170,10 @@ export const HistoryScreen: React.FC = () => {
           {/* Main Card Content */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4 min-w-0 flex-1">
-              <img
-                src={lastItem.imageUrl}
-                alt={lastItem.name}
-                className="w-20 h-20 rounded-2xl object-cover bg-white/10 shrink-0 border border-white/20 shadow-md"
+              <ProductIllustration
+                product={lastItem}
+                size="md"
+                className="shrink-0 shadow-md"
               />
 
               <div className="min-w-0 flex-1">
@@ -280,10 +281,10 @@ export const HistoryScreen: React.FC = () => {
               onClick={() => handleOpenProduct(item)}
             >
               <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover bg-white shrink-0 border border-black/5 dark:border-white/10 shadow-sm"
+                <ProductIllustration
+                  product={item}
+                  size="sm"
+                  className="shrink-0"
                 />
 
                 <div className="min-w-0 flex-1">

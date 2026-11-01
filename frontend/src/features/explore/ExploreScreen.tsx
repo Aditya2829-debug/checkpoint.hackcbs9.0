@@ -21,6 +21,7 @@ import { productService } from '../../services/api/productService';
 import { GradeBadge } from '../../components/ui/GradeBadge';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
+import { ProductIllustration } from '../../components/ui/ProductIllustration';
 import type { Product } from '../../types';
 
 type ExploreCategory = 'all' | 'pads' | 'noodles' | 'chocolates' | 'biscuits' | 'snacks' | 'beverages';
@@ -502,12 +503,12 @@ export const ExploreScreen: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Main Product Info & Thumbnail */}
+                {/* Main Product Info & Illustration */}
                 <div className="flex items-start gap-3.5">
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover bg-white shrink-0 border border-black/5 dark:border-white/10 shadow-sm"
+                  <ProductIllustration
+                    product={product}
+                    size="md"
+                    className="shrink-0"
                   />
 
                   <div className="min-w-0 flex-1">

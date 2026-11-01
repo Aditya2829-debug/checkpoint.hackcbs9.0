@@ -8,6 +8,7 @@ import { GradeBadge } from '../../components/ui/GradeBadge';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
+import { ProductIllustration } from '../../components/ui/ProductIllustration';
 
 export const WatchlistScreen: React.FC = () => {
   const { watchlistIds, products, setCurrentProduct, toggleWatchlist } = useProductStore();
@@ -72,11 +73,7 @@ export const WatchlistScreen: React.FC = () => {
               <div>
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-12 h-12 rounded-xl object-cover bg-white shrink-0"
-                    />
+                    <ProductIllustration product={product} size="xs" className="shrink-0" />
                     <div>
                       <span className="text-[10px] font-bold text-[#69766D] dark:text-[#9BAA9E] uppercase">
                         {product.brand}

@@ -11,6 +11,7 @@ import {
 import { productService } from '../../services/api/productService';
 import { aiService, type AiChatMessage } from '../../services/api/aiService';
 import { useLanguageStore } from '../../store/useLanguageStore';
+import { ProductIllustration } from '../../components/ui/ProductIllustration';
 import type { Product } from '../../types';
 
 export const GeminiExplainerScreen: React.FC = () => {
@@ -146,11 +147,7 @@ export const GeminiExplainerScreen: React.FC = () => {
       {/* Product Strip */}
       <div className="p-3 rounded-2xl bg-[#EDF6EA] dark:bg-[#15271B] border-2 border-[#111F15] flex items-center justify-between">
         <div className="flex items-center gap-2.5 min-w-0">
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="w-11 h-11 rounded-xl object-cover border border-[#111F15]/20 shrink-0 bg-white"
-          />
+          <ProductIllustration product={product} size="xs" className="shrink-0" />
           <div className="min-w-0">
             <span className="text-[9px] font-mono text-[#005128] font-bold block uppercase">
               {product.categoryLabel} • {product.barcode}
