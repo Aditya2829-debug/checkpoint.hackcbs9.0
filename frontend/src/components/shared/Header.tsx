@@ -27,8 +27,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-2xl bg-[#D7FF63] text-[#0F3822] border-2 border-[#0F3822] flex items-center justify-center font-bold shadow-[2px_2px_0px_#0F3822] group-hover:scale-105 transition-transform">
-            <ShieldCheck className="w-6 h-6 stroke-[2.5]" />
+          <div className="w-10 h-10 rounded-2xl border-2 border-[#0F3822] shadow-[2px_2px_0px_#0F3822] group-hover:scale-105 transition-transform overflow-hidden bg-[#0A1A10]">
+            <img src="/favicon.png" alt="CheckPoint Logo" className="w-full h-full object-cover" />
           </div>
           <div>
             <div className="flex items-center gap-1">

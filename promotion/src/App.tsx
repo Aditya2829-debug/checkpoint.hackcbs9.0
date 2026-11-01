@@ -41,8 +41,8 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
           {/* Logo */}
           <a href="#" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-[#005128] border-2 border-[#111F15] flex items-center justify-center shadow-[2px_2px_0px_#111F15] text-[#C5F82A] font-black text-xl group-hover:rotate-6 transition-transform">
-              ✓
+            <div className="w-10 h-10 rounded-xl border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] overflow-hidden group-hover:rotate-6 transition-transform bg-[#0A1A10]">
+              <img src="/favicon.png" alt="CheckPoint Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <span className="text-xl sm:text-2xl font-black tracking-tight block leading-none font-sans">
