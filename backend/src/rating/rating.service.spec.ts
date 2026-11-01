@@ -182,13 +182,13 @@ describe('Phase 1 - Rating Engine Unit Tests', () => {
         category: 'food' as const,
         nutrition: {
           energyKj: 1200, // 3 pts
-          sugars: 15, // 3 pts
+          sugars: 6, // 1 pt (moderate sugar)
           satFat: 2.5, // 2 pts
-          sodiumMg: 150, // 1 pt -> total N = 9 pts
+          sodiumMg: 150, // 1 pt -> total N = 7 pts
           fibre: 1, // 1 pt
-          protein: 2, // 1 pt
+          protein: 0,
           fruitVegPct: 0,
-        }, // score = 9 - 2 = 7 -> grade C
+        }, // score = 7 - 1 = 6 -> grade C
         ingredients: ['Palm oil', 'Wheat'],
       };
       const resultC = ratingService.rate(foodC);

@@ -376,6 +376,51 @@ export const ProductAnalysisScreen: React.FC = () => {
         );
       })()}
 
+      {/* Chemical & Heavy Metal Contaminants Audit (Infant & High-Scrutiny Foods) */}
+      {product.chemicalContaminants && product.chemicalContaminants.length > 0 && (
+        <section className="p-4 rounded-3xl bg-[#FFFBEB] dark:bg-[#2D2416] border-2 border-[#D97706] shadow-[2px_2px_0px_#D97706] space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-[#D97706] text-white flex items-center justify-center text-xs font-black">
+                🔬
+              </span>
+              <div>
+                <h2 className="text-xs font-black font-['Plus_Jakarta_Sans'] text-[#92400E] dark:text-[#FDE68A]">
+                  Chemical Contaminants & Heavy Metals
+                </h2>
+                <p className="text-[10px] text-[#B45309] dark:text-[#FCD34D]">
+                  Infant & Child Food Safety Screening
+                </p>
+              </div>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#D97706] text-[9px] font-black uppercase">
+              {product.targetAge ? `Target: ${product.targetAge}` : 'Lab Audit Required'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            {product.chemicalContaminants.map((contam, idx) => (
+              <div key={idx} className="p-2.5 rounded-xl bg-white dark:bg-[#1E1910] border border-[#D97706]/40 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-[#111F15] dark:text-white">
+                    {contam.name}
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded text-[8px] font-mono font-black uppercase bg-[#FDE68A] text-[#92400E]">
+                    {contam.riskLevel}
+                  </span>
+                </div>
+                <p className="text-[9px] text-[#69766D] dark:text-[#D1D5DB]">
+                  {contam.measuredValueMgKg ? `${contam.measuredValueMgKg} mg/kg` : 'Requires 3rd-party batch lab assay'}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-[#78350F] dark:text-[#FDE68A] leading-tight">
+            ⚠️ Infant rice cereals bioaccumulate soil arsenic. FSSAI & WHO standards mandate strict limits on inorganic arsenic, lead, cadmium, and mercury for babies under 24 months.
+          </p>
+        </section>
+      )}
+
       {/* Section 02: Nutritional Profile */}
       <section className="p-4 rounded-3xl bg-white dark:bg-[#1A2A1F] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] dark:shadow-none space-y-3">
         <div className="flex items-center justify-between">

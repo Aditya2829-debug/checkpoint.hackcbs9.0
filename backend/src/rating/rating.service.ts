@@ -110,14 +110,14 @@ export class RatingService {
     // Any high-sugar item MUST be D or E (never B or A)
     const sugars = product.nutrition.sugars ?? 0;
     if (isBeverage) {
-      if (sugars >= 8) {
+      if (sugars >= 6) {
         if (grade === 'A' || grade === 'B' || grade === 'C') {
           grade = sugars >= 10 ? 'E' : 'D';
         }
         warnings.push(
           `High liquid sugar (${sugars}g/100ml) causes rapid glycemic spikes and increases metabolic risk.`,
         );
-      } else if (sugars >= 4.5 && (grade === 'A' || grade === 'B')) {
+      } else if (sugars >= 3.5 && (grade === 'A' || grade === 'B')) {
         grade = 'C';
       }
     } else {
@@ -128,21 +128,24 @@ export class RatingService {
         warnings.push(
           `High sugar (${sugars}g/100g) exceeds 50% of recommended daily sugar intake.`,
         );
-      } else if (sugars >= 15 && (grade === 'A' || grade === 'B')) {
+      } else if (sugars >= 14 && (grade === 'A' || grade === 'B' || grade === 'C')) {
         grade = 'D';
         warnings.push(
-          `High sugar (${sugars}g/100g) exceeds FSSAI benchmark.`,
+          `High sugar (${sugars}g/100g) exceeds safe dietary benchmarks (marked Grade D).`,
         );
       }
     }
 
-    // Palm oil penalty
+    // Palm oil penalty: Immediate Grade D/E penalty
     if (palmOil === 'yes') {
-      const downgraded = this.downgradeGrade(grade);
-      reasons.push(
-        `Contains palm oil: grade downgraded from ${grade} to ${downgraded}`,
+      const origGrade = grade;
+      if (grade === 'A' || grade === 'B' || grade === 'C') {
+        grade = 'D';
+      }
+      reasons.unshift(
+        `Contains palm oil: grade downgraded from ${origGrade} to ${grade} (High saturated palmitic acid & cardiovascular risk)`,
       );
-      grade = downgraded;
+      warnings.push('Contains palm oil / palmolein: high saturated fat penalty applied.');
     } else if (palmOil === 'possible') {
       warnings.push('May contain unlisted palm oil / generic vegetable oil.');
     }

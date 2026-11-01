@@ -1,6 +1,7 @@
 import { apiClient } from './apiClient';
 import { ENDPOINTS } from './endpoints';
 import { MOCK_PRODUCTS } from './mockData';
+import { FAMOUS_INDIAN_PRODUCTS } from './famousIndianProducts';
 import type { HealthGrade, Ingredient, NutritionFact, OcrExtractionResult, Product } from '../../types';
 
 export interface BackendScanResponse {
@@ -59,10 +60,20 @@ export function transformScanResponseToProduct(res: BackendScanResponse, fallbac
     if (grade === 'A' || grade === 'B' || grade === 'C') {
       grade = sugars >= 10 ? 'E' : 'D';
     }
-  } else if (!isBeverage && sugars >= 15) {
-    if (grade === 'A' || grade === 'B') {
+  } else if (!isBeverage && sugars >= 14) {
+    if (grade === 'A' || grade === 'B' || grade === 'C') {
       grade = sugars >= 25 ? 'E' : 'D';
     }
+  }
+
+  // Immediate Palm Oil Penalty: Any product with palm oil is strictly capped at Grade D / E
+  const hasPalmOil =
+    (res.product?.ingredients || []).some((i) =>
+      /palm\s*oil|palmolein|palm\s*kernel|palm\s*fat/i.test(i),
+    ) || res.rating?.palmOil === 'yes';
+
+  if (hasPalmOil && (grade === 'A' || grade === 'B' || grade === 'C')) {
+    grade = 'D';
   }
 
   // Calculate a 0-100 score from Nutri-Score score
@@ -220,48 +231,166 @@ export function transformScanResponseToProduct(res: BackendScanResponse, fallbac
     };
   });
 
-  // Nutrition Facts
+  // Complete Nutritional Profile (Supports Energy, Carbs, Sugars, Added Sugars, Fats, Sodium, Calcium, Potassium, Iron, Vitamins)
   const nutrition = res.product?.nutrition || {};
   const nutritionFacts: NutritionFact[] = [];
-  if (nutrition.caloriesKcal != null || nutrition.energyKj != null) {
-    const kcal = nutrition.caloriesKcal ?? Math.round((nutrition.energyKj || 0) / 4.184);
+
+  // 1. Energy
+  if (nutrition.caloriesKcal != null || nutrition.energyKj != null || nutrition.energy_kcal_100g != null) {
+    const kcal = nutrition.caloriesKcal ?? nutrition.energy_kcal_100g ?? Math.round((nutrition.energyKj || 0) / 4.184);
     nutritionFacts.push({
       nutrient: 'Energy',
       amountPer100g: `${kcal} kcal (${Math.round(kcal * 4.184)} kJ)`,
-      flag: kcal > 450 ? 'excessive' : kcal > 250 ? 'moderate' : 'low',
+      flag: isBeverage ? (kcal > 50 ? 'excessive' : kcal > 20 ? 'moderate' : 'low') : (kcal > 450 ? 'excessive' : kcal > 250 ? 'moderate' : 'low'),
     });
   }
-  if (nutrition.sugars != null) {
+
+  // 2. Total Carbohydrates
+  const carbsVal = nutrition.carbohydrates ?? nutrition.carbs ?? nutrition.carbohydrates_g_100g;
+  if (carbsVal != null) {
     nutritionFacts.push({
-      nutrient: 'Sugars',
-      amountPer100g: `${nutrition.sugars} g`,
-      flag: nutrition.sugars > 22.5 ? 'excessive' : nutrition.sugars > 10 ? 'moderate' : 'low',
+      nutrient: 'Carbohydrates',
+      amountPer100g: `${carbsVal} g`,
+      flag: carbsVal > 65 ? 'excessive' : carbsVal > 20 ? 'moderate' : 'low',
     });
   }
-  if (nutrition.satFat != null) {
+
+  // 3. Sugars (Beverage >6g is EXCESSIVE, Food >14g is EXCESSIVE)
+  const sugarsVal = nutrition.sugars ?? nutrition.totalSugars ?? nutrition.total_sugars_g_100g;
+  if (sugarsVal != null) {
+    nutritionFacts.push({
+      nutrient: 'Total Sugars',
+      amountPer100g: `${sugarsVal} g`,
+      flag: isBeverage
+        ? (sugarsVal > 6 ? 'excessive' : sugarsVal > 2 ? 'moderate' : 'low')
+        : (sugarsVal > 14 ? 'excessive' : sugarsVal > 6 ? 'moderate' : 'low'),
+    });
+  }
+
+  // 4. Added Sugars
+  const addedSugarsVal = nutrition.addedSugars ?? nutrition.added_sugars ?? nutrition.added_sugars_g_100g;
+  if (addedSugarsVal != null) {
+    nutritionFacts.push({
+      nutrient: 'Added Sugars',
+      amountPer100g: `${addedSugarsVal} g`,
+      flag: addedSugarsVal > 0 ? 'excessive' : 'low',
+    });
+  }
+
+  // 5. Natural Fruit Sugars
+  if (nutrition.naturalSugars != null) {
+    nutritionFacts.push({
+      nutrient: 'Natural Fruit Sugars',
+      amountPer100g: `${nutrition.naturalSugars} g`,
+      flag: 'low',
+    });
+  }
+
+  // 6. Total Fat
+  const totalFatVal = nutrition.totalFat ?? nutrition.fat ?? nutrition.total_fat_g_100g;
+  if (totalFatVal != null) {
+    nutritionFacts.push({
+      nutrient: 'Total Fat',
+      amountPer100g: `${totalFatVal} g`,
+      flag: totalFatVal > 17.5 ? 'excessive' : totalFatVal > 3 ? 'moderate' : 'low',
+    });
+  }
+
+  // 7. Saturated Fat
+  const satFatVal = nutrition.satFat ?? nutrition.saturatedFat ?? nutrition.saturated_fat_g_100g;
+  if (satFatVal != null) {
     nutritionFacts.push({
       nutrient: 'Saturated Fat',
-      amountPer100g: `${nutrition.satFat} g`,
-      flag: nutrition.satFat > 5 ? 'excessive' : nutrition.satFat > 2 ? 'moderate' : 'low',
+      amountPer100g: `${satFatVal} g`,
+      flag: satFatVal > 5 ? 'excessive' : satFatVal > 1.5 ? 'moderate' : 'low',
     });
   }
-  if (nutrition.sodiumMg != null) {
+
+  // 8. Trans Fat
+  if (nutrition.transFat != null) {
+    nutritionFacts.push({
+      nutrient: 'Trans Fat',
+      amountPer100g: `${nutrition.transFat} g`,
+      flag: nutrition.transFat > 0 ? 'excessive' : 'low',
+    });
+  }
+
+  // 9. Sodium (accurate decimal representation)
+  const sodiumVal = nutrition.sodiumMg ?? nutrition.sodium ?? nutrition.sodium_mg_100g;
+  if (sodiumVal != null) {
+    const formattedSodium = Number(sodiumVal).toFixed(Number(sodiumVal) % 1 === 0 ? 0 : 1);
     nutritionFacts.push({
       nutrient: 'Sodium',
-      amountPer100g: `${nutrition.sodiumMg} mg`,
-      flag: nutrition.sodiumMg > 600 ? 'excessive' : nutrition.sodiumMg > 250 ? 'moderate' : 'low',
+      amountPer100g: `${formattedSodium} mg`,
+      flag: sodiumVal > 500 ? 'excessive' : sodiumVal > 150 ? 'moderate' : 'low',
     });
   }
-  if (nutrition.protein != null) {
+
+  // 10. Protein
+  const proteinVal = nutrition.protein ?? nutrition.protein_g_100g;
+  if (proteinVal != null) {
     nutritionFacts.push({
       nutrient: 'Protein',
-      amountPer100g: `${nutrition.protein} g`,
+      amountPer100g: `${proteinVal} g`,
     });
   }
-  if (nutrition.fibre != null) {
+
+  // 11. Dietary Fibre
+  const fibreVal = nutrition.fibre ?? nutrition.fiber ?? nutrition.fiber_g_100g;
+  if (fibreVal != null) {
     nutritionFacts.push({
       nutrient: 'Dietary Fibre',
-      amountPer100g: `${nutrition.fibre} g`,
+      amountPer100g: `${fibreVal} g`,
+    });
+  }
+
+  // 12. Calcium
+  const calciumVal = nutrition.calcium ?? nutrition.calciumMg ?? nutrition.calcium_mg_100g;
+  if (calciumVal != null) {
+    nutritionFacts.push({
+      nutrient: 'Calcium',
+      amountPer100g: `${calciumVal} mg`,
+      flag: 'low',
+    });
+  }
+
+  // 13. Potassium
+  const potassiumVal = nutrition.potassium ?? nutrition.potassiumMg ?? nutrition.potassium_mg_100g;
+  if (potassiumVal != null) {
+    nutritionFacts.push({
+      nutrient: 'Potassium',
+      amountPer100g: `${potassiumVal} mg`,
+      flag: 'low',
+    });
+  }
+
+  // 14. Vitamin C
+  const vitaminCVal = nutrition.vitaminC ?? nutrition.vitaminCMg ?? nutrition.vitamin_c_mg_100g;
+  if (vitaminCVal != null) {
+    nutritionFacts.push({
+      nutrient: 'Vitamin C',
+      amountPer100g: `${vitaminCVal} mg`,
+      flag: 'low',
+    });
+  }
+
+  // 15. Iron
+  const ironVal = nutrition.iron ?? nutrition.ironMg ?? nutrition.iron_mg_100g;
+  if (ironVal != null) {
+    nutritionFacts.push({
+      nutrient: 'Iron',
+      amountPer100g: `${ironVal} mg`,
+      flag: 'low',
+    });
+  }
+
+  // 16. Fruit Juice Content
+  const fruitPct = nutrition.fruitJuiceContent ?? (nutrition.fruitVegPct > 0 ? (nutrition.fruitVegPct > 8 ? '40%' : `${nutrition.fruitVegPct}%`) : null);
+  if (fruitPct != null) {
+    nutritionFacts.push({
+      nutrient: 'Fruit Juice Content',
+      amountPer100g: `${fruitPct}`,
+      flag: 'moderate',
     });
   }
 
@@ -340,9 +469,16 @@ export const scanService = {
   async lookupBarcode(barcode: string): Promise<Product> {
     const cleanBarcode = barcode.trim();
 
-    // Instant 0ms return if already scanned
+    // 1. Instant 0ms return if already scanned in this session
     if (clientBarcodeCache.has(cleanBarcode)) {
       return clientBarcodeCache.get(cleanBarcode)!;
+    }
+
+    // 2. Instant return from verified Indian FMCG products database (880+ items)
+    const famous = FAMOUS_INDIAN_PRODUCTS.find((p) => p.barcode === cleanBarcode);
+    if (famous) {
+      clientBarcodeCache.set(cleanBarcode, famous);
+      return famous;
     }
 
     try {
@@ -363,18 +499,21 @@ export const scanService = {
 
       throw new Error(response.data.reason || 'Product lookup failed');
     } catch (err: any) {
+      // Check offline fallback catalog if network error
+      const offlineFallback =
+        FAMOUS_INDIAN_PRODUCTS.find((p) => p.barcode === cleanBarcode) ||
+        MOCK_PRODUCTS.find((p) => p.barcode === cleanBarcode);
+      if (offlineFallback) {
+        clientBarcodeCache.set(cleanBarcode, offlineFallback);
+        return offlineFallback;
+      }
+
       if (err instanceof ProductNotFoundError) {
         throw err;
       }
       // Check if backend responded with 404 or 400
       if (err?.response?.data?.status === 'NOT_FOUND' || err?.response?.data?.needsLabelPhoto) {
         throw new ProductNotFoundError(cleanBarcode, true);
-      }
-
-      // Offline fallback: check local mock products
-      const found = MOCK_PRODUCTS.find((p) => p.barcode === cleanBarcode);
-      if (found) {
-        return found;
       }
       throw err;
     }

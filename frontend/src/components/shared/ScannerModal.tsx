@@ -139,9 +139,17 @@ export const ScannerModal: React.FC = () => {
       navigate(`/product/${product.id}`);
     } catch (err: any) {
       if (err?.needsLabelPhoto) {
-        // If unlisted, smoothly switch to label photo mode without confirmation dialog
-        setManualBarcodeInput(clean);
-        setActiveMode('ocr');
+        const confirmOcr = window.confirm(
+          language === 'hi'
+            ? `बारकोड #${clean} अभी सत्यापित बारकोड रजिस्ट्री में नहीं मिला।\n\nक्या आप सामग्री लेबल (Ingredients Label) की फोटो लेकर AI से विश्लेषण कराना चाहते हैं?`
+            : `Barcode #${clean} was not found in the verified product registry.\n\nWould you like to snap a quick photo of the ingredient label to analyze with AI?`
+        );
+        if (confirmOcr) {
+          setManualBarcodeInput(clean);
+          setActiveMode('ocr');
+        } else {
+          setDetectedCode(null);
+        }
       } else {
         alert(err?.message || (language === 'hi' ? `बारकोड "${clean}" नहीं मिल सका।` : `Barcode "${clean}" could not be processed.`));
       }

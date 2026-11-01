@@ -116,13 +116,13 @@ export function computeNutriScore(input: NutriScoreInput): NutriScoreResult {
     }
 
     // High sugar guardrails for beverages:
-    // Any beverage with >= 8g sugar/100ml (e.g. Coke, Pepsi, sodas at 10.6g) is severe high sugar
+    // Any beverage with >= 6g sugar/100ml (e.g. Coke, Pepsi, packed juices) is high sugar
     // and CANNOT be Grade A, B, or C. It must be Grade D or E.
-    if (sugars >= 8) {
+    if (sugars >= 6) {
       if (grade === 'A' || grade === 'B' || grade === 'C') {
         grade = sugars >= 10 ? 'E' : 'D';
       }
-    } else if (sugars >= 4.5) {
+    } else if (sugars >= 3.5) {
       if (grade === 'A' || grade === 'B') {
         grade = 'C';
       }
@@ -155,11 +155,11 @@ export function computeNutriScore(input: NutriScoreInput): NutriScoreResult {
       if (grade === 'A' || grade === 'B' || grade === 'C') {
         grade = sugars >= 35 ? 'E' : 'D';
       }
-    } else if (sugars >= 15) {
-      if (grade === 'A' || grade === 'B') {
+    } else if (sugars >= 14) {
+      if (grade === 'A' || grade === 'B' || grade === 'C') {
         grade = 'D';
       }
-    } else if (sugars >= 10 && (satFat >= 5 || energyKj >= 1675)) {
+    } else if (sugars >= 10 && (satFat >= 4 || energyKj >= 1600)) {
       if (grade === 'A' || grade === 'B') {
         grade = 'D';
       }

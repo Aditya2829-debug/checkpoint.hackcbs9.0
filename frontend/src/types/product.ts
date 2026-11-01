@@ -54,6 +54,12 @@ export interface GeminiExplainer {
   suggestedQuestions: string[];
 }
 
+export interface ChemicalContaminant {
+  name: string;
+  measuredValueMgKg?: number | string | null;
+  riskLevel: 'SAFE' | 'UNVERIFIED' | 'MODERATE' | 'CRITICAL';
+}
+
 export interface Product {
   id: string;
   barcode: string;
@@ -66,8 +72,10 @@ export interface Product {
   grade: HealthGrade;
   gradeScore: number; // 0 - 100
   summary: string;
+  targetAge?: string;
   ingredients: Ingredient[];
   nutritionFacts?: NutritionFact[];
+  chemicalContaminants?: ChemicalContaminant[];
   hygieneMetrics?: WomenHygieneSafetyMetrics;
   regulatoryNotices: RegulatoryNotice[];
   scientificEvidence: ScientificStudy[];

@@ -642,28 +642,109 @@ export const FAMOUS_INDIAN_PRODUCTS: Product[] = [
     imageUrl: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=600&q=80',
     packSize: '180 ml Tetra Pack (₹20)',
     grade: 'D',
-    gradeScore: 40,
-    summary: 'Packaged mixed fruit beverage containing 8.2% juice concentrate from 9 fruits, with 13.1g sugar per 100ml.',
+    gradeScore: 30,
+    summary: 'Contains 40% fruit juice content with 10.1g total sugars (6g added sugar) per 100ml. Formulated with INS 330, INS 440, INS 160a, INS 300, and INS 960.',
     ingredients: [
-      { id: 'ing-real-1', name: 'Water', purpose: 'Reconstitution vehicle', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: 'Purified drinking water.' },
-      { id: 'ing-real-2', name: 'Mixed Fruit Juice Concentrate (8.2%)', purpose: 'Fruit pulp', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Apple, orange, guava, apricot, mango, banana, lime, passion fruit, pineapple.' },
-      { id: 'ing-real-3', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: 'Over 13g free and added sugar per 100ml.' },
-      { id: 'ing-real-4', name: 'Acidity Regulator (INS 330) & Antioxidant (INS 300)', insNumber: 'INS 300', purpose: 'Stabilization & Vitamin C', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Citric acid and ascorbic acid.' }
+      { id: 'ing-real-1', name: 'Water', purpose: 'Vehicle', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: 'Purified water.' },
+      { id: 'ing-real-2', name: 'Concentrated Mixed Fruit Juice (8.2%) [Apple, Orange, Guava, Apricot, Mango, Banana, Lime, Passion Fruit, Pineapple]', purpose: 'Fruit pulp concentrate', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Natural fruit purees & concentrates.' },
+      { id: 'ing-real-3', name: 'Sugar', purpose: 'Sweetener', riskLevel: 'high', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: '6.0g added sugar per 100ml (18% RDA per serve).' },
+      { id: 'ing-real-4', name: 'Acidity Regulator (INS 330)', insNumber: 'INS 330', purpose: 'Acidity regulator', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Citric acid.' },
+      { id: 'ing-real-5', name: 'Stabilizer (INS 440)', insNumber: 'INS 440', purpose: 'Texture & suspension', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Pectin.' },
+      { id: 'ing-real-6', name: 'Flavours (Natural & Nature Identical Substances)', purpose: 'Flavouring', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: 'Mixed fruit aroma.' },
+      { id: 'ing-real-7', name: 'Colour [INS 160a (ii) & (iii)]', insNumber: 'INS 160a', purpose: 'Natural carotenes colour', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Beta-carotenes.' },
+      { id: 'ing-real-8', name: 'Antioxidant (INS 300)', insNumber: 'INS 300', purpose: 'Vitamin C & Antioxidant', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Ascorbic acid (18 mg/100ml).' },
+      { id: 'ing-real-9', name: 'Sweetener (INS 960)', insNumber: 'INS 960', purpose: 'Non-caloric sweetener', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Permitted', scientificContext: 'Steviol Glycosides.' }
     ],
     nutritionFacts: [
-      { nutrient: 'Energy', amountPer100g: '52 kcal', flag: 'moderate' },
-      { nutrient: 'Sugars', amountPer100g: '13.1 g', flag: 'excessive' },
+      { nutrient: 'Energy', amountPer100g: '42 kcal (176 kJ)', flag: 'moderate' },
+      { nutrient: 'Carbohydrates', amountPer100g: '10.1 g', flag: 'moderate' },
+      { nutrient: 'Total Sugars', amountPer100g: '10.1 g', flag: 'excessive' },
+      { nutrient: 'Added Sugars', amountPer100g: '6.0 g', dailyValuePercentage: '18% RDA', flag: 'excessive' },
+      { nutrient: 'Natural Fruit Sugars', amountPer100g: '4.1 g', flag: 'low' },
+      { nutrient: 'Protein', amountPer100g: '0.2 g', flag: 'low' },
       { nutrient: 'Total Fat', amountPer100g: '0.0 g', flag: 'low' },
-      { nutrient: 'Fruit Juice Content', amountPer100g: '8.2 %', flag: 'moderate' }
+      { nutrient: 'Saturated Fat', amountPer100g: '0.0 g', flag: 'low' },
+      { nutrient: 'Sodium', amountPer100g: '4.7 mg', dailyValuePercentage: '0.4% RDA', flag: 'low' },
+      { nutrient: 'Vitamin C', amountPer100g: '18.0 mg', dailyValuePercentage: '33.8% RDA', flag: 'low' },
+      { nutrient: 'Potassium', amountPer100g: '50.0 mg', dailyValuePercentage: '2.1% RDA', flag: 'low' },
+      { nutrient: 'Calcium', amountPer100g: '3.2 mg', dailyValuePercentage: '0.5% RDA', flag: 'low' },
+      { nutrient: 'Iron', amountPer100g: '0.2 mg', dailyValuePercentage: '1.6% RDA', flag: 'low' },
+      { nutrient: 'Fruit Juice Content', amountPer100g: '40 %', flag: 'moderate' }
     ],
     regulatoryNotices: [
-      { authority: 'FSSAI', standardCode: 'Lic. 10012011000618', status: 'Compliant', summary: 'Dabur India Ltd registered facility.' }
+      { authority: 'FSSAI', standardCode: 'Lic. 10012011000618', status: 'Compliant', summary: 'Dabur India Ltd registered manufacturing license.' },
+      { authority: 'FSSAI', standardCode: 'FSS (Advertising & Claims) Reg.', status: 'Warning', summary: 'Contains 6g added refined sugar per 100ml. High liquid sugar penalty applied.' }
     ],
     scientificEvidence: [],
     geminiExplainer: {
-      theBigPicture: 'Contains 8.2% real fruit concentrate with natural vitamin C, but total sugar reaches 13.1g per 100ml.',
-      whyThisGrade: ['8.2% real fruit concentrate provides antioxidants', 'Total sugar 13.1g/100ml limits grade to D', 'No palm oil or saturated fats'],
-      suggestedQuestions: ['Does Real Mixed Fruit have real fruit juice?', 'How does Real compare to freshly squeezed orange juice?']
+      theBigPicture: 'Contains 40% fruit juice content with natural Vitamin C (18mg) and Potassium (50mg), but packs 10.1g total sugars (including 6g added sugar) per 100ml.',
+      whyThisGrade: [
+        'High sugar penalty: 10.1 g/100 ml total sugars (6g added sugar) exceeds healthy liquid benchmarks',
+        'Contains 18mg Vitamin C (33.8% RDA) and 50mg Potassium',
+        'Zero palm oil and zero saturated fat'
+      ],
+      suggestedQuestions: ['How much added sugar is in one 180ml pack of Real Fruit Juice?', 'Is Real Fruit Juice better than soft drinks like Coke?']
+    }
+  },
+  {
+    id: 'prod-nestle-cerelac-rice-india',
+    barcode: '8901058000000',
+    name: 'Nestle Cerelac Rice (India)',
+    brand: 'Nestle',
+    category: 'food',
+    categoryLabel: 'Infant Cereal',
+    targetAge: '6-24 months',
+    imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80',
+    packSize: '300g (₹250)',
+    grade: 'D',
+    gradeScore: 35,
+    summary: 'Nestle Cerelac Rice baby cereal formulated with rice flour, milk solids, soybean oil, and 16g sugar per 100g. Requires monitoring for inorganic arsenic exposure.',
+    ingredients: [
+      { id: 'ing-cerelac-1', name: 'Rice Flour', purpose: 'Grain base', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Infant Food Standard', scientificContext: 'Naturally absorbs inorganic arsenic from paddy soil.' },
+      { id: 'ing-cerelac-2', name: 'Milk Solids', purpose: 'Protein & dairy nutrition', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved', scientificContext: 'Contains dairy lactose and milk proteins (potential allergen).' },
+      { id: 'ing-cerelac-3', name: 'Soybean Oil', purpose: 'Essential fatty acids', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Standard', scientificContext: 'Polyunsaturated plant lipid.' },
+      { id: 'ing-cerelac-4', name: 'Dibasic Potassium Phosphate', insNumber: 'INS 340(ii)', purpose: 'Acidity regulator & nutrient buffer', riskLevel: 'moderate', regulatoryStatusIndia: 'FSSAI Permitted in infant formulas', scientificContext: 'Inorganic phosphorus buffering salt.' },
+      { id: 'ing-cerelac-5', name: 'Alpha Amylase', purpose: 'Starch digestion enzyme', riskLevel: 'safe', regulatoryStatusIndia: 'FSSAI Approved enzyme', scientificContext: 'Breaks complex rice starches into simpler digestible maltodextrins.' }
+    ],
+    nutritionFacts: [
+      { nutrient: 'Energy', amountPer100g: '432 kcal', flag: 'moderate' },
+      { nutrient: 'Protein', amountPer100g: '15.0 g', flag: 'low' },
+      { nutrient: 'Carbohydrates', amountPer100g: '65.0 g', flag: 'moderate' },
+      { nutrient: 'Total Sugars', amountPer100g: '16.0 g', flag: 'excessive' },
+      { nutrient: 'Total Fat', amountPer100g: '10.0 g', flag: 'moderate' }
+    ],
+    chemicalContaminants: [
+      { name: 'Inorganic Arsenic', measuredValueMgKg: null, riskLevel: 'UNVERIFIED' },
+      { name: 'Lead', measuredValueMgKg: null, riskLevel: 'UNVERIFIED' },
+      { name: 'Cadmium', measuredValueMgKg: null, riskLevel: 'UNVERIFIED' },
+      { name: 'Mercury', measuredValueMgKg: null, riskLevel: 'UNVERIFIED' }
+    ],
+    regulatoryNotices: [
+      { authority: 'FSSAI', standardCode: 'FSS (Foods for Infant Nutrition) Reg. 2020', status: 'Warning', summary: 'High sugar density for infant food (16g/100g). WHO European standard recommends 0g added sugar.' },
+      { authority: 'WHO', standardCode: 'Guideline on sugars intake for adults and children', status: 'Warning', summary: 'Added sugars not recommended for infants under 24 months.' }
+    ],
+    scientificEvidence: [
+      {
+        id: 'study-cerelac-arsenic',
+        title: 'Arsenic in baby foods: Dietary exposure and risk assessment',
+        journal: 'Food and Chemical Toxicology',
+        year: 2023,
+        findingSummary: 'Rice crops bioaccumulate arsenic 10x faster than other cereals; infant formula requires strict batch certification.'
+      }
+    ],
+    geminiExplainer: {
+      theBigPicture: 'Infant cereal with 16g sugar per 100g. Public Eye investigation highlighted higher sugar in Indian Cerelac formulations vs European versions.',
+      whyThisGrade: [
+        'Infant food requires strict monitoring of sugar (16g/100g exceeds infant benchmarks)',
+        'Rice-based cereal warrants attention to soil inorganic arsenic exposure',
+        'Contains milk solids (potential allergen)',
+        'Should be consumed as part of a diverse complementary diet'
+      ],
+      suggestedQuestions: [
+        'Does Indian Cerelac contain more sugar than Cerelac in Europe?',
+        'How can I test baby food for inorganic arsenic?',
+        'What are healthier homemade baby food alternatives to Cerelac?'
+      ]
     }
   },
 
