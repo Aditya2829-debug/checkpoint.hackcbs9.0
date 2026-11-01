@@ -39,8 +39,8 @@ const CATEGORY_INSIGHTS: Record<ExploreCategory, CategoryInsight | null> = {
       hi: 'FSSAI एवं BIS प्रमाणित प्रयोगशाला मानक',
     },
     description: {
-      en: 'Explore India\'s packaged foods and intimate care essentials evaluated by deterministic nutritional algorithms and spectroscopic ingredient safety.',
-      hi: 'निष्पक्ष न्यूट्री-स्कोर और सामग्री सुरक्षा विश्लेषण के आधार पर भारत के पैकेज्ड खाद्य एवं स्वच्छता उत्पादों की जांच करें।',
+      en: 'Explore India\'s packaged foods and intimate care essentials evaluated by verified health and ingredient safety standards.',
+      hi: 'सत्यापित स्वास्थ्य और सामग्री सुरक्षा मानकों के आधार पर भारत के पैकेज्ड खाद्य एवं स्वच्छता उत्पादों की जांच करें।',
     },
     goldenRule: {
       en: 'Always inspect the 1st three ingredients on the label and look for unannounced palm oil or high free sugars.',

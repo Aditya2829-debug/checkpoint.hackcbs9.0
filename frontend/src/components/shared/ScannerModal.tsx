@@ -649,7 +649,7 @@ export const ScannerModal: React.FC = () => {
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>{language === 'hi' ? 'लेबल OCR' : 'OCR Label'}</span>
+              <span>{language === 'hi' ? 'फोटो स्कैन' : 'Photo Scan'}</span>
             </button>
           </div>
         </div>
@@ -751,7 +751,7 @@ export const ScannerModal: React.FC = () => {
                     {language === 'hi' ? 'सामग्री और पोषण का विश्लेषण जारी...' : 'Analyzing ingredients & nutrition...'}
                   </p>
                   <p className="text-[10px] text-[#D7FF63] mt-1 animate-pulse">
-                    ⚡ {language === 'hi' ? 'डेटाबेस एवं AI इंजन से तुरंत मिलान' : 'Querying database & AI engine'}
+                    ⚡ {language === 'hi' ? 'जांच जारी है...' : 'Checking product...'}
                   </p>
                 </div>
               )}
@@ -919,8 +919,8 @@ export const ScannerModal: React.FC = () => {
                     </h3>
                     <p className="text-xs sm:text-sm text-white/70 max-w-sm mb-6">
                       {language === 'hi'
-                        ? 'कैमरा से फोटो खींचें या अपने फ़ोन की गैलरी से इमेज चुनें। Gemini AI सामग्री और सुरक्षा ग्रेड निकालेगा।'
-                        : 'Take a live photo or choose an image from your phone. Gemini AI will extract ingredients and rate safety.'}
+                        ? 'कैमरा से फोटो लें या गैलरी से चुनें। सामग्री और स्वास्थ्य रेटिंग तुरंत जांची जाएगी।'
+                        : 'Take a live photo or choose from your phone to check ingredients and health safety.'}
                     </p>
 
                     {/* Two action cards: Live Camera & Phone Gallery */}
@@ -999,8 +999,8 @@ export const ScannerModal: React.FC = () => {
                           <Loader2 className="w-10 h-10 text-[#D7FF63] animate-spin mb-3" />
                           <p className="font-bold text-sm sm:text-base text-white">
                             {language === 'hi'
-                              ? 'Gemini AI सामग्री और पोषण का विश्लेषण कर रहा है...'
-                              : 'Gemini AI is analyzing ingredients & nutrition...'}
+                              ? 'सामग्री और पोषण की जांच हो रही है...'
+                              : 'Checking ingredients & nutrition...'}
                           </p>
                           <p className="text-xs text-white/60 mt-1">
                             {language === 'hi'
@@ -1068,7 +1068,7 @@ export const ScannerModal: React.FC = () => {
                         ) : (
                           <>
                             <Check className="w-5 h-5 stroke-[3]" />
-                            <span>{language === 'hi' ? '✓ Gemini AI को भेजें' : '✓ Send to Gemini AI'}</span>
+                            <span>{language === 'hi' ? '✓ भेजें' : '✓ Send'}</span>
                           </>
                         )}
                       </button>
@@ -1195,7 +1195,7 @@ export const ScannerModal: React.FC = () => {
                     className="w-full py-2.5"
                     isLoading={isExtracting}
                   >
-                    <span>{language === 'hi' ? 'सुरक्षा एवं ग्रेड ऑडिट शुरू करें' : 'Submit for Official Grading'}</span>
+                    <span>{language === 'hi' ? 'स्वास्थ्य एवं सुरक्षा जांचें' : 'Check Health & Safety'}</span>
                     <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
                 </div>
@@ -1207,8 +1207,8 @@ export const ScannerModal: React.FC = () => {
 
       <div className="px-6 py-4 text-center text-xs text-white/60 z-10">
         {language === 'hi'
-          ? 'सभी उत्पाद ग्रेड FSSAI और BIS सुरक्षा मानकों के आधार पर निष्पक्ष रूप से विश्लेषित किए जाते हैं।'
-          : 'All product grades are evaluated through regulatory FSSAI & BIS safety algorithms.'}
+          ? 'सभी रेटिंग FSSAI और BIS सुरक्षा मानकों के आधार पर जांची जाती हैं।'
+          : 'All ratings are verified based on regulatory FSSAI & BIS safety standards.'}
       </div>
     </div>
   );

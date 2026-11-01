@@ -377,7 +377,7 @@ export const WomenHygieneScreen: React.FC = () => {
             onClick={() => navigate(`/ai-explainer/${product.id}`)}
             className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1A2A1F] border border-[#111F15] text-[10px] font-black flex items-center gap-1 shadow-sm cursor-pointer"
           >
-            <span>{language === 'hi' ? '⚡ AI से सवाल पूछें' : '文A Explain with Gemini'}</span>
+            <span>{language === 'hi' ? 'विशेषज्ञ से सलाह लें' : 'Ask Hygiene Expert'}</span>
           </button>
         </div>
       </div>

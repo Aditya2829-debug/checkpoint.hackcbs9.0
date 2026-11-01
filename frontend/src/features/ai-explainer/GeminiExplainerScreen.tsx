@@ -83,7 +83,7 @@ export const GeminiExplainerScreen: React.FC = () => {
   if (!product) {
     return (
       <div className="py-20 text-center text-xs font-mono font-bold text-[#111F15] dark:text-[#E4F5E5]">
-        {language === 'hi' ? 'Gemini AI विश्लेषण लोड हो रहा है...' : 'Loading Gemini Intelligence...'}
+        {language === 'hi' ? 'स्वास्थ्य विश्लेषण लोड हो रहा है...' : 'Loading Health Intelligence...'}
       </div>
     );
   }
@@ -125,11 +125,11 @@ export const GeminiExplainerScreen: React.FC = () => {
               <Sparkles className="w-4 h-4" />
             </div>
             <h2 className="text-sm font-black font-['Plus_Jakarta_Sans']">
-              {language === 'hi' ? 'चेकपॉइंट AI इंटेलिजेंस' : 'CheckPoint Intelligence'}
+              {language === 'hi' ? 'स्वास्थ्य विश्लेषण एवं मार्गदर्शन' : 'Health & Nutrition Insights'}
             </h2>
           </div>
           <span className="px-2 py-0.5 rounded-md bg-[#C5F82A] text-[#111F15] text-[9px] font-black border border-[#111F15] uppercase">
-            GEMINI 3 FLASH
+            {language === 'hi' ? 'स्वास्थ्य सहायक' : 'HEALTH AI'}
           </span>
         </div>
         <p className="text-[11px] text-[#404940] dark:text-[#9BAA9E] leading-snug">
@@ -285,7 +285,7 @@ export const GeminiExplainerScreen: React.FC = () => {
         <span className="text-[#69766D] pl-2 text-xs">‹</span>
         <input
           type="text"
-          placeholder={language === 'hi' ? 'इस उत्पाद के बारे में AI से कोई सवाल पूछें...' : 'Ask Gemini about this product...'}
+          placeholder={language === 'hi' ? 'इस उत्पाद के बारे में कोई सवाल पूछें...' : 'Ask any question about this product...'}
           value={inputQuestion}
           onChange={(e) => setInputQuestion(e.target.value)}
           className="flex-1 bg-transparent px-2 text-xs font-semibold focus:outline-none"
