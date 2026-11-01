@@ -88,7 +88,7 @@ export default function App() {
               {/* Release Pill */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#005128] text-[#C5F82A] border-2 border-[#111F15] shadow-[2px_2px_0px_#111F15] text-xs font-black tracking-wide uppercase">
                 <ShieldCheck className="w-4 h-4" />
-                <span>Official Android APK • Version 1.0 • ~4.3 MB Ultra-Light</span>
+                <span>Official Android APK • Version 1.0 • ~5.7 MB Ultra-Light</span>
               </div>
 
               {/* Main Headline */}
@@ -140,7 +140,7 @@ export default function App() {
                     <span className="w-2 h-2 rounded-full bg-[#16A34A]" />
                     Package: <code>checkpoint-v1.0.apk</code>
                   </span>
-                  <span>Size: ~4.3 MB (Ultra-Lightweight)</span>
+                  <span>Size: ~5.7 MB (Ultra-Lightweight)</span>
                   <span>Android 8.0+</span>
                 </div>
               </div>
@@ -148,7 +148,7 @@ export default function App() {
               {/* Trust Badges */}
               <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-[#69766D] pt-1">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-[#16A34A]" /> ~4.3 MB Ultra-Lightweight
+                  <CheckCircle2 className="w-4 h-4 text-[#16A34A]" /> ~5.7 MB Ultra-Lightweight
                 </span>
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-[#16A34A]" /> Zero Advertisements
@@ -586,7 +586,7 @@ export default function App() {
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-[#005128] hover:bg-[#0E7A40] text-[#C5F82A] font-black text-sm border-2 border-[#111F15] shadow-[4px_4px_0px_#111F15] hover:shadow-none transition-all cursor-pointer"
             >
               <Download className="w-4 h-4 stroke-[3]" />
-              <span>Download CheckPoint APK (~4.3 MB Ultra-Light)</span>
+              <span>Download CheckPoint APK (~5.7 MB Ultra-Light)</span>
             </a>
           </div>
         </section>
@@ -602,7 +602,7 @@ export default function App() {
             {[
               {
                 q: 'How large is the app download?',
-                a: 'The APK is exceptionally lightweight at only ~4.3 MB! It downloads in 2-3 seconds even on 3G/4G connections and occupies minimal device storage without bloating your phone.',
+                a: 'The APK is exceptionally lightweight at only ~5.7 MB! It downloads in 2-3 seconds even on 3G/4G connections and occupies minimal device storage without bloating your phone.',
               },
               {
                 q: 'Why download an APK instead of Google Play Store?',
