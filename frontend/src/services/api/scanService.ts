@@ -422,18 +422,12 @@ export const scanService = {
         })),
         detectedStandardCodes: res.regulatoryNotices.map((r) => r.standardCode),
       };
-    } catch {
-      return {
-        rawText: 'INGREDIENTS: REFINED WHEAT FLOUR (MAIDA), PALM OIL, IODIZED SALT, SUGAR.',
-        productNameCandidates: ['Scanned Product'],
-        brandCandidate: 'Packaged Food',
-        extractedIngredients: ['Refined Wheat Flour (Maida)', 'Palm Oil', 'Iodized Salt', 'Sugar'],
-        nutritionalTokens: [
-          { key: 'Energy', value: '450 kcal' },
-          { key: 'Sugars', value: '25 g' },
-        ],
-        detectedStandardCodes: ['FSSAI Certified'],
-      };
+    } catch (err: any) {
+      throw new Error(
+        err?.response?.data?.message ||
+          err?.message ||
+          'Failed to extract product label from image.',
+      );
     }
   },
 

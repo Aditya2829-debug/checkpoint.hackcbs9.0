@@ -258,7 +258,10 @@ export class ScanService {
       },
       rating,
     };
-    this.setMemoryCache(normalizedBarcode, response);
+
+    if (!hasImage) {
+      this.setMemoryCache(normalizedBarcode, response);
+    }
 
     return response;
   }

@@ -584,23 +584,15 @@ export const ScannerModal: React.FC = () => {
       navigate(`/product/${product.id}`);
     } catch (err: any) {
       console.warn('Backend label analysis notice:', err?.message);
-      try {
-        const result = await scanService.extractFromImage(selectedOcrImage);
-        setExtractedIngredients(result.extractedIngredients);
-        setProductNameDraft(
-          result.productNameCandidates[0] ||
-            (language === 'hi' ? 'पहचाना गया उत्पाद' : 'Extracted Product'),
-        );
-        setIsExtracting(false);
-        setOcrStep('verify');
-      } catch (fallbackErr) {
-        setIsExtracting(false);
-        alert(
-          language === 'hi'
-            ? 'फोटो का विश्लेषण करने में असमर्थ। कृपया स्पष्ट फोटो लें।'
-            : 'Unable to analyze image. Please take a clearer photo.',
-        );
-      }
+      setIsExtracting(false);
+      const msg =
+        err?.response?.data?.reason ||
+        err?.response?.data?.message ||
+        err?.message ||
+        (language === 'hi'
+          ? 'फोटो का विश्लेषण करने में असमर्थ। कृपया लेबल पर केंद्रित स्पष्ट फोटो लें।'
+          : 'Unable to analyze image. Please take a clearer photo centering on the ingredients/nutrition label.');
+      alert(msg);
     }
   };
 

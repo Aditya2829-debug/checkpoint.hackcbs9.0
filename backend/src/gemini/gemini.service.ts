@@ -73,7 +73,7 @@ export class GeminiService {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY')?.trim();
     this.modelName =
       this.configService.get<string>('GEMINI_MODEL')?.trim() ||
-      'gemini-3-flash-preview';
+      'gemini-flash-lite-latest';
 
     if (apiKey) {
       this.client = new GoogleGenAI({ apiKey });
@@ -148,24 +148,31 @@ CRITICAL: If the barcode does not match a verified known product in your trainin
         systemInstruction: effectiveSystemInstruction,
         responseMimeType: 'application/json',
         responseSchema: EXTRACTION_SCHEMA,
-        thinkingConfig: {
-          thinkingBudget: 0,
-        },
       },
     };
 
-    let attempts = 0;
-    const maxAttempts = 2; // 1 try + 1 retry on 429/5xx
+    const candidateModels = [
+      this.modelName,
+      'gemini-flash-lite-latest',
+      'gemini-3.5-flash-lite',
+      'gemini-3.8-flash',
+    ].filter((v, i, a) => Boolean(v) && a.indexOf(v) === i);
 
-    while (attempts < maxAttempts) {
-      attempts++;
+    let lastError: any = null;
+
+    for (const modelToUse of candidateModels) {
       try {
+        const payload = {
+          ...requestPayload,
+          model: modelToUse,
+        };
+
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 25000);
 
         try {
           const response = await Promise.race([
-            this.client.models.generateContent(requestPayload),
+            this.client.models.generateContent(payload),
             new Promise<never>((_, reject) =>
               setTimeout(() => reject(new Error('TIMEOUT')), 25000),
             ),
@@ -180,35 +187,16 @@ CRITICAL: If the barcode does not match a verified known product in your trainin
           clearTimeout(timeoutId);
         }
       } catch (err: any) {
-        const isTimeout =
-          err?.message === 'TIMEOUT' || err?.name === 'AbortError';
-        const status = err?.status || err?.statusCode || 0;
-        const isRateLimitOrServerError =
-          status === 429 || (status >= 500 && status < 600);
-
+        lastError = err;
         this.logger.warn(
-          `Gemini API attempt ${attempts} failed: ${isTimeout ? 'Request timed out (25s)' : err?.message || 'Unknown error'}`,
-        );
-
-        if (attempts < maxAttempts && (isRateLimitOrServerError || isTimeout)) {
-          // Short backoff before retry
-          await new Promise((resolve) => setTimeout(resolve, 1500));
-          continue;
-        }
-
-        if (isTimeout) {
-          throw new BadGatewayException(
-            'Label analysis timed out after 25 seconds. Please retry with a clearer photo.',
-          );
-        }
-
-        throw new BadGatewayException(
-          'Failed to extract product label details from image. Please ensure the label is clear and try again.',
+          `Gemini model ${modelToUse} failed: ${err?.message || err}. Trying candidate fallback...`,
         );
       }
     }
 
-    throw new BadGatewayException('Failed to process label image.');
+    throw new BadGatewayException(
+      `Failed to extract product details from image: ${lastError?.message || 'Gemini service unavailable'}`,
+    );
   }
 
   validateAndNormalizeExtraction(
